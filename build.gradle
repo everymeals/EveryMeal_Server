@@ -12,7 +12,7 @@ sonar {
 	properties {
 		property "sonar.projectKey", "everymeals_EveryMeal_Server"
 		property "sonar.organization", "everymeals"
-		property "sonar.host", "https://sonarcloud.io"
+		property "sonar.host.url", "https://sonarcloud.io"
 		property 'sonar.sources', 'src'
 		property 'sonar.language', 'java'
 		property 'sonar.sourceEncoding', 'UTF-8'
