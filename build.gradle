@@ -8,7 +8,7 @@ plugins {
 group = 'everymeal'
 version = '0.0.1-SNAPSHOT'
 
-sonarqube {
+sonar {
 	properties {
 		property "sonar.projectKey", "everymeals_EveryMeal_Server"
 		property "sonar.organization", "everymeals"
