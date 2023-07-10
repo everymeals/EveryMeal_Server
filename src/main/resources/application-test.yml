@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: EveryMeal-server-test
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:~/test # h2 support in-memory-db
+    username: sa
+    password:
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath*:db/schema.sql
+      data-locations: classpath*:db/data.sql
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        show_sql: false
+        format_sql: false
+        hbm2ddl:
+          auto: none
+    showSql: false
+    database-platform: org.hibernate.dialect.H2Dialect
+
+swagger:
+  enabled: true
+
+log:
+  config:
+    path: ./logs
+    filename: app-dev
+    maxHistory: 1 # 1일
+    totalSizeCap: 10MB # 로그 파일 사이즈
