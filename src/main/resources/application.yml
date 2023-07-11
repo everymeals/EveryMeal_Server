@@ -1,1 +1,67 @@
+server:
+  port: 80
+  error:
+    path: /error
 
+spring:
+  application:
+    name: EveryMeal-server-main
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100MB
+      max-request-size: 100MB
+#  jpa:
+#    properties:
+#      hibernate:
+#        dialect: org.hibernate.dialect.MySQLDialect
+#        show_sql: false
+#        format_sql: false
+#        use_sql_comments: true
+#        id:
+#          new_generator_mappings: true
+#                naming: #네이밍 카멜케이스 컬럼명 적용
+#                    implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+#                    physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+management:
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, prometheus
+
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+springdoc:
+  api-docs:
+    groups-order: DESC
+    enabled: true
+    swagger-ui:
+      path: /swagger-ui.html
+      groups-order: DESC
+    path: /api-docs
+
+---
+# Local
+spring:
+  config:
+    activate:
+      on-profile: local
+    import: application-local.yml
+---
+# PROD
+spring:
+  config:
+    activate:
+      on-profile: prod
+    import: application-prod.yml
