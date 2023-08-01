@@ -1,1 +1,15 @@
-
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: test-mongo
+      uri: mongodb://localhost/test-mongo
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          mongodb:
+            core:
+              MongoTemplate: DEBUG
