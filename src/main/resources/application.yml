@@ -1,4 +1,18 @@
+server:
+  port: 80
+  error:
+    path: /error
+
 spring:
+  application:
+    name: EveryMeal-server-main
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100MB
+      max-request-size: 100MB
   data:
     mongodb:
       host: localhost
@@ -13,3 +27,43 @@ logging:
           mongodb:
             core:
               MongoTemplate: DEBUG
+
+management:
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, prometheus
+
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+springdoc:
+  api-docs:
+    groups-order: DESC
+    enabled: true
+    swagger-ui:
+      path: /swagger-ui.html
+      groups-order: DESC
+    path: /api-docs
+
+---
+# Local
+spring:
+  config:
+    activate:
+      on-profile: local
+    import: application-local.yml
+---
+# PROD
+spring:
+  config:
+    activate:
+      on-profile: prod
+    import: application-prod.yml
