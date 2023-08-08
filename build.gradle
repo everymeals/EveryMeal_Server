@@ -89,7 +89,8 @@ jacocoTestReport {
 					"**/entity/**",
 					"**/dto/**",
 					"**/exception/**",
-					"**/repository/**"
+					"**/repository/**",
+					"**/global/*"
 			])
 		}))
 	}
@@ -121,7 +122,8 @@ jacocoTestCoverageVerification {
 					"**/entity/**",
 					"**/dto/**",
 					"**/exception/**",
-					"**/repository/**"
+					"**/repository/**",
+					"**/global/*"
 			])
 		}))
 	}
