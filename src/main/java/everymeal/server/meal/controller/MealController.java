@@ -16,8 +16,4 @@ public class MealController {
 
     private final MealService mealService;
 
-    @GetMapping("/test")
-    public void test() {
-        mealService.test();
-    }
 }

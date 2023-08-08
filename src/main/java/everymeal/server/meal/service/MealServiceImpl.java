@@ -8,6 +8,4 @@ import org.springframework.stereotype.Service;
 @Service
 public class MealServiceImpl implements MealService {
 
-    @Override
-    public void test() {}
 }
