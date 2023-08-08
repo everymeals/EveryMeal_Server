@@ -6,6 +6,4 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class MealServiceImpl implements MealService {
-
-}
+public class MealServiceImpl implements MealService {}
