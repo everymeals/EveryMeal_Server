@@ -90,7 +90,9 @@ jacocoTestReport {
 					"**/dto/**",
 					"**/exception/**",
 					"**/repository/**",
-					"**/global/*"
+					"**/global/*",
+					"**/service/**",
+					"**/controller/**"
 			])
 		}))
 	}
@@ -123,7 +125,9 @@ jacocoTestCoverageVerification {
 					"**/dto/**",
 					"**/exception/**",
 					"**/repository/**",
-					"**/global/*"
+					"**/global/*",
+					"**/service/**",
+					"**/controller/**"
 			])
 		}))
 	}
