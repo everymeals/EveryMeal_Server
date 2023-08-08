@@ -1,5 +1,3 @@
 package everymeal.server.store.service;
 
-public interface StoreService {
-
-}
+public interface StoreService {}

@@ -1,5 +1,6 @@
 package everymeal.server.meal.entity;
 
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

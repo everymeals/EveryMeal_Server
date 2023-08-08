@@ -1,7 +1,5 @@
 package everymeal.server.global.exception;
 
-
-
 import static everymeal.server.global.exception.ExceptionList.INVALID_REQUEST;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
@@ -26,15 +24,11 @@ public class GlobalExceptionHandler {
     private static final String INTERNAL_SERVER_ERROR_CODE = "S0001";
 
     @ExceptionHandler(ApplicationException.class)
-    public ResponseEntity applicationException(
-        ApplicationException e) {
+    public ResponseEntity applicationException(ApplicationException e) {
         String errorCode = e.getErrorCode();
-        log.warn(
-                LOG_FORMAT,
-                e.getClass().getSimpleName(),
-                errorCode,
-                e.getMessage());
-        return new ResponseEntity<>(ApplicationErrorResponse.error(errorCode, e.getMessage()), e.getHttpStatus());
+        log.warn(LOG_FORMAT, e.getClass().getSimpleName(), errorCode, e.getMessage());
+        return new ResponseEntity<>(
+                ApplicationErrorResponse.error(errorCode, e.getMessage()), e.getHttpStatus());
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -57,8 +51,7 @@ public class GlobalExceptionHandler {
                 INTERNAL_SERVER_ERROR_CODE,
                 e.getMessage());
         return ApplicationErrorResponse.error(
-                "V0001",
-                e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
+                "V0001", e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -70,11 +63,13 @@ public class GlobalExceptionHandler {
                 INTERNAL_SERVER_ERROR_CODE,
                 e.getMessage());
         return ApplicationErrorResponse.error(
-                "V0001",
-                e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
+                "V0001", e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
     }
 
-    @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = ApplicationErrorResponse.class)))
+    @ApiResponse(
+            responseCode = "400",
+            description = "잘못된 요청",
+            content = @Content(schema = @Schema(implementation = ApplicationErrorResponse.class)))
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ApplicationErrorResponse<Object> typeErrorException(HttpMessageNotReadableException e) {
@@ -89,9 +84,7 @@ public class GlobalExceptionHandler {
             errorCode = INVALID_REQUEST.getCODE();
             errorMessage = INVALID_REQUEST.getMESSAGE();
         }
-        return ApplicationErrorResponse.error(
-                errorCode,
-                errorMessage);
+        return ApplicationErrorResponse.error(errorCode, errorMessage);
     }
 
     @ApiResponse(responseCode = "500", description = "서버 에러", content = @Content())

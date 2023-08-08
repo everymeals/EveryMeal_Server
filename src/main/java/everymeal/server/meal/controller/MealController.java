@@ -1,14 +1,9 @@
 package everymeal.server.meal.controller;
 
+
 import everymeal.server.meal.service.MealService;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,7 +17,7 @@ public class MealController {
     private final MealService mealService;
 
     @GetMapping("/test")
-    public void test(){
+    public void test() {
         mealService.test();
     }
 }
