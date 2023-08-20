@@ -20,16 +20,16 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public List<String> getStoresByArea(String area) {
-        String searchKeyword = "명지대학교 서울캠퍼스 커피";
-        Map block =
-                kakaoWebClientUtil
-                        .getWebClient()
-                        .get()
-                        .uri("/v2/local/search/keyword?query={area}", searchKeyword)
-                        .retrieve()
-                        .bodyToMono(Map.class)
-                        .block();
-        List<Store> all = storeRepository.findAll();
+//        String searchKeyword = "명지대학교 서울캠퍼스 커피";
+//        Map block =
+//                kakaoWebClientUtil
+//                        .getWebClient()
+//                        .get()
+//                        .uri("/v2/local/search/keyword?query={area}", searchKeyword)
+//                        .retrieve()
+//                        .bodyToMono(Map.class)
+//                        .block();
+//        List<Store> all = storeRepository.findAll();
         return null;
     }
 }
