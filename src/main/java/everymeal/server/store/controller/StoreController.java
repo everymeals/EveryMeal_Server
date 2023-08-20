@@ -20,6 +20,7 @@ public class StoreController {
 
     @GetMapping("/{area}")
     public List<String> getStoresByArea(@PathVariable("area") String area) {
-        return storeService.getStoresByArea(area);
+        //        return storeService.getStoresByArea(area);
+        return null;
     }
 }
