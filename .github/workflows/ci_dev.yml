@@ -30,6 +30,12 @@ jobs:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
+      - name: Make application-secret.yml
+        run: |
+          cd ./src/main/resources
+          touch ./application-secret.yml
+          echo "${{ secrets.PROPERTIES_SECRET }}" > ./application-secret.yml
+        shell: bash
       - name: Build and analyze
         run: ./gradlew test sonar --info
         env:

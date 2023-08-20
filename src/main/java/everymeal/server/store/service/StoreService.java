@@ -1,3 +1,8 @@
 package everymeal.server.store.service;
 
-public interface StoreService {}
+
+import java.util.List;
+
+public interface StoreService {
+    List<String> getStoresByArea(String area);
+}
