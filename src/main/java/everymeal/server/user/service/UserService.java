@@ -1,3 +1,6 @@
 package everymeal.server.user.service;
 
-public interface UserService {}
+public interface UserService {
+
+    Boolean signUp(String userDeviceId);
+}
