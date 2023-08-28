@@ -1,13 +1,11 @@
 server:
-  port: 80
+  port: 8080
   error:
     path: /error
 
 spring:
   application:
     name: EveryMeal-server-main
-#  datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
   servlet:
     multipart:
       enabled: true
@@ -15,10 +13,11 @@ spring:
       max-request-size: 100MB
   data:
     mongodb:
-      host: localhost
-      port: 27017
-      database: test-mongo
-      uri: mongodb://localhost/test-mongo
+      database: everymeal
+      uri: mongodb://localhost:27017/everymeal
+  profiles:
+    include: secret
+
 logging:
   level:
     org:
@@ -45,13 +44,15 @@ management:
       application: ${spring.application.name}
 
 springdoc:
-  api-docs:
+  swagger-ui:
+    path: /docs
     groups-order: DESC
+    doc-expansion: none
+  api-docs:
+    groups:
+      enabled: true
     enabled: true
-    swagger-ui:
-      path: /swagger-ui.html
-      groups-order: DESC
-    path: /api-docs
+
 
 ---
 # Local
