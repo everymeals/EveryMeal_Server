@@ -1,7 +1,7 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.1.1'
-	id 'io.spring.dependency-management' version '1.1.0'
+	id 'org.springframework.boot' version '2.7.15'
+	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 	id "org.sonarqube" version "4.2.1.3168"
 	id 'jacoco'
 	id 'com.diffplug.spotless' version '6.11.0'
@@ -37,7 +37,7 @@ spotless {
 }
 
 java {
-	sourceCompatibility = '17'
+	sourceCompatibility = '11'
 }
 
 repositories {
@@ -64,7 +64,7 @@ dependencies {
 //	implementation ('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
 
 	//SWAGGER
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4'
+	implementation("org.springdoc:springdoc-openapi-ui:1.6.11")
 
 	//Webflux
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
