@@ -15,7 +15,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean signUp(String userDeviceId) {
         User user = User.builder().deviceId(userDeviceId).build();
-        User save = userRepository.save(user);
+        userRepository.save(user);
         return true;
     }
 }

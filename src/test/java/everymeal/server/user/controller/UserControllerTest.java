@@ -15,7 +15,7 @@ class UserControllerTest extends ControllerTestSupport {
 
     @DisplayName("회원가입을 진행한다.")
     @Test
-    public void signUp() throws Exception {
+    void signUp() throws Exception {
         // given
         String deviceId = "123456789";
 
