@@ -94,8 +94,6 @@ jacocoTestReport {
 					"**/exception/**",
 					"**/repository/**",
 					"**/global/*",
-					"**/service/**",
-					"**/controller/**"
 			])
 		}))
 	}
@@ -129,8 +127,6 @@ jacocoTestCoverageVerification {
 					"**/exception/**",
 					"**/repository/**",
 					"**/global/*",
-					"**/service/**",
-					"**/controller/**"
 			])
 		}))
 	}
