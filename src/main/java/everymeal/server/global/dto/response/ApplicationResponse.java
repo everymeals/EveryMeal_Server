@@ -23,11 +23,11 @@ public class ApplicationResponse<T> {
     }
 
     public static <T> ApplicationResponse<T> ok() {
-        return makeResponse("성공", null);
+        return makeResponse("OK", null);
     }
 
     public static <T> ApplicationResponse<T> ok(T data) {
-        return makeResponse("성공", data);
+        return makeResponse("OK", data);
     }
 
     private static <T> ApplicationResponse<T> makeResponse(String message, T data) {
