@@ -1,1 +1,70 @@
+server:
+  port: 8080
+  error:
+    path: /error
 
+spring:
+  application:
+    name: EveryMeal-server-main
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100MB
+      max-request-size: 100MB
+  data:
+    mongodb:
+      database: everymeal
+      uri: mongodb://localhost:27017/everymeal
+  profiles:
+    include: secret
+
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          mongodb:
+            core:
+              MongoTemplate: DEBUG
+
+management:
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, prometheus
+
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+springdoc:
+  swagger-ui:
+    path: /docs
+    groups-order: DESC
+    doc-expansion: none
+  api-docs:
+    groups:
+      enabled: true
+    enabled: true
+
+
+---
+# Local
+spring:
+  config:
+    activate:
+      on-profile: local
+    import: application-local.yml
+---
+# PROD
+spring:
+  config:
+    activate:
+      on-profile: prod
+    import: application-prod.yml
