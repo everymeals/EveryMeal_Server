@@ -53,8 +53,9 @@ jobs:
       - name: docker build and push
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -f Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY}}:${{ github.sha }} .
-          docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY}}:${{ github.sha }}
+          docker build -f Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY}}:${{ github.run_number }} .
+          docker tag ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY}}${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY}}:${{ github.run_number }} ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY}}
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY}}
 
       # 9) Deploy (DEV)
       - name: Deploy (DEV)
@@ -66,6 +67,6 @@ jobs:
           script: |
             docker stop dev
             docker rm dev
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY}}:${{ github.sha }}
-            sudo docker run -d --name dev -v /var/log/app:/var/log/app -v /etc/localtime:/etc/localtime:ro -e TZ=Asia/Seoul -p 8085:8080 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY}}:${{ github.sha }}
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY}}
+            sudo docker run -d --name dev -v /var/log/app:/var/log/app -v /etc/localtime:/etc/localtime:ro -e TZ=Asia/Seoul -p 8085:8080 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY}}
             docker rmi -f $(docker images -f "dangling=true" -q)
