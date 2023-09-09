@@ -37,7 +37,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # 5) Set for yml
+      # 5) Set for application-secret.yml
       - name: Make application-secret.yml
         run: |
           cd ./src/main/resources
