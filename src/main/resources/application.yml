@@ -6,6 +6,8 @@ server:
 spring:
   application:
     name: EveryMeal-server-main
+  profiles:
+    include: secret
   servlet:
     multipart:
       enabled: true
@@ -15,8 +17,6 @@ spring:
     mongodb:
       database: everymeal
       uri: mongodb://localhost:27017/everymeal
-  profiles:
-    include: secret
 
 logging:
   level:
@@ -52,19 +52,3 @@ springdoc:
     groups:
       enabled: true
     enabled: true
-
-
----
-# Local
-spring:
-  config:
-    activate:
-      on-profile: local
-    import: application-local.yml
----
-# PROD
-spring:
-  config:
-    activate:
-      on-profile: prod
-    import: application-prod.yml
