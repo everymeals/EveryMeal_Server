@@ -56,7 +56,7 @@ jobs:
           docker build -f Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY}} .
           docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY}}
 
-      # 9) Deploy (DEV)
+      # 9) Deploy (DEV-Server)
       - name: Deploy (DEV)
         uses: appleboy/ssh-action@master
         with:
