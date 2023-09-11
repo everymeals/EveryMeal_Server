@@ -26,7 +26,7 @@ public class UserController {
             @RequestBody
                     @Schema(
                             description = "유저의 기기 고유 번호",
-                            defaultValue = "1234567890",
+                            defaultValue = "123456789",
                             example = "1234567890")
                     String userDeviceId) {
         return ApplicationResponse.ok(userService.signUp(userDeviceId));

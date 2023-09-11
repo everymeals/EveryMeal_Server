@@ -6,6 +6,8 @@ server:
 spring:
   application:
     name: EveryMeal-server-main
+  profiles:
+    include: secret
   servlet:
     multipart:
       enabled: true
@@ -55,19 +57,3 @@ springdoc:
     groups:
       enabled: true
     enabled: true
-
-
----
-# Local
-spring:
-  config:
-    activate:
-      on-profile: local
-    import: application-local.yml
----
-# PROD
-spring:
-  config:
-    activate:
-      on-profile: prod
-    import: application-prod.yml
