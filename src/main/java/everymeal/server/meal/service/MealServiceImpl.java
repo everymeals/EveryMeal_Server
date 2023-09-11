@@ -80,10 +80,11 @@ public class MealServiceImpl implements MealService {
     @Override
     public List<Meal> getDayMeal(String restId) {
         // 식당 조회
-        Restaurant restaurant = restaurantRepository
-                .findById(restId)
-                .orElseThrow(() -> new ApplicationException(ExceptionList.RESTAURANT_NOT_FOUND));
-
+        Restaurant restaurant =
+                restaurantRepository
+                        .findById(restId)
+                        .orElseThrow(
+                                () -> new ApplicationException(ExceptionList.RESTAURANT_NOT_FOUND));
         return mealRepositoryCustom.findAllByOfferedAtToday(restaurant.get_id());
     }
 }
