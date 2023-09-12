@@ -1,16 +1,31 @@
 package everymeal.server.user.entity;
 
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.util.List;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Document(value = "review")
+
+@Getter
+@Table
+@Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Review {
-    @Id private String _id;
-    private User user;
+
+    @Id
+    private Long index;
+
     private List<String> photoList;
     private String content;
     private Double grade;
     private Integer awesomeCount;
+
+    private User user;
+    private Long id;
+
+
 }
