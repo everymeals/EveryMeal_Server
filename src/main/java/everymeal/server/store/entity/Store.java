@@ -1,7 +1,7 @@
 package everymeal.server.store.entity;
 
 
-import everymeal.server.meal.entity.Area;
+import everymeal.server.meal.entity.Restaurant;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
@@ -26,5 +26,5 @@ public class Store {
     private Integer reviewCount;
     private Integer recommendedCnt;
     private List<String> photoList;
-    private Area area;
+    private Restaurant restaurant;
 }

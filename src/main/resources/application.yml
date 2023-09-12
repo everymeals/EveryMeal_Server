@@ -17,6 +17,9 @@ spring:
     mongodb:
       database: everymeal
       uri: mongodb://localhost:27017/everymeal
+      time-zone: Asia/Seoul
+    jackson:
+      time-zone: Asia/Seoul
 
 logging:
   level:
