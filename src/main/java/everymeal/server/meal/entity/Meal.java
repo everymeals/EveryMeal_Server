@@ -1,26 +1,52 @@
 package everymeal.server.meal.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
-@Document(collection = "meal")
+@Table
+@Entity
+@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class Meal {
 
-    @Id private String _id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long idx;
+
     private String menu;
+
+    @Enumerated(EnumType.STRING)
     private MealType mealType;
+
+    @Enumerated(EnumType.STRING)
     private MealStatus mealStatus;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate offeredAt;
 
     private Double price;
-    private Restaurant restaurant;
+
+    @ManyToOne private Restaurant restaurant;
+
+    @Builder
+    public Meal(String menu, MealType mealType,
+        MealStatus mealStatus, LocalDate offeredAt, Double price,
+        Restaurant restaurant) {
+        this.menu = menu;
+        this.mealType = mealType;
+        this.mealStatus = mealStatus;
+        this.offeredAt = offeredAt;
+        this.price = price;
+        this.restaurant = restaurant;
+    }
 }

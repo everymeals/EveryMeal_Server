@@ -1,7 +1,7 @@
 package everymeal.server.user.service;
 
 
-import everymeal.server.user.entity.User;
+import everymeal.server.user.entity.Users;
 import everymeal.server.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Boolean signUp(String userDeviceId) {
-        User user = User.builder().deviceId(userDeviceId).build();
+        Users user = Users.builder().deviceId(userDeviceId).build();
         userRepository.save(user);
         return true;
     }

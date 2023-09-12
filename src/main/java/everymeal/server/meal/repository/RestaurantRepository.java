@@ -2,6 +2,6 @@ package everymeal.server.meal.repository;
 
 
 import everymeal.server.meal.entity.Restaurant;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface RestaurantRepository extends MongoRepository<Restaurant, String> {}
+public interface RestaurantRepository extends JpaRepository<Restaurant, String> {}

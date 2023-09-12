@@ -1,6 +1,8 @@
 package everymeal.server.meal.entity;
 
 
+import everymeal.server.global.exception.ApplicationException;
+import java.util.Arrays;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -17,5 +19,11 @@ public enum University {
 
     University(String name) {
         this.name = name;
+    }
+
+    public static University fromCode(String name) {
+        return Arrays.stream(University.values())
+            .filter(r -> r.getName().equals(name))
+            .findAny().orElseThrow(() -> new ApplicationException("해당하는 학교가 없습니다."));
     }
 }

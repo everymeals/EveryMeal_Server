@@ -1,7 +1,7 @@
-package everymeal.server.meal.entity;
+package everymeal.server.user.entity;
 
 
-import jakarta.persistence.Convert;
+import everymeal.server.meal.entity.University;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -17,29 +17,24 @@ import lombok.NoArgsConstructor;
 @Table
 @Entity
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-public class Restaurant {
+public class Users {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
 
-    private String name;
-    private String address;
-    private Boolean useYn;
+    private String deviceId;
+    private String nickName;
+    private String email;
 
     @Enumerated(EnumType.STRING)
     private University university;
 
     @Builder
-    public Restaurant(String name, String address, University university) {
-        this.name = name;
-        this.address = address;
+    public Users(String deviceId, String nickName, String email, University university) {
+        this.deviceId = deviceId;
+        this.nickName = nickName;
+        this.email = email;
         this.university = university;
-        this.useYn = true;
-    }
-
-    /** 학생식당 미운영 상태로 변경 폐업, 업체 변경 등의 이유일 경우, 해당 함수를 통해 상태 변경 */
-    public void updateUseYn() {
-        this.useYn = false;
     }
 }

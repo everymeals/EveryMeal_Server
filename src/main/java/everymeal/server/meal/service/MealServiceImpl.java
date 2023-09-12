@@ -48,8 +48,8 @@ public class MealServiceImpl implements MealService {
                         .address(restaurantRegisterReq.getAddress())
                         .university(university)
                         .build();
-
-        return restaurantRepository.save(restaurant).get_id();
+//        restaurantRepository.save(restaurant).get_id();
+        return null;
     }
 
     @Override
@@ -85,6 +85,7 @@ public class MealServiceImpl implements MealService {
                         .findById(restId)
                         .orElseThrow(
                                 () -> new ApplicationException(ExceptionList.RESTAURANT_NOT_FOUND));
-        return mealRepositoryCustom.findAllByOfferedAtToday(restaurant.get_id());
+//        mealRepositoryCustom.findAllByOfferedAtToday(restaurant.get_id());
+        return null;
     }
 }

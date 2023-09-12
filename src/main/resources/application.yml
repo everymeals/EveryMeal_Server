@@ -13,6 +13,21 @@ spring:
       enabled: true
       max-file-size: 100MB
       max-request-size: 100MB
+  datasource:
+    url: jdbc:mysql://everymeal-rds.cvd1711aoesu.ap-northeast-2.rds.amazonaws.com:3306/everymeal?characterEncoding=UTF-8&useUnicode=true&serverTimezone=Asia/Seoul
+    username: everydb
+    password: everymeal123!!
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        default_batch_fetch_size: 10
+    open-in-view: false
+    show-sql: true
 
 logging:
   level:

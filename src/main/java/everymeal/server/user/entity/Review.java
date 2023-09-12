@@ -2,13 +2,14 @@ package everymeal.server.user.entity;
 
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 
 @Getter
 @Table
@@ -17,15 +18,13 @@ import lombok.NoArgsConstructor;
 public class Review {
 
     @Id
-    private Long index;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long idx;
 
-    private List<String> photoList;
+    private String photoList;
     private String content;
     private Double grade;
     private Integer awesomeCount;
 
-    private User user;
-    private Long id;
-
-
+    @ManyToOne private Users user;
 }
