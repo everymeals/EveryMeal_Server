@@ -60,14 +60,14 @@ dependencies {
 	//Validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-	//SWAGGER
-	implementation("org.springdoc:springdoc-openapi-ui:1.6.11")
-
 	//Webflux
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
 	//MySQL
 	implementation 'mysql:mysql-connector-java:8.0.28'
+
+	//테스트용 H2
+	implementation 'com.h2database:h2'
 
 	//Spring Data JPA
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -79,6 +79,14 @@ dependencies {
 	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
+	//SWAGGER
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+	//JWT
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 }
 
 tasks.named('test') {
@@ -141,4 +149,22 @@ jacocoTestCoverageVerification {
 			])
 		}))
 	}
+}
+// Querydsl 설정부, default는 build 디렉토리에 생성되나 IntelliJ IDLE을 사용시 gradle에서 한번 읽고 IntelliJ에서 중복 읽음으로써 버그 발생하는 현상을 없애기 위해
+def generated = 'build/generated'
+
+// query QClass 파일 생성 위치를 지정
+tasks.withType(JavaCompile){
+	options.getGeneratedSourceOutputDirectory().set(file(generated))
+}
+
+// java source set에 querydsl QClass 위치 추가
+sourceSets{
+	main.java.srcDirs += [ generated ]
+}
+
+
+// gradle clean시에 QClass 디렉토리 삭제
+clean{
+	delete file(generated)
 }

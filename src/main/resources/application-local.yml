@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/everymeal?characterEncoding=UTF-8&useUnicode=true&serverTimezone=Asia/Seoul
+    username: root
+    password: 1q2w3e4r!
+    driver-class-name: com.mysql.cj.jdbc.Driver
+

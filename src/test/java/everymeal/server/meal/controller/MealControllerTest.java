@@ -11,7 +11,7 @@ import everymeal.server.meal.controller.dto.request.RestaurantRegisterReq;
 import everymeal.server.meal.controller.dto.request.WeekMealRegisterReq;
 import everymeal.server.meal.entity.MealStatus;
 import everymeal.server.meal.entity.MealType;
-import everymeal.server.meal.entity.University;
+import everymeal.server.meal.entity.UniversityEnum;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -84,7 +84,7 @@ class MealControllerTest extends ControllerTestSupport {
         RestaurantRegisterReq req = new RestaurantRegisterReq();
         req.setName("MCC 식당");
         req.setAddress("서울시 서대문구 남가좌동 거북골로 34");
-        req.setUniversity(University.MYONGJI_S.toString());
+        req.setUniversity(UniversityEnum.MYONGJI_S.toString());
         return req;
     }
 }

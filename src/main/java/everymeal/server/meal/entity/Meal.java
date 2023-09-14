@@ -39,9 +39,13 @@ public class Meal {
     @ManyToOne private Restaurant restaurant;
 
     @Builder
-    public Meal(String menu, MealType mealType,
-        MealStatus mealStatus, LocalDate offeredAt, Double price,
-        Restaurant restaurant) {
+    public Meal(
+            String menu,
+            MealType mealType,
+            MealStatus mealStatus,
+            LocalDate offeredAt,
+            Double price,
+            Restaurant restaurant) {
         this.menu = menu;
         this.mealType = mealType;
         this.mealStatus = mealStatus;

@@ -10,7 +10,7 @@ import everymeal.server.meal.entity.Meal;
 import everymeal.server.meal.entity.MealStatus;
 import everymeal.server.meal.entity.MealType;
 import everymeal.server.meal.entity.Restaurant;
-import everymeal.server.meal.entity.University;
+import everymeal.server.meal.entity.UniversityEnum;
 import everymeal.server.meal.repository.MealRepository;
 import everymeal.server.meal.repository.MealRepositoryCustom;
 import everymeal.server.meal.repository.RestaurantRepository;
@@ -34,21 +34,21 @@ public class MealServiceImpl implements MealService {
     @Transactional
     public String createRestaurant(RestaurantRegisterReq restaurantRegisterReq) {
         // 등록된 학교인지 확인
-        if (Arrays.stream(University.values())
+        if (Arrays.stream(UniversityEnum.values())
                 .noneMatch(
                         university ->
                                 university.name().equals(restaurantRegisterReq.getUniversity()))) {
             throw new ApplicationException(ExceptionList.INVALID_REQUEST);
         }
-        University university = University.valueOf(restaurantRegisterReq.getUniversity());
+        UniversityEnum university = UniversityEnum.valueOf(restaurantRegisterReq.getUniversity());
         // 학생식당 생성
         Restaurant restaurant =
                 Restaurant.builder()
                         .name(restaurantRegisterReq.getName())
                         .address(restaurantRegisterReq.getAddress())
-                        .university(university)
+                        //                        .university(university)
                         .build();
-//        restaurantRepository.save(restaurant).get_id();
+        //        restaurantRepository.save(restaurant).get_id();
         return null;
     }
 
@@ -85,7 +85,7 @@ public class MealServiceImpl implements MealService {
                         .findById(restId)
                         .orElseThrow(
                                 () -> new ApplicationException(ExceptionList.RESTAURANT_NOT_FOUND));
-//        mealRepositoryCustom.findAllByOfferedAtToday(restaurant.get_id());
+        //        mealRepositoryCustom.findAllByOfferedAtToday(restaurant.get_id());
         return null;
     }
 }

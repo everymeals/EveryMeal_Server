@@ -23,6 +23,6 @@ class UserServiceImplTest extends IntegrationTestSupport {
         Boolean response = userService.signUp(deviceId);
 
         // then
-        assertEquals(userRepository.findById(deviceId).get().getDeviceId(), deviceId);
+        assertEquals(userRepository.findByDeviceId(deviceId).get().getDeviceId(), deviceId);
     }
 }
