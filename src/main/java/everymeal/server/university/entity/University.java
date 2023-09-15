@@ -32,6 +32,6 @@ public class University extends BaseEntity {
         this.idx = idx;
         this.name = name;
         this.campusName = campusName;
-        this.isDeleted = isDeleted;
+        this.isDeleted = Boolean.FALSE;
     }
 }

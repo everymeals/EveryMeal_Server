@@ -23,4 +23,13 @@ public class UniversityServiceImpl implements UniversityService {
                         universityName, campusName);
         return UniversityListGetRes.of(universities);
     }
+
+    @Override
+    @Transactional
+    public Boolean addUniversity(String universityName, String campusName) {
+        University university =
+                University.builder().name(universityName).campusName(campusName).build();
+        universityRepository.save(university);
+        return true;
+    }
 }
