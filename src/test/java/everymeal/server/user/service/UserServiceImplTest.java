@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import everymeal.server.global.IntegrationTestSupport;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
 import everymeal.server.user.repository.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,11 @@ class UserServiceImplTest extends IntegrationTestSupport {
 
     @Autowired private UserService userService;
     @Autowired private UserRepository userRepository;
+
+    @AfterEach
+    void tearDown() {
+        userRepository.deleteAllInBatch();
+    }
 
     @DisplayName("회원가입을 진행한다.")
     @Test
