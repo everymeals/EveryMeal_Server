@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 public enum ExceptionList {
     MEAL_NOT_FOUND("M0001", HttpStatus.NOT_FOUND, "Meal Not Found"),
     RESTAURANT_NOT_FOUND("M0002", HttpStatus.NOT_FOUND, "등록된 식당이 아닙니다."),
+    UNIVERSITY_NOT_FOUND("M0003", HttpStatus.NOT_FOUND, "등록된 학교가 아닙니다."),
+    INVALID_MEAL_OFFEREDAT_REQUEST(
+            "M0004", HttpStatus.BAD_REQUEST, "등록되어 있는 식단 데이터 보다 과거의 날짜로 등록할 수 없습니다."),
     INVALID_REQUEST("R0001", HttpStatus.BAD_REQUEST, "Request의 Data Type이 올바르지 않습니다."),
 
     USER_NOT_FOUND("U0001", HttpStatus.NOT_FOUND, "등록된 유저가 아닙니다."),

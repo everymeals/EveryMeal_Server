@@ -29,10 +29,10 @@ public class Restaurant {
     @ManyToOne private University university;
 
     @Builder
-    public Restaurant(String name, String address, Boolean useYn, University university) {
+    public Restaurant(String name, String address, University university) {
         this.name = name;
         this.address = address;
-        this.useYn = useYn;
+        this.useYn = Boolean.TRUE;
         this.university = university;
     }
 
