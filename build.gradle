@@ -150,21 +150,18 @@ jacocoTestCoverageVerification {
 		}))
 	}
 }
-// Querydsl 설정부, default는 build 디렉토리에 생성되나 IntelliJ IDLE을 사용시 gradle에서 한번 읽고 IntelliJ에서 중복 읽음으로써 버그 발생하는 현상을 없애기 위해
-def generated = 'build/generated'
 
-// query QClass 파일 생성 위치를 지정
-tasks.withType(JavaCompile){
-	options.getGeneratedSourceOutputDirectory().set(file(generated))
+// === ⭐ QueryDsl 빌드 옵션 (선택) ===
+def querydslDir = "$buildDir/generated/querydsl"
+
+sourceSets {
+	main.java.srcDirs += [ querydslDir ]
 }
 
-// java source set에 querydsl QClass 위치 추가
-sourceSets{
-	main.java.srcDirs += [ generated ]
+tasks.withType(JavaCompile) {
+	options.annotationProcessorGeneratedSourcesDirectory = file(querydslDir)
 }
 
-
-// gradle clean시에 QClass 디렉토리 삭제
-clean{
-	delete file(generated)
+clean.doLast {
+	file(querydslDir).deleteDir()
 }
