@@ -50,7 +50,7 @@ public class UserController {
                         .httpOnly(true)
                         .sameSite("None")
                         .path("/")
-                        .maxAge(60 * 60 * 24 * 30)
+                        .maxAge(60 * 60 * 24 * 30L)
                         .secure(true)
                         .build();
         response.setRefreshToken(null);
