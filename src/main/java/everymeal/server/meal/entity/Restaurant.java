@@ -1,26 +1,39 @@
 package everymeal.server.meal.entity;
 
 
+import everymeal.server.university.entity.University;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Document(value = "restaurant")
+@Table
+@Entity
+@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class Restaurant {
-    @Id private String _id;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long idx;
+
     private String name;
     private String address;
-    private boolean useYn;
-    private University university;
+    private Boolean useYn;
+
+    @ManyToOne private University university;
 
     @Builder
     public Restaurant(String name, String address, University university) {
         this.name = name;
         this.address = address;
+        this.useYn = Boolean.TRUE;
         this.university = university;
-        this.useYn = true;
     }
 
     /** 학생식당 미운영 상태로 변경 폐업, 업체 변경 등의 이유일 경우, 해당 함수를 통해 상태 변경 */

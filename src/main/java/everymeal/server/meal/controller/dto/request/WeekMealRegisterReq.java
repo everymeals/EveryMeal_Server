@@ -14,6 +14,6 @@ public class WeekMealRegisterReq {
     @Schema(description = "등록하고자 하는 식단 데이터 객체")
     private List<MealRegisterReq> registerReqList;
 
-    @Schema(description = "학생식당 PK", defaultValue = "restaurantId")
-    private String restaurantId;
+    @Schema(description = "학생식당 PK", defaultValue = "1")
+    private Long restaurantIdx;
 }

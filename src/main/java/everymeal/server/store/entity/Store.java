@@ -1,22 +1,24 @@
 package everymeal.server.store.entity;
 
 
-import everymeal.server.meal.entity.Restaurant;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.List;
-import lombok.Builder;
 import lombok.Getter;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
-@Document(value = "store")
+@Table
+@Entity
+@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class Store {
+
     @Id
-    @Field("_id")
-    private String _id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long idx;
 
     private String name;
     private String tag;
@@ -25,6 +27,5 @@ public class Store {
     private Double grade;
     private Integer reviewCount;
     private Integer recommendedCnt;
-    private List<String> photoList;
-    private Restaurant restaurant;
+    private String photoList;
 }

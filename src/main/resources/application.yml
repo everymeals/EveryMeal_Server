@@ -8,27 +8,15 @@ spring:
     name: EveryMeal-server-main
   profiles:
     include: secret
-  servlet:
-    multipart:
-      enabled: true
-      max-file-size: 100MB
-      max-request-size: 100MB
-  data:
-    mongodb:
-      database: everymeal
-      uri: mongodb://localhost:27017/everymeal
-      time-zone: Asia/Seoul
-    jackson:
-      time-zone: Asia/Seoul
-
-logging:
-  level:
-    org:
-      springframework:
-        data:
-          mongodb:
-            core:
-              MongoTemplate: DEBUG
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        default_batch_fetch_size: 10
+    open-in-view: false
+    show-sql: true
 
 management:
   endpoint:
@@ -36,12 +24,10 @@ management:
       enabled: true
     prometheus:
       enabled: true
-
   endpoints:
     web:
       exposure:
         include: health, info, metrics, prometheus
-
   metrics:
     tags:
       application: ${spring.application.name}
