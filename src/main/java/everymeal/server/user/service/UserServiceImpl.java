@@ -26,13 +26,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserLoginRes login(String userDeviceId) {
-        Users user = userRepository.findByDeviceId(userDeviceId).orElseThrow(() ->
-            new ApplicationException(ExceptionList.USER_NOT_FOUND));
+        Users user =
+                userRepository
+                        .findByDeviceId(userDeviceId)
+                        .orElseThrow(() -> new ApplicationException(ExceptionList.USER_NOT_FOUND));
         String accessToken = jwtUtil.generateAccessToken(user.getIdx());
-        String refreshToken = jwtUtil.generateRefreshToken(user.getIdx(),accessToken);
-        return UserLoginRes.builder()
-            .accessToken(accessToken)
-            .refreshToken(refreshToken)
-            .build();
+        String refreshToken = jwtUtil.generateRefreshToken(user.getIdx(), accessToken);
+        return UserLoginRes.builder().accessToken(accessToken).refreshToken(refreshToken).build();
     }
 }

@@ -45,17 +45,17 @@ public class UserController {
                             example = "1234567890")
                     String userDeviceId) {
         UserLoginRes response = userService.login(userDeviceId);
-        ResponseCookie cookie = ResponseCookie.from("refresh-token", response.getRefreshToken())
-            .httpOnly(true)
-            .sameSite("None")
-            .path("/")
-            .maxAge(60 * 60 * 24 * 30)
-            .secure(true)
-            .build();
+        ResponseCookie cookie =
+                ResponseCookie.from("refresh-token", response.getRefreshToken())
+                        .httpOnly(true)
+                        .sameSite("None")
+                        .path("/")
+                        .maxAge(60 * 60 * 24 * 30)
+                        .secure(true)
+                        .build();
         response.setRefreshToken(null);
         return ResponseEntity.ok()
-            .header("Set-Cookie", cookie.toString())
-            .body(ApplicationResponse.ok(response));
+                .header("Set-Cookie", cookie.toString())
+                .body(ApplicationResponse.ok(response));
     }
-
 }

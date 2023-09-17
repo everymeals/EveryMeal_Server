@@ -1,5 +1,6 @@
 package everymeal.server.global.util;
 
+
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -32,11 +33,11 @@ public class JwtUtil {
         Map<String, Object> claims = new HashMap<>();
         claims.put("CLAIM_KEY_IDX", idx);
         return Jwts.builder()
-            .setClaims(claims)
-            .setIssuedAt(now)
-            .setExpiration(expiryDate)
-            .signWith(Keys.hmacShaKeyFor(accessSecretKey.getBytes()), SignatureAlgorithm.HS512)
-            .compact();
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(Keys.hmacShaKeyFor(accessSecretKey.getBytes()), SignatureAlgorithm.HS512)
+                .compact();
     }
 
     public String generateRefreshToken(Long idx, String accessToken) {
@@ -46,10 +47,10 @@ public class JwtUtil {
         claims.put("CLAIM_KEY_IDX", idx);
         claims.put("CLAIM_KEY_ACCESS_TOKEN", accessToken);
         return Jwts.builder()
-            .setClaims(claims)
-            .setIssuedAt(now)
-            .setExpiration(expiryDate)
-            .signWith(Keys.hmacShaKeyFor(refreshSecretKey.getBytes()), SignatureAlgorithm.HS512)
-            .compact();
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(Keys.hmacShaKeyFor(refreshSecretKey.getBytes()), SignatureAlgorithm.HS512)
+                .compact();
     }
 }
