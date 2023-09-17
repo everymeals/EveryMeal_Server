@@ -50,7 +50,8 @@ public class MealServiceImpl implements MealService {
                                 restaurantRegisterReq.getCampusName())
                         .stream()
                         .findFirst()
-                        .get();
+                        .orElseThrow(
+                                () -> new ApplicationException(ExceptionList.UNIVERSITY_NOT_FOUND));
         Restaurant restaurant =
                 Restaurant.builder()
                         .name(restaurantRegisterReq.getRestaurantName())
