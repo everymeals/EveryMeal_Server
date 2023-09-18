@@ -7,10 +7,6 @@ jobs:
   sonarcloud:
     name: SonarCloud
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        mongodb-version: ['6.0'] # 몽고디비 버전별 병렬 실행
-        mongodb-db: ['everymeal']
     steps:
       - uses: actions/checkout@v3
         with:
