@@ -1,6 +1,5 @@
 package everymeal.server.global.util;
 
-
 import static everymeal.server.global.exception.ExceptionList.TOKEN_EXPIRATION;
 import static everymeal.server.global.exception.ExceptionList.TOKEN_NOT_VALID;
 
@@ -67,10 +66,10 @@ public class JwtUtil {
         Claims claims = getClaimsFromToken(tokenSubBearer(token), accessSecretKey);
         if (claims != null) {
             return AuthenticatedUser.builder()
-                .idx(Long.parseLong(claims.get("CLAIM_KEY_IDX").toString()))
-                .email(claims.get("CLAIM_KEY_EMAIL").toString())
-                .nickName(claims.get("CLAIM_KEY_NICKNAME").toString())
-                .build();
+                    .idx(Long.parseLong(claims.get("CLAIM_KEY_IDX").toString()))
+                    .email(claims.get("CLAIM_KEY_EMAIL").toString())
+                    .nickName(claims.get("CLAIM_KEY_NICKNAME").toString())
+                    .build();
         }
         return null;
     }
@@ -78,10 +77,7 @@ public class JwtUtil {
     private Claims getClaimsFromToken(String token, String secretKey) {
         try {
             Key key = Keys.hmacShaKeyFor(secretKey.getBytes());
-            return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token).getBody();
+            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
         } catch (ExpiredJwtException exception) {
             log.error("Token Tampered");
             throw new ApplicationException(TOKEN_EXPIRATION);

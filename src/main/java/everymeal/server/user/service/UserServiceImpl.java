@@ -38,8 +38,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Boolean isAuth(AuthenticatedUser authenticatedUser) {
-        User user = userRepository.findById(authenticatedUser.getIdx())
-            .orElseThrow(() -> new ApplicationException(ExceptionList.USER_NOT_FOUND));
+        User user =
+                userRepository
+                        .findById(authenticatedUser.getIdx())
+                        .orElseThrow(() -> new ApplicationException(ExceptionList.USER_NOT_FOUND));
         return !user.getEmail().isEmpty();
     }
 }

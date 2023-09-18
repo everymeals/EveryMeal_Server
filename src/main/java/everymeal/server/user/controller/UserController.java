@@ -68,9 +68,7 @@ public class UserController {
     @GetMapping("/auth")
     @Operation(summary = "유저 인증 여부")
     @SecurityRequirement(name = "bearerAuth")
-    public ApplicationResponse<Boolean> isAuth(
-        @AuthUser AuthenticatedUser authenticatedUser
-    ) {
+    public ApplicationResponse<Boolean> isAuth(@AuthUser AuthenticatedUser authenticatedUser) {
         return ApplicationResponse.ok(userService.isAuth(authenticatedUser));
     }
 }

@@ -21,24 +21,26 @@ public class UserJwtResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(AuthUser.class) && AuthenticatedUser.class.equals(parameter.getParameterType());
+        return parameter.hasParameterAnnotation(AuthUser.class)
+                && AuthenticatedUser.class.equals(parameter.getParameterType());
     }
 
     @Nullable
     @Override
-    public Object resolveArgument(@NotNull MethodParameter parameter,
-                                  ModelAndViewContainer mavContainer,
-                                  @NotNull NativeWebRequest webRequest,
-                                  WebDataBinderFactory binderFactory) throws Exception
-    {
+    public Object resolveArgument(
+            @NotNull MethodParameter parameter,
+            ModelAndViewContainer mavContainer,
+            @NotNull NativeWebRequest webRequest,
+            WebDataBinderFactory binderFactory)
+            throws Exception {
         Auth auth = parameter.getMethodAnnotation(Auth.class);
         if (auth == null) {
             throw new Exception("토큰을 통해 userId를 추출하는 메서드에는 @Auth 어노테이션을 붙여주세요.");
         }
         String authorization = webRequest.getHeader("Authorization");
-        if (!auth.require() && authorization == null){
+        if (!auth.require() && authorization == null) {
             return null;
-        }else{
+        } else {
             return jwtUtil.getAuthenticateUserFromAccessToken(authorization);
         }
     }

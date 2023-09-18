@@ -1,5 +1,6 @@
 package everymeal.server.global.util.authresolver.entity;
 
+
 import lombok.Builder;
 import lombok.Getter;
 
