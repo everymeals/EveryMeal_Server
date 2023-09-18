@@ -34,11 +34,6 @@ jobs:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-      - name: Start MongoDB v${{ matrix.mongodb-version }}
-        uses: supercharge/mongodb-github-action@1.10.0
-        with:
-          mongodb-version: ${{ matrix.mongodb-version }}
-          mongodb-db: ${{ matrix.mongodb-db }}
       - name: Make application-secret.yml
         run: |
           cd ./src/main/resources
