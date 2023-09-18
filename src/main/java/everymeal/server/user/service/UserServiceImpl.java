@@ -40,8 +40,8 @@ public class UserServiceImpl implements UserService {
     public Boolean isAuth(AuthenticatedUser authenticatedUser) {
         User user =
                 userRepository
-                        .findById(authenticatedUser.getIdx())
+                        .findByDeviceId(authenticatedUser.getDeviceId())
                         .orElseThrow(() -> new ApplicationException(ExceptionList.USER_NOT_FOUND));
-        return !user.getEmail().isEmpty();
+        return !user.getEmail().isBlank();
     }
 }

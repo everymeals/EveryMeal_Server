@@ -4,16 +4,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import everymeal.server.global.ControllerTestSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(HealthCheckController.class)
-class HealthCheckControllerTest {
-
-    @Autowired MockMvc mvc;
+class HealthCheckControllerTest extends ControllerTestSupport {
 
     @Test
     @DisplayName("health-check")
@@ -23,7 +18,7 @@ class HealthCheckControllerTest {
         // when
 
         // then
-        mvc.perform(get("/health-check"))
+        mockMvc.perform(get("/health-check"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(hello));
     }

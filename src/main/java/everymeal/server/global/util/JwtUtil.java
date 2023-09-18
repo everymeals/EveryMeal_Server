@@ -67,7 +67,7 @@ public class JwtUtil {
         if (claims != null) {
             return AuthenticatedUser.builder()
                     .idx(Long.parseLong(claims.get("CLAIM_KEY_IDX").toString()))
-                    .email(claims.get("CLAIM_KEY_EMAIL").toString())
+                    .deviceId(claims.get("CLAIM_KEY_DEVICEID").toString())
                     .nickName(claims.get("CLAIM_KEY_NICKNAME").toString())
                     .build();
         }
