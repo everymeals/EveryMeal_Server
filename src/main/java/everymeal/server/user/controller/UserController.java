@@ -2,14 +2,19 @@ package everymeal.server.user.controller;
 
 
 import everymeal.server.global.dto.response.ApplicationResponse;
+import everymeal.server.global.util.authresolver.Auth;
+import everymeal.server.global.util.authresolver.AuthUser;
+import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
 import everymeal.server.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,5 +62,15 @@ public class UserController {
         return ResponseEntity.ok()
                 .header("Set-Cookie", cookie.toString())
                 .body(ApplicationResponse.ok(response));
+    }
+
+    @Auth(require = true)
+    @GetMapping("/auth")
+    @Operation(summary = "유저 인증 여부")
+    @SecurityRequirement(name = "bearerAuth")
+    public ApplicationResponse<Boolean> isAuth(
+        @AuthUser AuthenticatedUser authenticatedUser
+    ) {
+        return ApplicationResponse.ok(userService.isAuth(authenticatedUser));
     }
 }

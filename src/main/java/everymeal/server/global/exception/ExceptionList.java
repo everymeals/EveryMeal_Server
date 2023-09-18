@@ -16,6 +16,9 @@ public enum ExceptionList {
     INVALID_REQUEST("R0001", HttpStatus.BAD_REQUEST, "Request의 Data Type이 올바르지 않습니다."),
 
     USER_NOT_FOUND("U0001", HttpStatus.NOT_FOUND, "등록된 유저가 아닙니다."),
+
+    TOKEN_NOT_VALID("T0001", HttpStatus.NOT_ACCEPTABLE, "해당 토큰은 유효하지 않습니다."),
+    TOKEN_EXPIRATION("T0002", HttpStatus.FORBIDDEN, "토큰이 만료되었습니다."),
     ;
 
     public final String CODE;

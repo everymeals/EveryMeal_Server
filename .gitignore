@@ -36,6 +36,10 @@ out/
 ### VS Code ###
 .vscode/
 
+application-dev.yml
+application-prod.yml
+application-secret.yml
+
 *.log
 
 /src/main/resources/application-secret.yml

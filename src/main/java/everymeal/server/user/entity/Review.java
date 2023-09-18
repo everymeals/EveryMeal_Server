@@ -26,5 +26,5 @@ public class Review {
     private Double grade;
     private Integer awesomeCount;
 
-    @ManyToOne private Users user;
+    @ManyToOne private User user;
 }
