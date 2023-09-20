@@ -7,10 +7,6 @@ jobs:
   sonarcloud:
     name: SonarCloud
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        mongodb-version: ['6.0'] # 몽고디비 버전별 병렬 실행
-        mongodb-db: ['everymeal']
     steps:
       - uses: actions/checkout@v3
         with:
@@ -34,11 +30,6 @@ jobs:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-      - name: Start MongoDB v${{ matrix.mongodb-version }}
-        uses: supercharge/mongodb-github-action@1.10.0
-        with:
-          mongodb-version: ${{ matrix.mongodb-version }}
-          mongodb-db: ${{ matrix.mongodb-db }}
       - name: Make application-secret.yml
         run: |
           cd ./src/main/resources

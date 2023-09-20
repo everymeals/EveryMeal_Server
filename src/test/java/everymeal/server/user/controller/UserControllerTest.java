@@ -3,6 +3,7 @@ package everymeal.server.user.controller;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -57,5 +58,24 @@ class UserControllerTest extends ControllerTestSupport {
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("OK"))
                 .andExpect(cookie().exists("refresh-token"));
+    }
+
+    @DisplayName("유저 인증 여부를 확인한다.")
+    @Test
+    void checkUserAuth() throws Exception {
+        // given
+        String accessToken = "eyTestToken1ojkfnsnjie432GFDdss";
+
+        given(userService.isAuth(any())).willReturn(true);
+
+        // when then
+        mockMvc.perform(
+                        get("/api/v1/users/auth")
+                                .content(accessToken)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("OK"));
     }
 }

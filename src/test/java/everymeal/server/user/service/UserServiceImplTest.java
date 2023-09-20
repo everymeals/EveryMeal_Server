@@ -3,7 +3,9 @@ package everymeal.server.user.service;
 import static org.junit.jupiter.api.Assertions.*;
 
 import everymeal.server.global.IntegrationTestSupport;
+import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
+import everymeal.server.user.entity.User;
 import everymeal.server.user.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -45,5 +47,25 @@ class UserServiceImplTest extends IntegrationTestSupport {
 
         // then
         assertNotNull(response.getRefreshToken());
+    }
+
+    @DisplayName("유저 인증 여부를 반환한다.")
+    @Test
+    void isUserAuthenticated() {
+        // given
+        User user =
+                userRepository.save(
+                        User.builder()
+                                .deviceId("dsafkml-fgsmkgrlms-421m4f")
+                                .email("test@mju.ac.kr")
+                                .build());
+        AuthenticatedUser authenticatedUser =
+                AuthenticatedUser.builder().deviceId("dsafkml-fgsmkgrlms-421m4f").build();
+
+        // when
+        Boolean response = userService.isAuth(authenticatedUser);
+
+        // then
+        assertTrue(response);
     }
 }

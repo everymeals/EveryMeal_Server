@@ -24,5 +24,5 @@ public class Scrap {
 
     @ManyToOne private Store store;
 
-    @ManyToOne private Users user;
+    @ManyToOne private User user;
 }

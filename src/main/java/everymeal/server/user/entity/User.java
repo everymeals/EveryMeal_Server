@@ -15,9 +15,9 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Table
-@Entity
+@Entity(name = "users")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-public class Users extends BaseEntity {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +34,7 @@ public class Users extends BaseEntity {
     @ManyToOne private University university;
 
     @Builder
-    public Users(String deviceId, String nickName, String email, University university) {
+    public User(String deviceId, String nickName, String email, University university) {
         this.deviceId = deviceId;
         this.nickName = nickName;
         this.email = email;

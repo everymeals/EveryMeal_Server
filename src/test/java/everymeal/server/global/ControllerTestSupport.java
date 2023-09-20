@@ -2,6 +2,9 @@ package everymeal.server.global;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import everymeal.server.global.util.JwtUtil;
+import everymeal.server.global.util.authresolver.UserJwtResolver;
+import everymeal.server.infra.HealthCheckController;
 import everymeal.server.meal.controller.MealController;
 import everymeal.server.meal.service.MealService;
 import everymeal.server.university.controller.UniversityController;
@@ -13,12 +16,22 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(controllers = {UserController.class, MealController.class, UniversityController.class})
+@WebMvcTest(
+        controllers = {
+            UserController.class,
+            MealController.class,
+            UniversityController.class,
+            HealthCheckController.class
+        })
 public abstract class ControllerTestSupport {
 
     @Autowired protected MockMvc mockMvc;
 
+    @Autowired protected UserJwtResolver userJwtResolver;
+
     @Autowired protected ObjectMapper objectMapper;
+
+    @MockBean protected JwtUtil jwtUtil;
 
     @MockBean protected UserService userService;
 
