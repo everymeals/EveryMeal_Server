@@ -70,11 +70,12 @@ public class UserController {
 
     @Auth(require = true)
     @GetMapping("/auth")
-    @Operation(summary = "유저 인증 여부",
-    description = "유저가 인증되었는지 여부를 반환합니다. <br> 인증되었다면 true, 아니라면 false를 반환합니다.")
+    @Operation(
+            summary = "유저 인증 여부",
+            description = "유저가 인증되었는지 여부를 반환합니다. <br> 인증되었다면 true, 아니라면 false를 반환합니다.")
     @SecurityRequirement(name = "bearerAuth")
-    public ApplicationResponse<Boolean> isAuth(@AuthUser @Parameter(hidden = true
-    ) AuthenticatedUser authenticatedUser) {
+    public ApplicationResponse<Boolean> isAuth(
+            @AuthUser @Parameter(hidden = true) AuthenticatedUser authenticatedUser) {
         return ApplicationResponse.ok(userService.isAuth(authenticatedUser));
     }
 
@@ -98,27 +99,8 @@ public class UserController {
             summary = "이메일 인증 확인",
             description = "이메일 인증을 확인합니다. <br> Request에는 이메일 인증 시 발송된 값이 담겨야 합니다.")
     public ApplicationResponse<Boolean> verifyEmailAuth(
-            @RequestBody
-                UserEmailAuthVerifyReq request,
+            @RequestBody UserEmailAuthVerifyReq request,
             @AuthUser @Parameter(hidden = true) AuthenticatedUser authenticatedUser) {
         return ApplicationResponse.ok(userService.verifyEmailAuth(request, authenticatedUser));
     }
-
-    @Auth(require = true)
-    @SecurityRequirement(name = "bearerAuth")
-    @PostMapping("/profile")
-    @Operation(
-            summary = "프로필 생성",
-            description = "프로필을 생성합니다. <br> Request에는 수정할 프로필 정보가 담겨야 합니다.")
-    public ApplicationResponse<Boolean> createProfile(
-            @RequestBody
-                    @Schema(
-                            description = "프로필 정보",
-                            defaultValue = "프로필 정보",
-                            example = "프로필 정보")
-                    String profile,
-            @AuthUser @Parameter(hidden = true) AuthenticatedUser authenticatedUser) {
-        return ApplicationResponse.ok(userService.createProfile(profile, authenticatedUser));
-    }
-
 }

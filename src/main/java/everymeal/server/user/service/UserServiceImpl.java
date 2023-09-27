@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService {
                                     () -> new ApplicationException(ExceptionList.USER_NOT_FOUND));
             user.setEmail(emailTokenFromAuthCode);
             return true;
-        }else{
+        } else {
             throw new ApplicationException(ExceptionList.USER_AUTH_FAIL);
         }
     }

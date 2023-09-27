@@ -1,9 +1,14 @@
 package everymeal.server.user.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import everymeal.server.global.IntegrationTestSupport;
+import everymeal.server.global.util.JwtUtil;
 import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
+import everymeal.server.user.controller.dto.request.UserEmailAuthReq;
+import everymeal.server.user.controller.dto.request.UserEmailAuthVerifyReq;
+import everymeal.server.user.controller.dto.response.UserEmailAuthRes;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
 import everymeal.server.user.entity.User;
 import everymeal.server.user.repository.UserRepository;
@@ -16,6 +21,7 @@ class UserServiceImplTest extends IntegrationTestSupport {
 
     @Autowired private UserService userService;
     @Autowired private UserRepository userRepository;
+    @Autowired private JwtUtil jwtUtil;
 
     @AfterEach
     void tearDown() {
@@ -33,6 +39,7 @@ class UserServiceImplTest extends IntegrationTestSupport {
 
         // then
         assertEquals(userRepository.findByDeviceId(deviceId).get().getDeviceId(), deviceId);
+        assertTrue(response);
     }
 
     @DisplayName("로그인을 진행한다.")
@@ -64,6 +71,49 @@ class UserServiceImplTest extends IntegrationTestSupport {
 
         // when
         Boolean response = userService.isAuth(authenticatedUser);
+
+        // then
+        assertTrue(response);
+    }
+
+    @DisplayName("이메일 인증을 진행한다.")
+    @Test
+    void emailAuth() {
+        // given
+        UserEmailAuthReq request = UserEmailAuthReq.builder().email("test@gmail.com").build();
+
+        AuthenticatedUser authenticatedUser =
+                AuthenticatedUser.builder().deviceId("dsafkml-fgsmkgrlms-421m4f").build();
+
+        // when
+        UserEmailAuthRes response = userService.emailAuth(request, authenticatedUser);
+
+        // then
+        assertThat(response).isNotNull();
+    }
+
+    @DisplayName("이메일 인증 확인을 진행한다.")
+    @Test
+    void emailAuthVerify() {
+        // given
+        User user = User.builder().deviceId("dsafkml-fgsmkgrlms-421m4f").email(null).build();
+        userRepository.save(user);
+
+        String token = jwtUtil.generateEmailToken(user.getIdx(), "test@gmail.com", "123456");
+        UserEmailAuthVerifyReq request =
+                UserEmailAuthVerifyReq.builder()
+                        .emailAuthToken(token)
+                        .emailAuthValue("123456")
+                        .build();
+
+        AuthenticatedUser authenticatedUser =
+                AuthenticatedUser.builder()
+                        .idx(user.getIdx())
+                        .deviceId("dsafkml-fgsmkgrlms-421m4f")
+                        .build();
+
+        // when
+        Boolean response = userService.verifyEmailAuth(request, authenticatedUser);
 
         // then
         assertTrue(response);

@@ -1,5 +1,6 @@
 package everymeal.server.global.config;
 
+
 import everymeal.server.global.util.authresolver.UserJwtResolver;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -17,5 +18,4 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(adminResolver);
     }
-
 }
