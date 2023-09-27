@@ -35,6 +35,21 @@ public class JwtUtil {
     @Value("${jwt.validity.refresh-seconds}")
     private Long refreshTokenExpirationMs;
 
+    public String generateEmailToken(Long userId, String email, String sendAuthPassword) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + (accessTokenExpirationMs * 2));
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("CLAIM_KEY_IDX", userId);
+        claims.put("CLAIM_KEY_EMAIL", email);
+        claims.put("CLAIM_KEY_SEND_AUTH_PASSWORD", sendAuthPassword);
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(Keys.hmacShaKeyFor(accessSecretKey.getBytes()), SignatureAlgorithm.HS512)
+                .compact();
+    }
+
     public String generateAccessToken(Long idx) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + accessTokenExpirationMs);
@@ -67,9 +82,15 @@ public class JwtUtil {
         if (claims != null) {
             return AuthenticatedUser.builder()
                     .idx(Long.parseLong(claims.get("CLAIM_KEY_IDX").toString()))
-                    .email(claims.get("CLAIM_KEY_EMAIL").toString())
-                    .nickName(claims.get("CLAIM_KEY_NICKNAME").toString())
                     .build();
+        }
+        return null;
+    }
+
+    public String getEmailTokenFromAuthCode(String token) {
+        Claims claims = getClaimsFromToken(tokenSubBearer(token), accessSecretKey);
+        if (claims != null) {
+            return claims.get("CLAIM_KEY_SEND_AUTH_PASSWORD").toString();
         }
         return null;
     }
