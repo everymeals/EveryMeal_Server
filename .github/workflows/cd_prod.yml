@@ -44,6 +44,18 @@ jobs:
           touch ./application-secret.yml
           echo "${{ secrets.PROPERTIES_SECRET }}" > ./application-secret.yml
         shell: bash
+      - name: Make application-dev.yml
+        run: |
+          cd ./src/main/resources
+          touch ./application-dev.yml
+          echo "${{ secrets.PROPERTIES_SECRET_DEV }}" > ./application-dev.yml
+        shell: bash
+      - name: Make application-prod.yml
+        run: |
+          cd ./src/main/resources
+          touch ./application-prod.yml
+          echo "${{ secrets.PROPERTIES_SECRET_PROD }}" > ./application-prod.yml
+        shell: bash
 
       # 6) 빌드
       - name: Build with gradle

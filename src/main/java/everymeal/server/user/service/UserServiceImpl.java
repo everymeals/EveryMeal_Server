@@ -5,9 +5,6 @@ import everymeal.server.global.exception.ApplicationException;
 import everymeal.server.global.exception.ExceptionList;
 import everymeal.server.global.util.JwtUtil;
 import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
-import everymeal.server.user.controller.dto.request.UserEmailAuthReq;
-import everymeal.server.user.controller.dto.request.UserEmailAuthVerifyReq;
-import everymeal.server.user.controller.dto.response.UserEmailAuthRes;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
 import everymeal.server.user.entity.User;
 import everymeal.server.user.repository.UserRepository;
@@ -53,7 +50,7 @@ public class UserServiceImpl implements UserService {
     public Boolean isAuth(AuthenticatedUser authenticatedUser) {
         User user =
                 userRepository
-                        .findById(authenticatedUser.getIdx())
+                        .findByDeviceId(authenticatedUser.getDeviceId())
                         .orElseThrow(() -> new ApplicationException(ExceptionList.USER_NOT_FOUND));
         return user.getEmail() != null;
     }

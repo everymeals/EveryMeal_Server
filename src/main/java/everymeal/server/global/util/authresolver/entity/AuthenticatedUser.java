@@ -7,13 +7,13 @@ import lombok.Getter;
 @Getter
 public class AuthenticatedUser {
     private Long idx;
-    private String email;
+    private String deviceId;
     private String nickName;
 
     @Builder
-    public AuthenticatedUser(Long idx, String email, String nickName) {
+    public AuthenticatedUser(Long idx, String deviceId, String nickName) {
         this.idx = idx;
-        this.email = email;
+        this.deviceId = deviceId;
         this.nickName = nickName;
     }
 }

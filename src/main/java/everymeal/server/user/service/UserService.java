@@ -13,7 +13,7 @@ public interface UserService {
 
     UserLoginRes login(String userDeviceId);
 
-    Boolean isAuth(AuthenticatedUser accessToken);
+    Boolean isAuth(AuthenticatedUser authenticatedUser);
 
     UserEmailAuthRes emailAuth(UserEmailAuthReq request, AuthenticatedUser authenticatedUser);
 
