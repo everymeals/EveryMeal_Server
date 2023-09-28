@@ -70,7 +70,6 @@ public class UserServiceImpl implements UserService {
                             Integer.toString(authCode));
             return UserEmailAuthRes.builder().emailAuthToken(mailJwt).build();
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
             return null;
         }
     }
