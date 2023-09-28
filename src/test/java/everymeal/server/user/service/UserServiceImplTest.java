@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import everymeal.server.global.IntegrationTestSupport;
+import everymeal.server.global.exception.ApplicationException;
+import everymeal.server.global.exception.ExceptionList;
 import everymeal.server.global.util.JwtUtil;
 import everymeal.server.global.util.MailUtil;
 import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
@@ -119,5 +121,65 @@ class UserServiceImplTest extends IntegrationTestSupport {
 
         // then
         assertTrue(response);
+    }
+
+    @DisplayName("이메일 인증 과정에서 없는 유저의 인덱스가 들어 있을 경우, 예외가 발생한다.")
+    @Test
+    void emailAuthVerifyWithNotExistUserIdx() {
+        // given
+
+        User user = User.builder().deviceId("dsafkml-fgsmkgrlms-421m4f").email(null).build();
+        userRepository.save(user);
+
+        String token = jwtUtil.generateEmailToken(user.getIdx(), "test@gmail.com", "123456");
+        UserEmailAuthVerifyReq request =
+                UserEmailAuthVerifyReq.builder()
+                        .emailAuthToken(token)
+                        .emailAuthValue("123456")
+                        .build();
+
+        AuthenticatedUser authenticatedUser =
+                AuthenticatedUser.builder()
+                        .idx(user.getIdx())
+                        .deviceId("dsafkml-fgsmkgrlms-421m4f")
+                        .build();
+
+        userRepository.delete(user);
+
+        // when & then
+        ApplicationException applicationException =
+                assertThrows(
+                        ApplicationException.class,
+                        () -> userService.verifyEmailAuth(request, authenticatedUser));
+        assertEquals(applicationException.getErrorCode(), ExceptionList.USER_NOT_FOUND.getCODE());
+    }
+
+    @DisplayName("토큰에서 추출한 인증값과 유저가 입력한 인증값이 일치하지 않을 경우, 예외가 발생한다.")
+    @Test
+    void emailAuthVerifyWithNotMatchAuthValue() {
+        // given
+        User user = User.builder().deviceId("dsafkml-fgsmkgrlms-421m4f").email(null).build();
+        userRepository.save(user);
+
+        String token = jwtUtil.generateEmailToken(user.getIdx(), "", "123456");
+
+        UserEmailAuthVerifyReq request =
+                UserEmailAuthVerifyReq.builder()
+                        .emailAuthToken(token)
+                        .emailAuthValue("1234567")
+                        .build();
+
+        AuthenticatedUser authenticatedUser =
+                AuthenticatedUser.builder()
+                        .idx(user.getIdx())
+                        .deviceId("dsafkml-fgsmkgrlms-421m4f")
+                        .build();
+
+        // when & then
+        ApplicationException applicationException =
+                assertThrows(
+                        ApplicationException.class,
+                        () -> userService.verifyEmailAuth(request, authenticatedUser));
+        assertEquals(applicationException.getErrorCode(), ExceptionList.USER_AUTH_FAIL.getCODE());
     }
 }
