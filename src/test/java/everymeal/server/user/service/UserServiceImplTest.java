@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import everymeal.server.global.IntegrationTestSupport;
 import everymeal.server.global.util.JwtUtil;
+import everymeal.server.global.util.MailUtil;
 import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
 import everymeal.server.user.controller.dto.request.UserEmailAuthReq;
 import everymeal.server.user.controller.dto.request.UserEmailAuthVerifyReq;
@@ -22,6 +23,7 @@ class UserServiceImplTest extends IntegrationTestSupport {
     @Autowired private UserService userService;
     @Autowired private UserRepository userRepository;
     @Autowired private JwtUtil jwtUtil;
+    @Autowired private MailUtil mailUtil;
 
     @AfterEach
     void tearDown() {
