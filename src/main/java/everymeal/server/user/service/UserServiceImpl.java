@@ -14,6 +14,8 @@ import everymeal.server.user.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMessage.RecipientType;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -28,7 +30,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
     private final JavaMailSender javaMailSender;
-    private final Random random = new Random();
 
     @Override
     @Transactional
@@ -61,21 +62,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserEmailAuthRes emailAuth(
             UserEmailAuthReq request, AuthenticatedUser authenticatedUser) {
-        int authCode = random.nextInt(900000) + 100000;
-        String mailJwt =
-                jwtUtil.generateEmailToken(
-                        authenticatedUser.getIdx(), request.getEmail(), Integer.toString(authCode));
         try {
+            Random random = SecureRandom.getInstanceStrong();
+            int authCode = random.nextInt(900000) + 100000;
+            String mailJwt =
+                jwtUtil.generateEmailToken(
+                    authenticatedUser.getIdx(), request.getEmail(), Integer.toString(authCode));
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             mimeMessage.setSubject("[에브리밀] 대학교 이메일 인증");
             mimeMessage.setText("인증번호 : " + authCode);
             mimeMessage.setRecipients(RecipientType.TO, request.getEmail());
             javaMailSender.send(mimeMessage);
-        } catch (MessagingException e) {
+            return UserEmailAuthRes.builder().emailAuthToken(mailJwt).build();
+        } catch (MessagingException | NoSuchAlgorithmException e) {
             e.printStackTrace();
             return null;
         }
-        return UserEmailAuthRes.builder().emailAuthToken(mailJwt).build();
     }
 
     @Override
