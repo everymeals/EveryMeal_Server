@@ -23,7 +23,7 @@ public class MealRepositoryImpl implements MealRepositoryCustom {
                         .from(QMeal.meal)
                         .leftJoin(QMeal.meal.restaurant, QRestaurant.restaurant)
                         .on(QRestaurant.restaurant.idx.eq(restaurantIdx))
-                        .where(isAfterOfferedAt(mealRegisterReq.getOfferedAt()))
+                        .where(isAfterOfferedAt(mealRegisterReq.offeredAt()))
                         .fetch();
         return queryResult;
     }

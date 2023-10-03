@@ -46,16 +46,16 @@ public class MealServiceImpl implements MealService {
         University university =
                 universityRepository
                         .findByNameAndCampusNameAndIsDeletedFalse(
-                                restaurantRegisterReq.getUniversityName(),
-                                restaurantRegisterReq.getCampusName())
+                                restaurantRegisterReq.universityName(),
+                                restaurantRegisterReq.campusName())
                         .stream()
                         .findFirst()
                         .orElseThrow(
                                 () -> new ApplicationException(ExceptionList.UNIVERSITY_NOT_FOUND));
         Restaurant restaurant =
                 Restaurant.builder()
-                        .name(restaurantRegisterReq.getRestaurantName())
-                        .address(restaurantRegisterReq.getAddress())
+                        .name(restaurantRegisterReq.restaurantName())
+                        .address(restaurantRegisterReq.address())
                         .university(university)
                         .build();
         return restaurantRepository.save(restaurant).getIdx() != null;
@@ -67,13 +67,13 @@ public class MealServiceImpl implements MealService {
         // 식당 조회
         Restaurant restaurant =
                 restaurantRepository
-                        .findById(weekMealRegisterReq.getRestaurantIdx())
+                        .findById(weekMealRegisterReq.restaurantIdx())
                         .orElseThrow(
                                 () -> new ApplicationException(ExceptionList.RESTAURANT_NOT_FOUND));
         // REQ 데이터 제공 날짜 기준 오름차순 정렬
         weekMealRegisterReq
-                .getRegisterReqList()
-                .sort(Comparator.comparing(MealRegisterReq::getOfferedAt));
+                .registerReqList()
+                .sort(Comparator.comparing(MealRegisterReq::offeredAt));
         /**
          * 조건) 가장 늦은 offeredAt를 기준으로 날짜가 이후인 경우에만 추가할 수 있어야 한다. ( 데이터 간 충돌 방지를 위해서 ) 가정) REQ로 들어온
          * offeredAt(식사제공날짜)가 이미 테이블 내에 포함되어 있다. 행동) REQ 중 가장 빠른 offeredAt을 기준으로 테이블 내에 데이터가 존재하는지
@@ -81,20 +81,20 @@ public class MealServiceImpl implements MealService {
          */
         List<Meal> meals =
                 mealRepositoryCustom.findAllByAfterOfferedAt(
-                        weekMealRegisterReq.getRegisterReqList().get(0), restaurant.getIdx());
+                        weekMealRegisterReq.registerReqList().get(0), restaurant.getIdx());
         if (meals.size() > 0)
             throw new ApplicationException(ExceptionList.INVALID_MEAL_OFFEREDAT_REQUEST);
         // 주간 단위 식단 생성
         List<Meal> mealList = new ArrayList<>();
-        for (MealRegisterReq req : weekMealRegisterReq.getRegisterReqList()) {
+        for (MealRegisterReq req : weekMealRegisterReq.registerReqList()) {
             Meal meal =
                     Meal.builder()
-                            .mealStatus(MealStatus.valueOf(req.getMealStatus()))
-                            .mealType(MealType.valueOf(req.getMealType()))
-                            .menu(req.getMenu())
+                            .mealStatus(MealStatus.valueOf(req.mealStatus()))
+                            .mealType(MealType.valueOf(req.mealType()))
+                            .menu(req.menu())
                             .restaurant(restaurant)
-                            .price(req.getPrice())
-                            .offeredAt(req.getOfferedAt())
+                            .price(req.price())
+                            .offeredAt(req.offeredAt())
                             .build();
             mealList.add(meal);
         }
