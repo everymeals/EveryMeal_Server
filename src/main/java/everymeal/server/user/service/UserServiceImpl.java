@@ -8,6 +8,7 @@ import everymeal.server.global.util.MailUtil;
 import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
 import everymeal.server.user.controller.dto.request.UserEmailAuthReq;
 import everymeal.server.user.controller.dto.request.UserEmailAuthVerifyReq;
+import everymeal.server.user.controller.dto.request.UserSingReq;
 import everymeal.server.user.controller.dto.response.UserEmailAuthRes;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
 import everymeal.server.user.entity.User;
@@ -30,17 +31,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Boolean signUp(String userDeviceId) {
-        User user = User.builder().deviceId(userDeviceId).build();
+    public Boolean signUp(UserSingReq request) {
+        User user = User.builder().deviceId(request.getDeviceId()).build();
         userRepository.save(user);
         return true;
     }
 
     @Override
-    public UserLoginRes login(String userDeviceId) {
+    public UserLoginRes login(UserSingReq request) {
         User user =
                 userRepository
-                        .findByDeviceId(userDeviceId)
+                        .findByDeviceId(request.getDeviceId())
                         .orElseThrow(() -> new ApplicationException(ExceptionList.USER_NOT_FOUND));
         String accessToken = jwtUtil.generateAccessToken(user.getIdx());
         String refreshToken = jwtUtil.generateRefreshToken(user.getIdx(), accessToken);
@@ -62,7 +63,23 @@ public class UserServiceImpl implements UserService {
         try {
             Random random = SecureRandom.getInstanceStrong();
             int authCode = random.nextInt(900000) + 100000;
-            mailUtil.sendMail(request.getEmail(), "[에브리밀] 대학교 이메일 인증", "인증번호 : " + authCode);
+            String htmlText =
+                    String.format(
+                            "<html>"
+                                    + "<body>"
+                                    + "<p>안녕하세요!</p>"
+                                    + "<p>에브리밀 서비스에 가입해주셔서 감사합니다. 이메일 인증을 완료하여 식당 및 학식 정보를 더욱 편리하게 이용할 수 있습니다.</p>"
+                                    + "<p>아래의 인증 코드를 사용하여 이메일 인증을 진행해주세요:</p>"
+                                    + "<p><strong>인증 코드: %s</strong></p>"
+                                    + "<br />"
+                                    + "<p>감사합니다.</p>"
+                                    + "<br />"
+                                    + "<img src=\"https://github.com/everymeals/EveryMeal_Server/assets/53048655/b4543167-a03b-435d-b326-105aeeff3d6c\" alt=\"에브리밀 로고\" width=\"200px\" height=\"75px\">"
+                                    + "</body>"
+                                    + "</html>",
+                            authCode);
+
+            mailUtil.sendMail(request.getEmail(), "[에브리밀] 대학교 이메일 인증", htmlText);
             String mailJwt =
                     jwtUtil.generateEmailToken(
                             authenticatedUser.getIdx(),

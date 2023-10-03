@@ -1,6 +1,5 @@
 package everymeal.server.user.controller;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -12,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import everymeal.server.global.ControllerTestSupport;
 import everymeal.server.user.controller.dto.request.UserEmailAuthReq;
 import everymeal.server.user.controller.dto.request.UserEmailAuthVerifyReq;
+import everymeal.server.user.controller.dto.request.UserSingReq;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,12 +24,12 @@ class UserControllerTest extends ControllerTestSupport {
     @Test
     void signUp() throws Exception {
         // given
-        String deviceId = "123456789";
+        UserSingReq request = UserSingReq.builder().deviceId("123456789").build();
 
         // when then
         mockMvc.perform(
                         post("/api/v1/users")
-                                .content(deviceId)
+                                .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
@@ -41,7 +41,7 @@ class UserControllerTest extends ControllerTestSupport {
     @Test
     void login() throws Exception {
         // given
-        String deviceId = "123456789";
+        UserSingReq request = UserSingReq.builder().deviceId("123456789").build();
 
         given(userService.login(any()))
                 .willReturn(
@@ -53,7 +53,7 @@ class UserControllerTest extends ControllerTestSupport {
         // when then
         mockMvc.perform(
                         post("/api/v1/users/login")
-                                .content(deviceId)
+                                .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
