@@ -1,15 +1,19 @@
 package everymeal.server.meal.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import everymeal.server.global.IntegrationTestSupport;
+import everymeal.server.global.exception.ApplicationException;
+import everymeal.server.global.exception.ExceptionList;
 import everymeal.server.meal.controller.dto.request.MealRegisterReq;
 import everymeal.server.meal.controller.dto.request.RestaurantRegisterReq;
 import everymeal.server.meal.controller.dto.request.WeekMealRegisterReq;
 import everymeal.server.meal.controller.dto.response.DayMealListGetRes;
 import everymeal.server.meal.controller.dto.response.RestaurantListGetRes;
 import everymeal.server.meal.controller.dto.response.WeekMealListGetRes;
+import everymeal.server.meal.entity.Meal;
 import everymeal.server.meal.entity.MealStatus;
 import everymeal.server.meal.entity.MealType;
 import everymeal.server.meal.entity.Restaurant;
@@ -52,21 +56,20 @@ class MealServiceImplTest extends IntegrationTestSupport {
 
         // when
         University university =
-                universityRepository.save(
-                        getUniversity(req.getUniversityName(), req.getCampusName()));
+                universityRepository.save(getUniversity(req.universityName(), req.campusName()));
         Boolean response = mealService.createRestaurant(req);
 
         // then
-        Restaurant restaurants = restaurantRepository.findByName(req.getRestaurantName()).get();
+        Restaurant restaurants = restaurantRepository.findByName(req.restaurantName()).get();
         assertEquals(response, true);
-        assertEquals(restaurants.getAddress(), req.getAddress());
+        assertEquals(restaurants.getAddress(), req.address());
     }
 
     private Restaurant getRestaurant(University university, String address, String name) {
         return Restaurant.builder().university(university).address(address).name(name).build();
     }
 
-    @DisplayName("주간 식단을 등록합니다.")
+    @DisplayName("주간 식단을 등록")
     @Test
     void createWeekMeal() throws Exception {
         // given
@@ -74,29 +77,28 @@ class MealServiceImplTest extends IntegrationTestSupport {
         University university =
                 universityRepository.save(
                         getUniversity(
-                                restaurantRegisterReq.getUniversityName(),
-                                restaurantRegisterReq.getCampusName()));
+                                restaurantRegisterReq.universityName(),
+                                restaurantRegisterReq.campusName()));
         Restaurant restaurant =
                 restaurantRepository.save(
                         getRestaurant(
                                 university,
-                                restaurantRegisterReq.getAddress(),
-                                restaurantRegisterReq.getRestaurantName()));
+                                restaurantRegisterReq.address(),
+                                restaurantRegisterReq.restaurantName()));
 
-        WeekMealRegisterReq req = new WeekMealRegisterReq();
-        req.setRestaurantIdx(restaurant.getIdx());
         List<MealRegisterReq> list = new ArrayList<>();
         LocalDate today = LocalDate.now();
         for (int i = 0; i < 7; i++) {
-            MealRegisterReq mealReq = new MealRegisterReq();
-            mealReq.setMealStatus(MealStatus.OPEN.name());
-            mealReq.setMenu("갈비탕, 깍두기, 흰쌀밥");
-            mealReq.setMealType(MealType.BREAKFAST.name());
-            mealReq.setPrice(10000.0);
-            mealReq.setOfferedAt(today.plusDays(i));
+            MealRegisterReq mealReq =
+                    new MealRegisterReq(
+                            "갈비탕, 깍두기, 흰쌀밥",
+                            MealType.BREAKFAST.name(),
+                            MealStatus.OPEN.name(),
+                            today.plusDays(i),
+                            10000.0);
             list.add(mealReq);
         }
-        req.setRegisterReqList(list);
+        WeekMealRegisterReq req = new WeekMealRegisterReq(list, restaurant.getIdx());
 
         // when
         Boolean response = mealService.createWeekMeal(req);
@@ -113,29 +115,28 @@ class MealServiceImplTest extends IntegrationTestSupport {
         University university =
                 universityRepository.save(
                         getUniversity(
-                                restaurantRegisterReq.getUniversityName(),
-                                restaurantRegisterReq.getCampusName()));
+                                restaurantRegisterReq.universityName(),
+                                restaurantRegisterReq.campusName()));
         Restaurant restaurant =
                 restaurantRepository.save(
                         getRestaurant(
                                 university,
-                                restaurantRegisterReq.getAddress(),
-                                restaurantRegisterReq.getRestaurantName()));
+                                restaurantRegisterReq.address(),
+                                restaurantRegisterReq.restaurantName()));
 
-        WeekMealRegisterReq req = new WeekMealRegisterReq();
-        req.setRestaurantIdx(restaurant.getIdx());
         List<MealRegisterReq> list = new ArrayList<>();
         LocalDate today = LocalDate.now();
         for (int i = 0; i < 7; i++) {
-            MealRegisterReq mealReq = new MealRegisterReq();
-            mealReq.setMealStatus(MealStatus.OPEN.name());
-            mealReq.setMenu("갈비탕, 깍두기, 흰쌀밥");
-            mealReq.setMealType(MealType.BREAKFAST.name());
-            mealReq.setPrice(10000.0);
-            mealReq.setOfferedAt(today.plusDays(i));
+            MealRegisterReq mealReq =
+                    new MealRegisterReq(
+                            "갈비탕, 깍두기, 흰쌀밥",
+                            MealType.BREAKFAST.name(),
+                            MealStatus.OPEN.name(),
+                            today.plusDays(i),
+                            10000.0);
             list.add(mealReq);
         }
-        req.setRegisterReqList(list);
+        WeekMealRegisterReq req = new WeekMealRegisterReq(list, restaurant.getIdx());
         mealService.createWeekMeal(req);
 
         // when
@@ -143,7 +144,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
                 mealService.getWeekMealList(restaurant.getIdx(), today.toString());
 
         // then
-        assertEquals(response.size(), req.getRegisterReqList().size());
+        assertEquals(response.size(), req.registerReqList().size());
     }
 
     @DisplayName("하루 식단 조회")
@@ -154,28 +155,26 @@ class MealServiceImplTest extends IntegrationTestSupport {
         University university =
                 universityRepository.save(
                         getUniversity(
-                                restaurantRegisterReq.getUniversityName(),
-                                restaurantRegisterReq.getCampusName()));
+                                restaurantRegisterReq.universityName(),
+                                restaurantRegisterReq.campusName()));
         Restaurant restaurant =
                 restaurantRepository.save(
                         getRestaurant(
                                 university,
-                                restaurantRegisterReq.getAddress(),
-                                restaurantRegisterReq.getRestaurantName()));
-
-        WeekMealRegisterReq req = new WeekMealRegisterReq();
-        req.setRestaurantIdx(restaurant.getIdx());
+                                restaurantRegisterReq.address(),
+                                restaurantRegisterReq.restaurantName()));
         List<MealRegisterReq> list = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
-            MealRegisterReq mealReq = new MealRegisterReq();
-            mealReq.setMealStatus(MealStatus.OPEN.name());
-            mealReq.setMenu("갈비탕, 깍두기, 흰쌀밥");
-            mealReq.setMealType(MealType.BREAKFAST.name());
-            mealReq.setPrice(10000.0);
-            mealReq.setOfferedAt(LocalDate.now());
+            MealRegisterReq mealReq =
+                    new MealRegisterReq(
+                            "갈비탕, 깍두기, 흰쌀밥",
+                            MealType.BREAKFAST.name(),
+                            MealStatus.OPEN.name(),
+                            LocalDate.now(),
+                            10000.0);
             list.add(mealReq);
         }
-        req.setRegisterReqList(list);
+        WeekMealRegisterReq req = new WeekMealRegisterReq(list, restaurant.getIdx());
         mealService.createWeekMeal(req);
 
         // when
@@ -183,7 +182,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
                 mealService.getDayMealList(restaurant.getIdx(), LocalDate.now().toString());
 
         // then
-        assertEquals(response.size(), req.getRegisterReqList().size());
+        assertEquals(response.size(), req.registerReqList().size());
     }
 
     @DisplayName("학교별 학생 식당 조회")
@@ -194,17 +193,17 @@ class MealServiceImplTest extends IntegrationTestSupport {
         University university =
                 universityRepository.save(
                         getUniversity(
-                                restaurantRegisterReq.getUniversityName(),
-                                restaurantRegisterReq.getCampusName()));
+                                restaurantRegisterReq.universityName(),
+                                restaurantRegisterReq.campusName()));
         Restaurant restaurant =
                 restaurantRepository.save(
                         getRestaurant(
                                 university,
-                                restaurantRegisterReq.getAddress(),
-                                restaurantRegisterReq.getRestaurantName()));
+                                restaurantRegisterReq.address(),
+                                restaurantRegisterReq.restaurantName()));
 
-        String universityName = restaurantRegisterReq.getUniversityName();
-        String campusName = restaurantRegisterReq.getCampusName();
+        String universityName = restaurantRegisterReq.universityName();
+        String campusName = restaurantRegisterReq.campusName();
 
         // when
         List<RestaurantListGetRes> response =
@@ -214,13 +213,100 @@ class MealServiceImplTest extends IntegrationTestSupport {
         assertEquals(response.get(0).getRestaurantIdx(), restaurant.getIdx());
     }
 
+    @Test
+    @DisplayName("학생 식당 등록 시, 존재하지 않는 학교일 경우")
+    void createRestaurantWhenUniversityIsNotFound() throws Exception {
+        // given
+        RestaurantRegisterReq invalidReq =
+                new RestaurantRegisterReq("서울대학교", "서울캠퍼스", "서울시 관악구 관악로", "유령식당");
+        // when-then
+        ApplicationException applicationException =
+                assertThrows(
+                        ApplicationException.class, () -> mealService.createRestaurant(invalidReq));
+
+        assertEquals(
+                applicationException.getErrorCode(), ExceptionList.UNIVERSITY_NOT_FOUND.getCODE());
+    }
+
+    @Test
+    @DisplayName("주간 식단 등록 시, 존재하지 않는 식당일 경우")
+    void createWeekMealWhenRestaurantIsNotFound() throws Exception {
+        // given
+        List<MealRegisterReq> list = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+        for (int i = 0; i < 7; i++) {
+            MealRegisterReq mealReq =
+                    new MealRegisterReq(
+                            "갈비탕, 깍두기, 흰쌀밥",
+                            MealType.BREAKFAST.name(),
+                            MealStatus.OPEN.name(),
+                            today.plusDays(i),
+                            10000.0);
+            list.add(mealReq);
+        }
+        WeekMealRegisterReq invalidReq = new WeekMealRegisterReq(list, 9999L);
+
+        // when-then
+        ApplicationException applicationException =
+                assertThrows(
+                        ApplicationException.class, () -> mealService.createWeekMeal(invalidReq));
+        assertEquals(
+                applicationException.getErrorCode(), ExceptionList.RESTAURANT_NOT_FOUND.getCODE());
+    }
+
+    @Test
+    @DisplayName("등록되어 있는 식단 데이터 보다 과거의 날짜로 식단을 등록하려는 경 - 덮어쓰기")
+    void createWeekMealBeforeLastMealOfferedAt() throws Exception {
+        // given
+        RestaurantRegisterReq restaurantRegisterReq = getRestaurantRegisterReq();
+        University university =
+                universityRepository.save(
+                        getUniversity(
+                                restaurantRegisterReq.universityName(),
+                                restaurantRegisterReq.campusName()));
+        Restaurant restaurant =
+                restaurantRepository.save(
+                        getRestaurant(
+                                university,
+                                restaurantRegisterReq.address(),
+                                restaurantRegisterReq.restaurantName()));
+
+        Meal meal =
+                mealRepository.save(
+                        Meal.builder()
+                                .menu("떡볶이, 어묵탕, 튀김")
+                                .mealType(MealType.LUNCH)
+                                .mealStatus(MealStatus.OPEN)
+                                .offeredAt(LocalDate.now())
+                                .price(5000.0)
+                                .restaurant(restaurant)
+                                .build());
+
+        List<MealRegisterReq> list = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+        for (int i = 0; i < 7; i++) {
+            MealRegisterReq mealReq =
+                    new MealRegisterReq(
+                            "갈비탕, 깍두기, 흰쌀밥",
+                            MealType.BREAKFAST.name(),
+                            MealStatus.OPEN.name(),
+                            today.minusDays(i),
+                            10000.0);
+            list.add(mealReq);
+        }
+        WeekMealRegisterReq invalidReq = new WeekMealRegisterReq(list, restaurant.getIdx());
+
+        ApplicationException applicationException =
+                assertThrows(
+                        ApplicationException.class, () -> mealService.createWeekMeal(invalidReq));
+
+        assertEquals(
+                applicationException.getErrorCode(),
+                ExceptionList.INVALID_MEAL_OFFEREDAT_REQUEST.getCODE());
+    }
+
     private RestaurantRegisterReq getRestaurantRegisterReq() {
-        RestaurantRegisterReq req = new RestaurantRegisterReq();
-        req.setRestaurantName("MCC 식당");
-        req.setAddress("서울시 서대문구 남가좌동 거북골로 34");
-        req.setUniversityName("명지대학교");
-        req.setCampusName("인문캠퍼스");
-        return req;
+        return new RestaurantRegisterReq("명지대학교", "인문캠퍼스", "서울시 서대문구 남가좌동 거북골로 34", "MCC 식당");
     }
 
     private University getUniversity(String universityName, String campusName) {

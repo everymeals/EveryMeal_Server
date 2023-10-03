@@ -25,19 +25,18 @@ class MealControllerTest extends ControllerTestSupport {
     @Test
     void createWeekMeal() throws Exception {
         // given
-        WeekMealRegisterReq req = new WeekMealRegisterReq();
-        req.setRestaurantIdx(1L); // 식당 PK
         List<MealRegisterReq> list = new ArrayList<>(); // 식사 데이터
         for (int i = 0; i < 7; i++) {
-            MealRegisterReq mealReq = new MealRegisterReq();
-            mealReq.setMealStatus(MealStatus.OPEN.name());
-            mealReq.setMenu("갈비탕, 깍두기, 흰쌀밥");
-            mealReq.setMealType(MealType.BREAKFAST.name());
-            mealReq.setPrice(10000.0);
-            mealReq.setOfferedAt(LocalDate.now());
+            MealRegisterReq mealReq =
+                    new MealRegisterReq(
+                            "갈비탕, 깍두기, 흰쌀밥",
+                            MealType.BREAKFAST.name(),
+                            MealStatus.OPEN.name(),
+                            LocalDate.now(),
+                            10000.0);
             list.add(mealReq);
         }
-        req.setRegisterReqList(list);
+        WeekMealRegisterReq req = new WeekMealRegisterReq(list, 1L);
 
         // when-then
         mockMvc.perform(
@@ -120,11 +119,6 @@ class MealControllerTest extends ControllerTestSupport {
     }
 
     private RestaurantRegisterReq getRestaurantRegisterReq() {
-        RestaurantRegisterReq req = new RestaurantRegisterReq();
-        req.setRestaurantName("MCC 식당");
-        req.setAddress("서울시 서대문구 남가좌동 거북골로 34");
-        req.setUniversityName("명지대학교");
-        req.setCampusName("인문캠퍼스");
-        return req;
+        return new RestaurantRegisterReq("명지대학교", "인문캠퍼스", "서울시 서대문구 남가좌동 거북골로 34", "MCC 식당");
     }
 }
