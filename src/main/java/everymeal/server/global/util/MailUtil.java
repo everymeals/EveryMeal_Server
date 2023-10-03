@@ -18,6 +18,7 @@ public class MailUtil {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             mimeMessage.setSubject(title);
             mimeMessage.setText(text);
+            mimeMessage.setContent(text, "text/html; charset=utf-8");
             mimeMessage.setRecipients(RecipientType.TO, email);
             javaMailSender.send(mimeMessage);
         } catch (MessagingException e) {

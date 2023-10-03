@@ -7,12 +7,12 @@ import everymeal.server.global.util.authresolver.AuthUser;
 import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
 import everymeal.server.user.controller.dto.request.UserEmailAuthReq;
 import everymeal.server.user.controller.dto.request.UserEmailAuthVerifyReq;
+import everymeal.server.user.controller.dto.request.UserSingReq;
 import everymeal.server.user.controller.dto.response.UserEmailAuthRes;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
 import everymeal.server.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -35,25 +35,16 @@ public class UserController {
     @Operation(summary = "회원가입")
     @PostMapping
     public ApplicationResponse<Boolean> signUp(
-            @RequestBody
-                    @Schema(
-                            description = "유저의 기기 고유 번호",
-                            defaultValue = "123456789",
-                            example = "1234567890")
-                    String userDeviceId) {
-        return ApplicationResponse.ok(userService.signUp(userDeviceId));
+            @RequestBody UserSingReq request) {
+        return ApplicationResponse.ok(userService.signUp(request));
     }
 
     @Operation(summary = "로그인")
     @PostMapping("/login")
     public ResponseEntity<ApplicationResponse<UserLoginRes>> login(
             @RequestBody
-                    @Schema(
-                            description = "유저의 기기 고유 번호",
-                            defaultValue = "123456789",
-                            example = "1234567890")
-                    String userDeviceId) {
-        UserLoginRes response = userService.login(userDeviceId);
+                UserSingReq request) {
+        UserLoginRes response = userService.login(request);
         ResponseCookie cookie =
                 ResponseCookie.from("refresh-token", response.getRefreshToken())
                         .httpOnly(true)

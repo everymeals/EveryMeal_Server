@@ -11,6 +11,7 @@ import everymeal.server.global.util.MailUtil;
 import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
 import everymeal.server.user.controller.dto.request.UserEmailAuthReq;
 import everymeal.server.user.controller.dto.request.UserEmailAuthVerifyReq;
+import everymeal.server.user.controller.dto.request.UserSingReq;
 import everymeal.server.user.controller.dto.response.UserEmailAuthRes;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
 import everymeal.server.user.entity.User;
@@ -36,13 +37,15 @@ class UserServiceImplTest extends IntegrationTestSupport {
     @Test
     void singUp() {
         // given
-        String deviceId = "123456789";
+        UserSingReq request = UserSingReq.builder().deviceId("123456789").build();
 
         // when
-        Boolean response = userService.signUp(deviceId);
+        Boolean response = userService.signUp(request);
 
         // then
-        assertEquals(userRepository.findByDeviceId(deviceId).get().getDeviceId(), deviceId);
+        assertEquals(
+                userRepository.findByDeviceId(request.getDeviceId()).get().getDeviceId(),
+                request.getDeviceId());
         assertTrue(response);
     }
 
@@ -50,11 +53,11 @@ class UserServiceImplTest extends IntegrationTestSupport {
     @Test
     void login() {
         // given
-        String deviceId = "123456789";
-        userService.signUp(deviceId);
+        UserSingReq request = UserSingReq.builder().deviceId("123456789").build();
+        userService.signUp(request);
 
         // when
-        UserLoginRes response = userService.login(deviceId);
+        UserLoginRes response = userService.login(request);
 
         // then
         assertNotNull(response.getRefreshToken());
