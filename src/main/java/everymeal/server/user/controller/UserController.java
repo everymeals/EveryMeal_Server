@@ -34,16 +34,14 @@ public class UserController {
 
     @Operation(summary = "회원가입")
     @PostMapping
-    public ApplicationResponse<Boolean> signUp(
-            @RequestBody UserSingReq request) {
+    public ApplicationResponse<Boolean> signUp(@RequestBody UserSingReq request) {
         return ApplicationResponse.ok(userService.signUp(request));
     }
 
     @Operation(summary = "로그인")
     @PostMapping("/login")
     public ResponseEntity<ApplicationResponse<UserLoginRes>> login(
-            @RequestBody
-                UserSingReq request) {
+            @RequestBody UserSingReq request) {
         UserLoginRes response = userService.login(request);
         ResponseCookie cookie =
                 ResponseCookie.from("refresh-token", response.getRefreshToken())
