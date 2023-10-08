@@ -1,8 +1,8 @@
-name: CD for Prod
+name: CD for Dev
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "develop" ]
 
 permissions: write-all
 
@@ -79,5 +79,5 @@ jobs:
             docker stop dev
             docker rm dev
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY}}
-            sudo docker run -d --name dev -v /var/log/app:/var/log/app -v /etc/localtime:/etc/localtime:ro -e TZ=Asia/Seoul -e ENVIRONMENT_VALUE=-Dspring.profiles.active=prod -p 8085:8080 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY}}:latest
+            sudo docker run -d --name dev -v /var/log/app:/var/log/app -v /etc/localtime:/etc/localtime:ro -e TZ=Asia/Seoul -e ENVIRONMENT_VALUE=-Dspring.profiles.active=dev -p 8085:8080 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY}}:latest
             docker rmi -f $(docker images -f "dangling=true" -q)
