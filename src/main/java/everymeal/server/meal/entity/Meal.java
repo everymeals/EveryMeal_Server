@@ -7,15 +7,18 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDate;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import java.time.Instant;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Table
+@Table(indexes = {@Index(name = "idx__mealType__offeredAt", columnList = "mealType, offeredAt")})
 @Entity
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class Meal {
@@ -32,9 +35,13 @@ public class Meal {
     @Enumerated(EnumType.STRING)
     private MealStatus mealStatus;
 
-    private LocalDate offeredAt;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Instant offeredAt;
 
     private Double price;
+
+    @Enumerated(EnumType.STRING)
+    private MealCategory category;
 
     @ManyToOne private Restaurant restaurant;
 
@@ -43,14 +50,16 @@ public class Meal {
             String menu,
             MealType mealType,
             MealStatus mealStatus,
-            LocalDate offeredAt,
+            Instant offeredAt,
             Double price,
+            MealCategory category,
             Restaurant restaurant) {
         this.menu = menu;
         this.mealType = mealType;
         this.mealStatus = mealStatus;
         this.offeredAt = offeredAt;
         this.price = price;
+        this.category = category;
         this.restaurant = restaurant;
     }
 }

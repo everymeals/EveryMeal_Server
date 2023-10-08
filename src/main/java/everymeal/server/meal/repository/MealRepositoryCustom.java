@@ -3,7 +3,8 @@ package everymeal.server.meal.repository;
 
 import everymeal.server.meal.controller.dto.request.MealRegisterReq;
 import everymeal.server.meal.entity.Meal;
-import java.time.LocalDate;
+import everymeal.server.meal.entity.MealType;
+import java.time.Instant;
 import java.util.List;
 import org.springframework.stereotype.Repository;
 
@@ -11,8 +12,6 @@ import org.springframework.stereotype.Repository;
 public interface MealRepositoryCustom {
     List<Meal> findAllByAfterOfferedAt(MealRegisterReq mealRegisterReq, Long restaurantIdx);
 
-    List<Meal> findAllByOfferedAt(LocalDate offeredAt, Long restaurantIdx);
-
-    List<Meal> findAllByBetweenOfferedAtAndEndedAt(
-            LocalDate startedAt, LocalDate endedAt, Long restaurantIdx);
+    List<Meal> findAllByOfferedAtOnDateAndMealType(
+            Instant offeredAt, MealType mealType, Long restaurantIdx);
 }
