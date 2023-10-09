@@ -14,6 +14,7 @@ import everymeal.server.meal.controller.dto.response.DayMealListGetRes;
 import everymeal.server.meal.controller.dto.response.RestaurantListGetRes;
 import everymeal.server.meal.controller.dto.response.WeekMealListGetRes;
 import everymeal.server.meal.entity.Meal;
+import everymeal.server.meal.entity.MealCategory;
 import everymeal.server.meal.entity.MealStatus;
 import everymeal.server.meal.entity.MealType;
 import everymeal.server.meal.entity.Restaurant;
@@ -22,7 +23,9 @@ import everymeal.server.meal.repository.MealRepositoryCustom;
 import everymeal.server.meal.repository.RestaurantRepository;
 import everymeal.server.university.entity.University;
 import everymeal.server.university.repository.UniversityRepository;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -87,15 +90,16 @@ class MealServiceImplTest extends IntegrationTestSupport {
                                 restaurantRegisterReq.restaurantName()));
 
         List<MealRegisterReq> list = new ArrayList<>();
-        LocalDate today = LocalDate.now();
+        Instant today = Instant.now();
         for (int i = 0; i < 7; i++) {
             MealRegisterReq mealReq =
                     new MealRegisterReq(
                             "갈비탕, 깍두기, 흰쌀밥",
                             MealType.BREAKFAST.name(),
                             MealStatus.OPEN.name(),
-                            today.plusDays(i),
-                            10000.0);
+                            today.plus(i, ChronoUnit.DAYS),
+                            10000.0,
+                            MealCategory.DEFAULT.name());
             list.add(mealReq);
         }
         WeekMealRegisterReq req = new WeekMealRegisterReq(list, restaurant.getIdx());
@@ -125,23 +129,26 @@ class MealServiceImplTest extends IntegrationTestSupport {
                                 restaurantRegisterReq.restaurantName()));
 
         List<MealRegisterReq> list = new ArrayList<>();
-        LocalDate today = LocalDate.now();
+        Instant today = Instant.now();
         for (int i = 0; i < 7; i++) {
+            Instant offeredAt = today.plus(i, ChronoUnit.DAYS);
             MealRegisterReq mealReq =
                     new MealRegisterReq(
                             "갈비탕, 깍두기, 흰쌀밥",
                             MealType.BREAKFAST.name(),
                             MealStatus.OPEN.name(),
-                            today.plusDays(i),
-                            10000.0);
+                            offeredAt,
+                            10000.0,
+                            MealCategory.DEFAULT.name());
             list.add(mealReq);
         }
         WeekMealRegisterReq req = new WeekMealRegisterReq(list, restaurant.getIdx());
         mealService.createWeekMeal(req);
 
         // when
+        String offeredAt = today.toString().split("T")[0];
         List<WeekMealListGetRes> response =
-                mealService.getWeekMealList(restaurant.getIdx(), today.toString());
+                mealService.getWeekMealList(restaurant.getIdx(), offeredAt);
 
         // then
         assertEquals(response.size(), req.registerReqList().size());
@@ -164,25 +171,27 @@ class MealServiceImplTest extends IntegrationTestSupport {
                                 restaurantRegisterReq.address(),
                                 restaurantRegisterReq.restaurantName()));
         List<MealRegisterReq> list = new ArrayList<>();
-        for (int i = 0; i < 7; i++) {
-            MealRegisterReq mealReq =
-                    new MealRegisterReq(
-                            "갈비탕, 깍두기, 흰쌀밥",
-                            MealType.BREAKFAST.name(),
-                            MealStatus.OPEN.name(),
-                            LocalDate.now(),
-                            10000.0);
-            list.add(mealReq);
-        }
+        Instant today = Instant.now();
+        MealRegisterReq mealReq =
+                new MealRegisterReq(
+                        "갈비탕, 깍두기, 흰쌀밥",
+                        MealType.BREAKFAST.name(),
+                        MealStatus.OPEN.name(),
+                        today,
+                        10000.0,
+                        MealCategory.DEFAULT.name());
+        list.add(mealReq);
         WeekMealRegisterReq req = new WeekMealRegisterReq(list, restaurant.getIdx());
         mealService.createWeekMeal(req);
 
         // when
+        String offeredAt = LocalDate.now().toString().split("T")[0];
         List<DayMealListGetRes> response =
-                mealService.getDayMealList(restaurant.getIdx(), LocalDate.now().toString());
+                mealService.getDayMealList(restaurant.getIdx(), offeredAt);
 
         // then
-        assertEquals(response.size(), req.registerReqList().size());
+        assertEquals(response.size(), 3);
+        assertEquals(response.get(1).getMenu(), "등록된 식단이 없습니다.");
     }
 
     @DisplayName("학교별 학생 식당 조회")
@@ -233,15 +242,16 @@ class MealServiceImplTest extends IntegrationTestSupport {
     void createWeekMealWhenRestaurantIsNotFound() throws Exception {
         // given
         List<MealRegisterReq> list = new ArrayList<>();
-        LocalDate today = LocalDate.now();
+        Instant today = Instant.now();
         for (int i = 0; i < 7; i++) {
             MealRegisterReq mealReq =
                     new MealRegisterReq(
                             "갈비탕, 깍두기, 흰쌀밥",
                             MealType.BREAKFAST.name(),
                             MealStatus.OPEN.name(),
-                            today.plusDays(i),
-                            10000.0);
+                            today.plus(i, ChronoUnit.DAYS),
+                            10000.0,
+                            MealCategory.DEFAULT.name());
             list.add(mealReq);
         }
         WeekMealRegisterReq invalidReq = new WeekMealRegisterReq(list, 9999L);
@@ -255,7 +265,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
     }
 
     @Test
-    @DisplayName("등록되어 있는 식단 데이터 보다 과거의 날짜로 식단을 등록하려는 경 - 덮어쓰기")
+    @DisplayName("등록되어 있는 식단 데이터 덮어 쓰기")
     void createWeekMealBeforeLastMealOfferedAt() throws Exception {
         // given
         RestaurantRegisterReq restaurantRegisterReq = getRestaurantRegisterReq();
@@ -277,21 +287,23 @@ class MealServiceImplTest extends IntegrationTestSupport {
                                 .menu("떡볶이, 어묵탕, 튀김")
                                 .mealType(MealType.LUNCH)
                                 .mealStatus(MealStatus.OPEN)
-                                .offeredAt(LocalDate.now())
+                                .offeredAt(Instant.now())
                                 .price(5000.0)
+                                .category(MealCategory.DEFAULT)
                                 .restaurant(restaurant)
                                 .build());
 
         List<MealRegisterReq> list = new ArrayList<>();
-        LocalDate today = LocalDate.now();
+        Instant today = Instant.now();
         for (int i = 0; i < 7; i++) {
             MealRegisterReq mealReq =
                     new MealRegisterReq(
                             "갈비탕, 깍두기, 흰쌀밥",
-                            MealType.BREAKFAST.name(),
+                            MealType.LUNCH.name(),
                             MealStatus.OPEN.name(),
-                            today.minusDays(i),
-                            10000.0);
+                            today.plus(i, ChronoUnit.DAYS),
+                            10000.0,
+                            MealCategory.DEFAULT.name());
             list.add(mealReq);
         }
         WeekMealRegisterReq invalidReq = new WeekMealRegisterReq(list, restaurant.getIdx());

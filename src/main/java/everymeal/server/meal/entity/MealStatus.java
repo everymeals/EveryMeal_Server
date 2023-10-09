@@ -12,9 +12,9 @@ public enum MealStatus {
     SHORT_OPEN("단축운영"),
     ;
 
-    private String name;
+    private String value;
 
-    MealStatus(String name) {
-        this.name = name;
+    MealStatus(String value) {
+        this.value = value;
     }
 }
