@@ -9,6 +9,7 @@ import everymeal.server.meal.controller.dto.request.WeekMealRegisterReq;
 import everymeal.server.meal.controller.dto.response.DayMealListGetRes;
 import everymeal.server.meal.controller.dto.response.RestaurantListGetRes;
 import everymeal.server.meal.controller.dto.response.WeekMealListGetRes;
+import everymeal.server.meal.controller.dto.response.WeekMealListGetResTest;
 import everymeal.server.meal.entity.Meal;
 import everymeal.server.meal.entity.MealCategory;
 import everymeal.server.meal.entity.MealStatus;
@@ -19,7 +20,10 @@ import everymeal.server.meal.repository.MealRepositoryCustom;
 import everymeal.server.meal.repository.RestaurantRepository;
 import everymeal.server.university.entity.University;
 import everymeal.server.university.repository.UniversityRepository;
+import java.time.DayOfWeek;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -234,51 +238,89 @@ public class MealServiceImpl implements MealService {
         }
         // 비동기로 아침/점심/저녁 조회 쿼리 수행
         List<CompletableFuture<List<DayMealListGetRes>>> mealFutures =
-                dateList.stream()
-                        .map(
-                                ldOfferedAt -> {
-                                    CompletableFuture<List<Meal>> breakfastFuture =
-                                            getMealsByDateAndTypeAsync(
-                                                    ldOfferedAt.truncatedTo(ChronoUnit.DAYS),
-                                                    MealType.BREAKFAST,
-                                                    restaurant.getIdx());
-                                    CompletableFuture<List<Meal>> lunchFuture =
-                                            getMealsByDateAndTypeAsync(
-                                                    ldOfferedAt.truncatedTo(ChronoUnit.DAYS),
-                                                    MealType.LUNCH,
-                                                    restaurant.getIdx());
-                                    CompletableFuture<List<Meal>> dinnerFuture =
-                                            getMealsByDateAndTypeAsync(
-                                                    ldOfferedAt.truncatedTo(ChronoUnit.DAYS),
-                                                    MealType.DINNER,
-                                                    restaurant.getIdx());
+            dateList.stream()
+                .map(
+                    ldOfferedAt -> {
+                        CompletableFuture<List<Meal>> breakfastFuture =
+                            getMealsByDateAndTypeAsync(
+                                ldOfferedAt.truncatedTo(ChronoUnit.DAYS),
+                                MealType.BREAKFAST,
+                                restaurant.getIdx());
+                        CompletableFuture<List<Meal>> lunchFuture =
+                            getMealsByDateAndTypeAsync(
+                                ldOfferedAt.truncatedTo(ChronoUnit.DAYS),
+                                MealType.LUNCH,
+                                restaurant.getIdx());
+                        CompletableFuture<List<Meal>> dinnerFuture =
+                            getMealsByDateAndTypeAsync(
+                                ldOfferedAt.truncatedTo(ChronoUnit.DAYS),
+                                MealType.DINNER,
+                                restaurant.getIdx());
 
-                                    return CompletableFuture.allOf(
-                                                    breakfastFuture, lunchFuture, dinnerFuture)
-                                            .thenApply(
-                                                    ignored -> {
-                                                        List<Meal> breakfastMeals =
-                                                                breakfastFuture.join();
-                                                        List<Meal> lunchMeals = lunchFuture.join();
-                                                        List<Meal> dinnerMeals =
-                                                                dinnerFuture.join();
+                        return CompletableFuture.allOf(
+                                breakfastFuture, lunchFuture, dinnerFuture)
+                            .thenApply(
+                                ignored -> {
+                                    List<Meal> breakfastMeals =
+                                        breakfastFuture.join();
+                                    List<Meal> lunchMeals = lunchFuture.join();
+                                    List<Meal> dinnerMeals =
+                                        dinnerFuture.join();
 
-                                                        // 등록되지 않은 식단 처리
-                                                        return chkEmptyDayMeal(
-                                                                ldOfferedAt.truncatedTo(
-                                                                        ChronoUnit.DAYS),
-                                                                restaurant.getName(),
-                                                                breakfastMeals,
-                                                                lunchMeals,
-                                                                dinnerMeals);
-                                                    });
-                                })
-                        .toList();
+                                    // 등록되지 않은 식단 처리
+                                    return chkEmptyDayMeal(
+                                        ldOfferedAt.truncatedTo(
+                                            ChronoUnit.DAYS),
+                                        restaurant.getName(),
+                                        breakfastMeals,
+                                        lunchMeals,
+                                        dinnerMeals);
+                                });
+                    })
+                .toList();
         // CompletableFuture를 모두 조합하고 결과를 가져옴
         List<DayMealListGetRes> res =
-                mealFutures.stream().map(CompletableFuture::join).flatMap(List::stream).toList();
+            mealFutures.stream().map(CompletableFuture::join).flatMap(List::stream).toList();
         return WeekMealListGetRes.of(res);
     }
+
+    @Override
+    public List<WeekMealListGetResTest> getWeekMealListTest(Long restaurantIdx, String offeredAt) {
+        Restaurant restaurant =
+            restaurantRepository
+                .findById(restaurantIdx)
+                .orElseThrow(
+                    () -> new ApplicationException(ExceptionList.RESTAURANT_NOT_FOUND));
+
+        // 현재 날짜와 시간을 가져옵니다.
+        LocalDateTime now = LocalDateTime.now().plusDays(1);
+
+        // 현재 요일을 가져옵니다.
+        DayOfWeek currentDayOfWeek = now.getDayOfWeek();
+
+        // 월요일과 일요일의 날짜를 계산합니다.
+        LocalDateTime monday;
+        LocalDateTime sunday;
+
+        if (currentDayOfWeek == DayOfWeek.MONDAY) {
+            // 현재 요일이 월요일인 경우, 현재 날짜를 월요일로 설정하고 일요일을 6일 후로 설정합니다.
+            monday = now;
+            sunday = now.plusDays(6);
+        } else {
+            // 그 외의 경우, 현재 요일로부터 월요일과 일요일을 계산합니다.
+            monday = now.minusDays(currentDayOfWeek.getValue() - DayOfWeek.MONDAY.getValue());
+            sunday = now.plusDays(DayOfWeek.SUNDAY.getValue() - currentDayOfWeek.getValue());
+        }
+
+        // LocalDateTime을 한국 시간 (Asia/Seoul)으로 변환한 다음 Instant로 변환합니다.
+        ZoneId seoulZoneId = ZoneId.of("Asia/Seoul");
+        Instant mondayInstant = monday.atZone(seoulZoneId).toInstant();
+        Instant sundayInstant = sunday.atZone(seoulZoneId).toInstant();
+
+        return mealRepositoryCustom.getWeekMealList(restaurant,
+            mondayInstant, sundayInstant);
+    }
+
     /**
      * ============================================================================================
      * 비동기 식사 조회 <br>

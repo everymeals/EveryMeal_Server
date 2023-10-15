@@ -6,6 +6,7 @@ import everymeal.server.meal.controller.dto.request.WeekMealRegisterReq;
 import everymeal.server.meal.controller.dto.response.DayMealListGetRes;
 import everymeal.server.meal.controller.dto.response.RestaurantListGetRes;
 import everymeal.server.meal.controller.dto.response.WeekMealListGetRes;
+import everymeal.server.meal.controller.dto.response.WeekMealListGetResTest;
 import java.util.List;
 
 public interface MealService {
@@ -19,4 +20,6 @@ public interface MealService {
     List<DayMealListGetRes> getDayMealList(Long restaurantIdx, String offeredAt);
 
     List<WeekMealListGetRes> getWeekMealList(Long restaurantIdx, String offeredAt);
+
+    List<WeekMealListGetResTest> getWeekMealListTest(Long restaurantIdx, String offeredAt);
 }
