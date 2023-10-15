@@ -7,6 +7,7 @@ import everymeal.server.meal.controller.dto.request.WeekMealRegisterReq;
 import everymeal.server.meal.controller.dto.response.DayMealListGetRes;
 import everymeal.server.meal.controller.dto.response.RestaurantListGetRes;
 import everymeal.server.meal.controller.dto.response.WeekMealListGetRes;
+import everymeal.server.meal.controller.dto.response.WeekMealListGetResTest;
 import everymeal.server.meal.service.MealService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -101,13 +102,14 @@ public class MealController {
      */
     @GetMapping("/week")
     @Operation(summary = "주간 식단 조회")
-    public ApplicationResponse<List<WeekMealListGetRes>> getWeekMeal(
+    public ApplicationResponse<List<WeekMealListGetResTest>> getWeekMeal(
             @RequestParam @Schema(description = "학생식당 PK", defaultValue = "1") Long restaurantIdx,
             @RequestParam
                     @Schema(
                             description = "조회하고자 하는 시작 날짜 ( yyyy-MM-dd )",
                             defaultValue = "2023-10-01")
                     String offeredAt) {
-        return ApplicationResponse.ok(mealService.getWeekMealList(restaurantIdx, offeredAt));
+//        return ApplicationResponse.ok(mealService.getWeekMealList(restaurantIdx, offeredAt));
+        return ApplicationResponse.ok(mealService.getWeekMealListTest(restaurantIdx, offeredAt));
     }
 }

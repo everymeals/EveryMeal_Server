@@ -1,17 +1,28 @@
 package everymeal.server.meal.repository;
 
 
+import static com.querydsl.core.group.GroupBy.groupBy;
+
+import com.querydsl.core.Tuple;
+import com.querydsl.core.group.GroupBy;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import everymeal.server.meal.controller.dto.request.MealRegisterReq;
+import everymeal.server.meal.controller.dto.response.DayMealListGetRes;
+import everymeal.server.meal.controller.dto.response.DayMealListGetResTest;
+import everymeal.server.meal.controller.dto.response.WeekMealListGetRes;
+import everymeal.server.meal.controller.dto.response.WeekMealListGetResTest;
 import everymeal.server.meal.entity.Meal;
 import everymeal.server.meal.entity.MealCategory;
 import everymeal.server.meal.entity.MealType;
 import everymeal.server.meal.entity.QMeal;
 import everymeal.server.meal.entity.QRestaurant;
+import everymeal.server.meal.entity.Restaurant;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -60,6 +71,33 @@ public class MealRepositoryImpl implements MealRepositoryCustom {
                         .where(isEqOfferedAt(offeredAt), isEqMealType(mealType))
                         .fetch();
         return queryResult;
+    }
+
+    @Override
+    public List<WeekMealListGetResTest> getWeekMealList(Restaurant restaurant, Instant mondayInstant,
+        Instant sundayInstant) {
+        QMeal qMeal = QMeal.meal;
+        Map<Instant, WeekMealListGetResTest> transform = jpaQueryFactory.selectFrom(qMeal)
+            .where(qMeal.restaurant.eq(restaurant)
+                .and(qMeal.offeredAt.between(mondayInstant, sundayInstant)))
+            .transform(
+                groupBy(qMeal.offeredAt)
+                    .as(Projections.constructor(WeekMealListGetResTest.class,
+                        qMeal.offeredAt,
+                        GroupBy.list(Projections.constructor(DayMealListGetResTest.class,
+                            qMeal.menu.as("menu"),
+                            qMeal.mealType.as("mealType"),
+                            qMeal.mealStatus.as("mealStatus"),
+                            qMeal.offeredAt.as("offeredAt"),
+                            qMeal.price.as("price"),
+                            qMeal.category.as("category"),
+                            qMeal.restaurant.name.as("restaurantName")
+                        ))
+                    ))
+            );
+        return transform.keySet().stream()
+            .map(transform::get)
+            .toList();
     }
 
     /** 단일 메뉴, 복합 메뉴를 판별 */
