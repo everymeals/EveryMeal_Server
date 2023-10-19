@@ -19,4 +19,7 @@ public interface UserService {
     UserEmailAuthRes emailAuth(UserEmailAuthReq request, AuthenticatedUser authenticatedUser);
 
     Boolean verifyEmailAuth(UserEmailAuthVerifyReq request, AuthenticatedUser authenticatedUser);
+
+    Boolean checkRegistration(String userDeviceId);
+
 }
