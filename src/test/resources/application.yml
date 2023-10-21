@@ -20,9 +20,14 @@ spring:
   h2:
     console:
       enabled: true
+  application:
+    name: EveryMeal-server-test
 
 logging:
   level:
     org:
       hibernate:
         SQL: DEBUG
+
+running:
+  name: dev

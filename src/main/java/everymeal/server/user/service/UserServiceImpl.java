@@ -15,6 +15,7 @@ import everymeal.server.user.entity.User;
 import everymeal.server.user.repository.UserRepository;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Optional;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -108,5 +109,11 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new ApplicationException(ExceptionList.USER_AUTH_FAIL);
         }
+    }
+
+    @Override
+    public Boolean checkRegistration(String userDeviceId) {
+        Optional<User> byDeviceId = userRepository.findByDeviceId(userDeviceId);
+        return byDeviceId.isPresent();
     }
 }

@@ -5,3 +5,5 @@ spring:
     password: 1q2w3e4r!
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+running:
+  name: local

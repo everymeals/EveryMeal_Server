@@ -90,6 +90,11 @@ dependencies {
 
 	//STMP
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	//AWS S3
+	implementation 'software.amazon.awssdk:s3:2.20.68'
+	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.561'
+
 }
 
 tasks.named('test') {
