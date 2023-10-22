@@ -232,9 +232,9 @@ public class MealServiceImpl implements MealService {
             // 그 외의 경우, 현재 요일로부터 월요일과 일요일을 계산합니다.
             monday =
                     ldOfferedAt.minusDays(
-                            currentDayOfWeek.getValue() - DayOfWeek.MONDAY.getValue());
+                            currentDayOfWeek.getValue() - (long)DayOfWeek.MONDAY.getValue());
             sunday =
-                    ldOfferedAt.plusDays(DayOfWeek.SUNDAY.getValue() - currentDayOfWeek.getValue());
+                    ldOfferedAt.plusDays(DayOfWeek.SUNDAY.getValue() - (long)currentDayOfWeek.getValue());
         }
 
         // LocalDateTime을 한국 시간 (Asia/Seoul)으로 변환한 다음 Instant로 변환합니다.
