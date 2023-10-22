@@ -2,15 +2,18 @@ package everymeal.server.meal.controller.dto.response;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import everymeal.server.meal.entity.Meal;
+import everymeal.server.meal.entity.MealCategory;
 import everymeal.server.meal.entity.MealStatus;
 import everymeal.server.meal.entity.MealType;
-import java.time.LocalDate;
-import java.util.List;
+import java.time.Instant;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @Builder
@@ -21,21 +24,9 @@ public class DayMealListGetRes {
     private MealStatus mealStatus;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private LocalDate offeredAt;
+    private Instant offeredAt;
 
     private Double price;
-
-    public static List<DayMealListGetRes> of(List<Meal> mealList) {
-        return mealList.stream()
-                .map(
-                        meal ->
-                                DayMealListGetRes.builder()
-                                        .menu(meal.getMenu())
-                                        .mealType(meal.getMealType())
-                                        .mealStatus(meal.getMealStatus())
-                                        .offeredAt(meal.getOfferedAt())
-                                        .price(meal.getPrice())
-                                        .build())
-                .toList();
-    }
+    private MealCategory category;
+    private String restaurantName;
 }

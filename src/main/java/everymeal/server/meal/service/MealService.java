@@ -18,5 +18,5 @@ public interface MealService {
 
     List<DayMealListGetRes> getDayMealList(Long restaurantIdx, String offeredAt);
 
-    List<WeekMealListGetRes> getWeekMealList(Long restaurantIdx, String offeredAt);
+    List<WeekMealListGetRes> getWeekMealListTest(Long restaurantIdx, String offeredAt);
 }

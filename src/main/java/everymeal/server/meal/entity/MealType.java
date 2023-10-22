@@ -7,15 +7,14 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum MealType {
-    BREAKFAST("조식"),
-    LUNCH("중식"),
-    DINNER("석식"),
-    SPECIAL("특식"),
+    BREAKFAST("아침"),
+    LUNCH("점심"),
+    DINNER("저녁"),
     ;
 
-    private String name;
+    private String value;
 
-    MealType(String name) {
-        this.name = name;
+    MealType(String value) {
+        this.value = value;
     }
 }

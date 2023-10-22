@@ -97,7 +97,9 @@ public class MealController {
     /**
      * 주간 단위 식단 조회 API
      *
-     * @param
+     * @param restaurantIdx 식당 아이디
+     * @param offeredAt 조회날짜
+     * @author dldmsql
      */
     @GetMapping("/week")
     @Operation(summary = "주간 식단 조회")
@@ -108,6 +110,6 @@ public class MealController {
                             description = "조회하고자 하는 시작 날짜 ( yyyy-MM-dd )",
                             defaultValue = "2023-10-01")
                     String offeredAt) {
-        return ApplicationResponse.ok(mealService.getWeekMealList(restaurantIdx, offeredAt));
+        return ApplicationResponse.ok(mealService.getWeekMealListTest(restaurantIdx, offeredAt));
     }
 }
