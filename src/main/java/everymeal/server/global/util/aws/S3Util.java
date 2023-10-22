@@ -1,5 +1,6 @@
 package everymeal.server.global.util.aws;
 
+
 import com.amazonaws.HttpMethod;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -26,13 +27,15 @@ public class S3Util {
     @Value("${running.name}")
     private String runningName;
 
-    public S3Util(@Value("${cloud.aws.credentials.access-key}") String accessKey,
-                  @Value("${cloud.aws.credentials.secret-key}") String secretKey) {
+    public S3Util(
+            @Value("${cloud.aws.credentials.access-key}") String accessKey,
+            @Value("${cloud.aws.credentials.secret-key}") String secretKey) {
         BasicAWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
-        amazonS3 = AmazonS3ClientBuilder.standard()
-                .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(Regions.AP_NORTHEAST_2)
-                .build();
+        amazonS3 =
+                AmazonS3ClientBuilder.standard()
+                        .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                        .withRegion(Regions.AP_NORTHEAST_2)
+                        .build();
     }
 
     public URL getPresignedUrl(String fileName) {

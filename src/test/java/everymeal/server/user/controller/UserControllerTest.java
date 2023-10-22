@@ -128,7 +128,7 @@ class UserControllerTest extends ControllerTestSupport {
         // when then
         mockMvc.perform(
                         get("/api/v1/users/check-registration")
-                                .queryParam("userDeviceId",deviceId)
+                                .queryParam("userDeviceId", deviceId)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())

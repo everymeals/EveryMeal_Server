@@ -21,5 +21,4 @@ public interface UserService {
     Boolean verifyEmailAuth(UserEmailAuthVerifyReq request, AuthenticatedUser authenticatedUser);
 
     Boolean checkRegistration(String userDeviceId);
-
 }

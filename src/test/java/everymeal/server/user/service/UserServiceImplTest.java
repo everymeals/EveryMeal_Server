@@ -9,7 +9,6 @@ import everymeal.server.global.exception.ExceptionList;
 import everymeal.server.global.util.JwtUtil;
 import everymeal.server.global.util.MailUtil;
 import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
-import everymeal.server.global.util.aws.S3Util;
 import everymeal.server.user.controller.dto.request.UserEmailAuthReq;
 import everymeal.server.user.controller.dto.request.UserEmailAuthVerifyReq;
 import everymeal.server.user.controller.dto.request.UserSingReq;

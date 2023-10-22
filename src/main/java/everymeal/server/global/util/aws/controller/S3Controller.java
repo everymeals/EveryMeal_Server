@@ -1,5 +1,6 @@
 package everymeal.server.global.util.aws.controller;
 
+
 import everymeal.server.global.dto.response.ApplicationResponse;
 import everymeal.server.global.util.aws.S3Util;
 import everymeal.server.global.util.aws.controller.dto.S3GetResignedUrlRes;
@@ -21,8 +22,10 @@ public class S3Controller {
     private final S3Util s3Util;
 
     @GetMapping("/presigned-url")
-    @Operation(summary = "S3에 이미지를 저장하기 위한 PresignedUrl을 반환합니다.",
-        description = """
+    @Operation(
+            summary = "S3에 이미지를 저장하기 위한 PresignedUrl을 반환합니다.",
+            description =
+                    """
         1. 해당 API를 호출하면, Response에 url과 imageKey를 반환합니다.
         2. Url은 2분간 유효합니다.
         3. ImageKey는 S3에 저장될 파일의 이름입니다.
@@ -32,10 +35,7 @@ public class S3Controller {
     public ApplicationResponse<S3GetResignedUrlRes> getPresignedUrl() {
         String fileName = UUID.randomUUID().toString();
         URL test = s3Util.getPresignedUrl(fileName);
-        return ApplicationResponse.ok(S3GetResignedUrlRes.builder()
-                .imageKey(fileName)
-                .url(test.toString())
-                .build());
+        return ApplicationResponse.ok(
+                S3GetResignedUrlRes.builder().imageKey(fileName).url(test.toString()).build());
     }
-
 }

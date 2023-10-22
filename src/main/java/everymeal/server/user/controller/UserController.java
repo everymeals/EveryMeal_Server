@@ -101,16 +101,18 @@ public class UserController {
     @GetMapping("/check-registration")
     @Operation(
             summary = "회원가입 여부 확인",
-            description = "회원가입 여부를 확인합니다. <br> 회원가입되어있다면 true, 아니라면 false를 반환합니다."
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "회원가입 여부 확인 성공", content = @Content(schema = @Schema(implementation = Boolean.class))),
-    })
+            description = "회원가입 여부를 확인합니다. <br> 회원가입되어있다면 true, 아니라면 false를 반환합니다.")
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "회원가입 여부 확인 성공",
+                        content = @Content(schema = @Schema(implementation = Boolean.class))),
+            })
     public ApplicationResponse<Boolean> checkRegistration(
-        @Schema(title = "유저 Device ID", description = "회원가입 여부를 확인할 기기값", example = "123456789")
-        @RequestParam String userDeviceId
-    ) {
+            @Schema(title = "유저 Device ID", description = "회원가입 여부를 확인할 기기값", example = "123456789")
+                    @RequestParam
+                    String userDeviceId) {
         return ApplicationResponse.ok(userService.checkRegistration(userDeviceId));
     }
-
 }
