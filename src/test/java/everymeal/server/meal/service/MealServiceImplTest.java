@@ -148,7 +148,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
         // when
         String offeredAt = today.toString().split("T")[0];
         List<WeekMealListGetRes> response =
-                mealService.getWeekMealList(restaurant.getIdx(), offeredAt);
+                mealService.getWeekMealListTest(restaurant.getIdx(), offeredAt);
 
         // then
         assertEquals(response.size(), req.registerReqList().size());

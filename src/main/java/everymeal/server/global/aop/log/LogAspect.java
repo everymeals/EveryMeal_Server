@@ -19,8 +19,7 @@ public class LogAspect {
         this.logTrace = logTrace;
     }
 
-    @Around(
-            "everymeal.server.global.aop.log.Pointcuts.allQuery() || everymeal.server.global.aop.log.Pointcuts.allService()")
+    @Around("everymeal.server.global.aop.log.Pointcuts.allService()")
     public Object executingTimeLog(ProceedingJoinPoint joinPoint) throws Throwable {
         TraceInfo traceInfo = null;
         try {

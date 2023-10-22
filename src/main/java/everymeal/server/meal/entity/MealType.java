@@ -10,7 +10,6 @@ public enum MealType {
     BREAKFAST("아침"),
     LUNCH("점심"),
     DINNER("저녁"),
-    SPECIAL("특식"),
     ;
 
     private String value;
