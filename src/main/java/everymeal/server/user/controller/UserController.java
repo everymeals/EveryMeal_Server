@@ -13,6 +13,10 @@ import everymeal.server.user.controller.dto.response.UserLoginRes;
 import everymeal.server.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/api/v1/users")
@@ -60,7 +65,7 @@ public class UserController {
     @Auth(require = true)
     @GetMapping("/auth")
     @Operation(
-            summary = "유저 인증 여부",
+            summary = "유저 이메일 인증 여부",
             description = "유저가 인증되었는지 여부를 반환합니다. <br> 인증되었다면 true, 아니라면 false를 반환합니다.")
     @SecurityRequirement(name = "bearerAuth")
     public ApplicationResponse<Boolean> isAuth(
@@ -91,5 +96,23 @@ public class UserController {
             @RequestBody UserEmailAuthVerifyReq request,
             @AuthUser @Parameter(hidden = true) AuthenticatedUser authenticatedUser) {
         return ApplicationResponse.ok(userService.verifyEmailAuth(request, authenticatedUser));
+    }
+
+    @GetMapping("/check-registration")
+    @Operation(
+            summary = "회원가입 여부 확인",
+            description = "회원가입 여부를 확인합니다. <br> 회원가입되어있다면 true, 아니라면 false를 반환합니다.")
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "회원가입 여부 확인 성공",
+                        content = @Content(schema = @Schema(implementation = Boolean.class))),
+            })
+    public ApplicationResponse<Boolean> checkRegistration(
+            @Schema(title = "유저 Device ID", description = "회원가입 여부를 확인할 기기값", example = "123456789")
+                    @RequestParam
+                    String userDeviceId) {
+        return ApplicationResponse.ok(userService.checkRegistration(userDeviceId));
     }
 }

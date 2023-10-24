@@ -185,4 +185,28 @@ class UserServiceImplTest extends IntegrationTestSupport {
                         () -> userService.verifyEmailAuth(request, authenticatedUser));
         assertEquals(applicationException.getErrorCode(), ExceptionList.USER_AUTH_FAIL.getCODE());
     }
+
+    @DisplayName("유저 기기값을 기준으로 유저 등록 여부를 조회한다.")
+    @Test
+    void checkRegistration() {
+        // given
+        User user = User.builder().deviceId("dsafkml-fgsmkgrlms-421m4f").email(null).build();
+        userRepository.save(user);
+
+        // when
+        Boolean response = userService.checkRegistration(user.getDeviceId());
+
+        // then
+        assertTrue(response);
+    }
+
+    @DisplayName("유저 기기값을 기준으로 등록이 되어 있지 않다면, false를 반환한다.")
+    @Test
+    void checkRegistrationFalse() {
+        // when
+        Boolean response = userService.checkRegistration("dsafkml-fgsmkgrlms-421m4f");
+
+        // then
+        assertFalse(response);
+    }
 }

@@ -3,7 +3,7 @@ package everymeal.server.meal.controller.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.querydsl.core.annotations.QueryProjection;
-import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,13 +16,13 @@ import lombok.Setter;
 @Builder
 public class WeekMealListGetRes {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private Instant offeredAt;
+    private LocalDate offeredAt;
 
     private List<DayMealListGetRes> dayMealListGetResListTest;
 
     @QueryProjection
     public WeekMealListGetRes(
-            Instant offeredAt, List<DayMealListGetRes> dayMealListGetResListTest) {
+            LocalDate offeredAt, List<DayMealListGetRes> dayMealListGetResListTest) {
         this.offeredAt = offeredAt;
         this.dayMealListGetResListTest = dayMealListGetResListTest;
     }

@@ -15,12 +15,9 @@ import everymeal.server.meal.entity.MealStatus;
 import everymeal.server.meal.entity.MealType;
 import everymeal.server.meal.entity.QMeal;
 import everymeal.server.meal.entity.Restaurant;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -44,7 +41,7 @@ public class MealRepositoryImpl implements MealRepositoryCustom {
      */
     @Override
     public List<Meal> findAllByOfferedAtOnDateAndMealType(
-            Instant offeredAt, MealType mealType, Restaurant restaurant) {
+            LocalDate offeredAt, MealType mealType, Restaurant restaurant) {
         QMeal qMeal = meal;
         var queryResult =
                 jpaQueryFactory
@@ -68,7 +65,7 @@ public class MealRepositoryImpl implements MealRepositoryCustom {
      */
     @Override
     public List<DayMealListGetRes> findAllByOfferedAtOnDate(
-            Instant offeredAt, Restaurant restaurant) {
+            LocalDate offeredAt, Restaurant restaurant) {
         QMeal qMeal = meal;
         var queryResult =
                 jpaQueryFactory
@@ -113,78 +110,65 @@ public class MealRepositoryImpl implements MealRepositoryCustom {
      * 주간 식사 데이터 조회 <br>
      *
      * @param restaurant 식당
-     * @param mondayInstant 월요일
-     * @param sundayInstant 일요일
+     * @param monday 월요일
+     * @param sunday 일요일
      * @return List<WeekMealListGetResTest>
      *     =========================================================================================
      */
     @Override
     public List<WeekMealListGetRes> getWeekMealList(
-            Restaurant restaurant, Instant mondayInstant, Instant sundayInstant) {
+            Restaurant restaurant, LocalDate monday, LocalDate sunday) {
         QMeal qMeal = meal;
-        Map<Instant, WeekMealListGetRes> transform =
+        var transform =
                 jpaQueryFactory
                         .selectFrom(qMeal)
                         .where(
                                 qMeal.restaurant
                                         .eq(restaurant)
-                                        .and(qMeal.offeredAt.between(mondayInstant, sundayInstant)))
+                                        .and(qMeal.offeredAt.between(monday, sunday)))
                         .transform(
-                                groupBy(qMeal.offeredAt)
+                                groupBy(qMeal.offeredAt, qMeal.mealType)
                                         .as(
-                                                Projections.constructor(
-                                                        WeekMealListGetRes.class,
-                                                        qMeal.offeredAt,
-                                                        GroupBy.list(
-                                                                Projections.constructor(
-                                                                        DayMealListGetRes.class,
-                                                                        qMeal.menu.as("menu"),
-                                                                        qMeal.mealType.as(
-                                                                                "mealType"),
-                                                                        qMeal.mealStatus.as(
-                                                                                "mealStatus"),
-                                                                        qMeal.offeredAt.as(
-                                                                                "offeredAt"),
-                                                                        qMeal.price.as("price"),
-                                                                        qMeal.category.as(
-                                                                                "category"),
-                                                                        qMeal.restaurant.name.as(
-                                                                                "restaurantName"))))));
-        Instant currentInstant = mondayInstant;
-        while (!currentInstant.isAfter(sundayInstant)) {
-            transform.putIfAbsent(
-                    currentInstant,
-                    new WeekMealListGetRes(
-                            currentInstant,
-                            Arrays.asList(
-                                    new DayMealListGetRes(
-                                            UN_REGISTERED_MEAL,
-                                            MealType.BREAKFAST,
-                                            MealStatus.CLOSED,
-                                            currentInstant,
-                                            0.0,
-                                            MealCategory.DEFAULT,
-                                            restaurant.getName()),
-                                    new DayMealListGetRes(
-                                            UN_REGISTERED_MEAL,
-                                            MealType.LUNCH,
-                                            MealStatus.CLOSED,
-                                            currentInstant,
-                                            0.0,
-                                            MealCategory.DEFAULT,
-                                            restaurant.getName()),
-                                    new DayMealListGetRes(
-                                            UN_REGISTERED_MEAL,
-                                            MealType.DINNER,
-                                            MealStatus.CLOSED,
-                                            currentInstant,
-                                            0.0,
-                                            MealCategory.DEFAULT,
-                                            restaurant.getName()))));
-            currentInstant = currentInstant.plus(1, ChronoUnit.DAYS);
-        }
+                                                GroupBy.list(
+                                                        Projections.constructor(
+                                                                DayMealListGetRes.class,
+                                                                qMeal.menu.as("menu"),
+                                                                qMeal.mealType.as("mealType"),
+                                                                qMeal.mealStatus.as("mealStatus"),
+                                                                qMeal.offeredAt.as("offeredAt"),
+                                                                qMeal.price.as("price"),
+                                                                qMeal.category.as("category"),
+                                                                qMeal.restaurant.name.as(
+                                                                        "restaurantName")))));
+        LocalDate currentInstant = monday;
+        List<WeekMealListGetRes> result = new ArrayList<>();
+        while (!currentInstant.isAfter(sunday)) {
+            List<DayMealListGetRes> dayMealListGetResList = new ArrayList<>();
 
-        return transform.keySet().stream().map(transform::get).toList();
+            for (MealType mealType : MealType.values()) {
+                List<DayMealListGetRes> dayMeals = transform.get(List.of(currentInstant, mealType));
+                if (dayMeals == null || dayMeals.isEmpty()) {
+                    dayMealListGetResList.add(
+                            new DayMealListGetRes(
+                                    UN_REGISTERED_MEAL,
+                                    mealType,
+                                    MealStatus.CLOSED,
+                                    currentInstant,
+                                    0.0,
+                                    MealCategory.DEFAULT,
+                                    restaurant.getName()));
+                } else {
+                    dayMealListGetResList.addAll(dayMeals);
+                }
+            }
+            currentInstant = currentInstant.plusDays(1);
+            result.add(
+                    WeekMealListGetRes.builder()
+                            .offeredAt(currentInstant)
+                            .dayMealListGetResListTest(dayMealListGetResList)
+                            .build());
+        }
+        return result;
     }
 
     /** 단일 메뉴, 복합 메뉴를 판별 */
@@ -193,10 +177,8 @@ public class MealRepositoryImpl implements MealRepositoryCustom {
     }
 
     /** offeredAt 과 동일한 경우 */
-    private BooleanExpression isEqOfferedAt(Instant offeredAt) {
-        Instant startOfDay = offeredAt.truncatedTo(ChronoUnit.DAYS); // 예: 2023-10-01
-        Instant endOfDay = startOfDay.plus(1, ChronoUnit.DAYS).minus(1, ChronoUnit.MILLIS);
-        return QMeal.meal.offeredAt.between(startOfDay, endOfDay);
+    private BooleanExpression isEqOfferedAt(LocalDate offeredAt) {
+        return QMeal.meal.offeredAt.eq(offeredAt);
     }
     /** mealType 과 동일한 경우 */
     private BooleanExpression isEqMealType(MealType mealType) {

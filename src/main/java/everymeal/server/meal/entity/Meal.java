@@ -10,9 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-import java.time.Instant;
+import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,8 +33,7 @@ public class Meal {
     @Enumerated(EnumType.STRING)
     private MealStatus mealStatus;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Instant offeredAt;
+    private LocalDate offeredAt;
 
     private Double price;
 
@@ -50,7 +47,7 @@ public class Meal {
             String menu,
             MealType mealType,
             MealStatus mealStatus,
-            Instant offeredAt,
+            LocalDate offeredAt,
             Double price,
             MealCategory category,
             Restaurant restaurant) {

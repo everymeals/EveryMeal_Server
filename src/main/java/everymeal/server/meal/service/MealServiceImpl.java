@@ -20,10 +20,7 @@ import everymeal.server.meal.repository.RestaurantRepository;
 import everymeal.server.university.entity.University;
 import everymeal.server.university.repository.UniversityRepository;
 import java.time.DayOfWeek;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -116,7 +113,7 @@ public class MealServiceImpl implements MealService {
                     .isEmpty()) {
                 throw new ApplicationException(ExceptionList.INVALID_MEAL_OFFEREDAT_REQUEST);
             } else {
-                Instant iOfferedAt = Instant.from(req.offeredAt());
+                LocalDate iOfferedAt = LocalDate.from(req.offeredAt());
                 MealStatus mealStatus =
                         req.mealStatus() == null
                                 ? MealStatus.OPEN
@@ -178,8 +175,8 @@ public class MealServiceImpl implements MealService {
      */
     @Override
     public List<DayMealListGetRes> getDayMealList(Long restaurantIdx, String offeredAt) {
-        // offeredAt을 LocalDateTime로 바꿉니다.
-        LocalDateTime ldOfferedAt = LocalDateTime.parse(offeredAt + TIME_PARSING_INFO);
+        // offeredAt을 LocalDate로 바꿉니다.
+        LocalDate ldOfferedAt = LocalDate.parse(offeredAt);
 
         // 학생 식당 등록 여부 판단
         Restaurant restaurant =
@@ -188,11 +185,7 @@ public class MealServiceImpl implements MealService {
                         .orElseThrow(
                                 () -> new ApplicationException(ExceptionList.RESTAURANT_NOT_FOUND));
 
-        // LocalDateTime을 한국 시간 (Asia/Seoul)으로 변환한 다음 Instant로 변환합니다.
-        ZoneId seoulZoneId = ZoneId.of("Asia/Seoul");
-        Instant iOfferedAt = ldOfferedAt.atZone(seoulZoneId).toInstant().plus(1, ChronoUnit.DAYS);
-
-        return mealRepositoryCustom.findAllByOfferedAtOnDate(iOfferedAt, restaurant);
+        return mealRepositoryCustom.findAllByOfferedAtOnDate(ldOfferedAt, restaurant);
     }
     /**
      * ============================================================================================
@@ -215,14 +208,14 @@ public class MealServiceImpl implements MealService {
                                 () -> new ApplicationException(ExceptionList.RESTAURANT_NOT_FOUND));
 
         // 현재 날짜와 시간을 가져옵니다.
-        LocalDateTime ldOfferedAt = LocalDateTime.parse(offeredAt + TIME_PARSING_INFO);
+        LocalDate ldOfferedAt = LocalDate.parse(offeredAt);
 
         // 현재 요일을 가져옵니다.
         DayOfWeek currentDayOfWeek = ldOfferedAt.getDayOfWeek();
 
         // 월요일과 일요일의 날짜를 계산합니다.
-        LocalDateTime monday;
-        LocalDateTime sunday;
+        LocalDate monday;
+        LocalDate sunday;
 
         if (currentDayOfWeek == DayOfWeek.MONDAY) {
             // 현재 요일이 월요일인 경우, 현재 날짜를 월요일로 설정하고 일요일을 6일 후로 설정합니다.
@@ -238,11 +231,6 @@ public class MealServiceImpl implements MealService {
                             DayOfWeek.SUNDAY.getValue() - (long) currentDayOfWeek.getValue());
         }
 
-        // LocalDateTime을 한국 시간 (Asia/Seoul)으로 변환한 다음 Instant로 변환합니다.
-        ZoneId seoulZoneId = ZoneId.of("Asia/Seoul");
-        Instant mondayInstant = monday.atZone(seoulZoneId).toInstant();
-        Instant sundayInstant = sunday.atZone(seoulZoneId).toInstant();
-
-        return mealRepositoryCustom.getWeekMealList(restaurant, mondayInstant, sundayInstant);
+        return mealRepositoryCustom.getWeekMealList(restaurant, monday, sunday);
     }
 }
