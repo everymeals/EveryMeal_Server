@@ -3,7 +3,7 @@ package everymeal.server.meal.controller.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import java.time.Instant;
+import java.time.LocalDate;
 
 public record MealRegisterReq(
         @Schema(
@@ -19,7 +19,7 @@ public record MealRegisterReq(
         @Schema(description = "식사 운영 상태 ( OPEN | CLOSED | SHORT_OPEN )", defaultValue = "OPEN")
                 String mealStatus,
         @Schema(description = "식사 제공 날짜 ( yyyy-MM-dd ) ", defaultValue = "2023-10-01") @NotBlank
-                Instant offeredAt,
+                LocalDate offeredAt,
         @Schema(description = "가격을 Double 형태로 관리합니다.", defaultValue = "0.0") Double price,
         @Schema(
                         description =

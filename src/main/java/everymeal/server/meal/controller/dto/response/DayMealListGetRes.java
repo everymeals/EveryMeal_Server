@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import everymeal.server.meal.entity.MealCategory;
 import everymeal.server.meal.entity.MealStatus;
 import everymeal.server.meal.entity.MealType;
-import java.time.Instant;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,7 +24,7 @@ public class DayMealListGetRes {
     private MealStatus mealStatus;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private Instant offeredAt;
+    private LocalDate offeredAt;
 
     private Double price;
     private MealCategory category;

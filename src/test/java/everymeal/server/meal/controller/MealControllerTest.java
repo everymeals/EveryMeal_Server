@@ -12,7 +12,7 @@ import everymeal.server.meal.controller.dto.request.WeekMealRegisterReq;
 import everymeal.server.meal.entity.MealCategory;
 import everymeal.server.meal.entity.MealStatus;
 import everymeal.server.meal.entity.MealType;
-import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -33,7 +33,7 @@ class MealControllerTest extends ControllerTestSupport {
                             "갈비탕, 깍두기, 흰쌀밥",
                             MealType.BREAKFAST.name(),
                             MealStatus.OPEN.name(),
-                            Instant.now(),
+                            LocalDate.now(),
                             10000.0,
                             MealCategory.DEFAULT.name());
             list.add(mealReq);

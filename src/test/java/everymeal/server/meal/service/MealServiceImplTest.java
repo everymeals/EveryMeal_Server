@@ -23,9 +23,7 @@ import everymeal.server.meal.repository.MealRepositoryCustom;
 import everymeal.server.meal.repository.RestaurantRepository;
 import everymeal.server.university.entity.University;
 import everymeal.server.university.repository.UniversityRepository;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -90,14 +88,14 @@ class MealServiceImplTest extends IntegrationTestSupport {
                                 restaurantRegisterReq.restaurantName()));
 
         List<MealRegisterReq> list = new ArrayList<>();
-        Instant today = Instant.now();
+        LocalDate today = LocalDate.now();
         for (int i = 0; i < 7; i++) {
             MealRegisterReq mealReq =
                     new MealRegisterReq(
                             "갈비탕, 깍두기, 흰쌀밥",
                             MealType.BREAKFAST.name(),
                             MealStatus.OPEN.name(),
-                            today.plus(i, ChronoUnit.DAYS),
+                            today.plusDays(i),
                             10000.0,
                             MealCategory.DEFAULT.name());
             list.add(mealReq);
@@ -129,10 +127,10 @@ class MealServiceImplTest extends IntegrationTestSupport {
                                 restaurantRegisterReq.restaurantName()));
 
         List<MealRegisterReq> list = new ArrayList<>();
-        Instant today = Instant.now();
+        LocalDate today = LocalDate.now();
         for (int i = 0; i < 7; i++) {
-            Instant offeredAt = today.plus(i, ChronoUnit.DAYS);
-            MealRegisterReq mealReq =
+            LocalDate offeredAt = today.plusDays(i);
+            MealRegisterReq breakfast =
                     new MealRegisterReq(
                             "갈비탕, 깍두기, 흰쌀밥",
                             MealType.BREAKFAST.name(),
@@ -140,7 +138,25 @@ class MealServiceImplTest extends IntegrationTestSupport {
                             offeredAt,
                             10000.0,
                             MealCategory.DEFAULT.name());
-            list.add(mealReq);
+            MealRegisterReq lunch =
+                    new MealRegisterReq(
+                            "갈비탕, 깍두기, 흰쌀밥",
+                            MealType.BREAKFAST.name(),
+                            MealStatus.OPEN.name(),
+                            offeredAt,
+                            10000.0,
+                            MealCategory.DEFAULT.name());
+            MealRegisterReq dinner =
+                    new MealRegisterReq(
+                            "갈비탕, 깍두기, 흰쌀밥",
+                            MealType.BREAKFAST.name(),
+                            MealStatus.OPEN.name(),
+                            offeredAt,
+                            10000.0,
+                            MealCategory.DEFAULT.name());
+            list.add(breakfast);
+            list.add(lunch);
+            list.add(dinner);
         }
         WeekMealRegisterReq req = new WeekMealRegisterReq(list, restaurant.getIdx());
         mealService.createWeekMeal(req);
@@ -151,7 +167,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
                 mealService.getWeekMealListTest(restaurant.getIdx(), offeredAt);
 
         // then
-        assertEquals(response.size(), req.registerReqList().size());
+        assertEquals(response.size(), 7);
     }
 
     @DisplayName("하루 식단 조회")
@@ -171,7 +187,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
                                 restaurantRegisterReq.address(),
                                 restaurantRegisterReq.restaurantName()));
         List<MealRegisterReq> list = new ArrayList<>();
-        Instant today = Instant.now();
+        LocalDate today = LocalDate.now();
         MealRegisterReq mealReq =
                 new MealRegisterReq(
                         "갈비탕, 깍두기, 흰쌀밥",
@@ -242,14 +258,14 @@ class MealServiceImplTest extends IntegrationTestSupport {
     void createWeekMealWhenRestaurantIsNotFound() throws Exception {
         // given
         List<MealRegisterReq> list = new ArrayList<>();
-        Instant today = Instant.now();
+        LocalDate today = LocalDate.now();
         for (int i = 0; i < 7; i++) {
             MealRegisterReq mealReq =
                     new MealRegisterReq(
                             "갈비탕, 깍두기, 흰쌀밥",
                             MealType.BREAKFAST.name(),
                             MealStatus.OPEN.name(),
-                            today.plus(i, ChronoUnit.DAYS),
+                            today.plusDays(i),
                             10000.0,
                             MealCategory.DEFAULT.name());
             list.add(mealReq);
@@ -287,21 +303,21 @@ class MealServiceImplTest extends IntegrationTestSupport {
                                 .menu("떡볶이, 어묵탕, 튀김")
                                 .mealType(MealType.LUNCH)
                                 .mealStatus(MealStatus.OPEN)
-                                .offeredAt(Instant.now())
+                                .offeredAt(LocalDate.now())
                                 .price(5000.0)
                                 .category(MealCategory.DEFAULT)
                                 .restaurant(restaurant)
                                 .build());
 
         List<MealRegisterReq> list = new ArrayList<>();
-        Instant today = Instant.now();
+        LocalDate today = LocalDate.now();
         for (int i = 0; i < 7; i++) {
             MealRegisterReq mealReq =
                     new MealRegisterReq(
                             "갈비탕, 깍두기, 흰쌀밥",
                             MealType.LUNCH.name(),
                             MealStatus.OPEN.name(),
-                            today.plus(i, ChronoUnit.DAYS),
+                            today.plusDays(i),
                             10000.0,
                             MealCategory.DEFAULT.name());
             list.add(mealReq);
