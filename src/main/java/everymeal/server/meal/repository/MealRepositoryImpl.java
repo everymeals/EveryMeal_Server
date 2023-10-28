@@ -162,11 +162,7 @@ public class MealRepositoryImpl implements MealRepositoryCustom {
                 }
             }
             currentInstant = currentInstant.plusDays(1);
-            result.add(
-                    WeekMealListGetRes.builder()
-                            .offeredAt(currentInstant)
-                            .dayMealListGetResListTest(dayMealListGetResList)
-                            .build());
+            result.add(new WeekMealListGetRes(currentInstant, dayMealListGetResList));
         }
         return result;
     }
