@@ -1,4 +1,4 @@
-package everymeal.server.store.dto.request;
+package everymeal.server.global.util.kakaobatch;
 
 
 import everymeal.server.store.entity.Store;
@@ -15,7 +15,7 @@ public class KakaoStoreVO {
     private String category_group_code;
     private String category_group_name;
     private String category_name;
-    private String distance;
+    private int distance;
     private String id;
     private String phone;
     private String place_name;

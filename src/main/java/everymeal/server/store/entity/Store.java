@@ -29,7 +29,7 @@ public class Store {
     private String category;
     private String kakaoId;
     private String phone;
-    private String distance;
+    private Integer distance;
     private String url;
     private String roadAddress;
     private String x;
@@ -50,7 +50,7 @@ public class Store {
             String category,
             String kakaoId,
             String phone,
-            String distance,
+            Integer distance,
             String url,
             String roadAddress,
             String x,

@@ -33,7 +33,7 @@ public class University extends BaseEntity {
     private Boolean isDeleted;
 
     @OneToMany(mappedBy = "university", fetch = FetchType.LAZY)
-    private List<Store> kakaoStores = new ArrayList<>();
+    private List<Store> stores = new ArrayList<>();
 
     @Builder
     public University(Long idx, String name, String campusName, Boolean isDeleted) {

@@ -1,8 +1,7 @@
-package everymeal.server.global.util;
+package everymeal.server.global.util.kakaobatch;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import everymeal.server.store.dto.request.KakaoStoreVO;
 import everymeal.server.store.entity.Store;
 import everymeal.server.store.repository.StoreRepository;
 import everymeal.server.university.entity.University;
