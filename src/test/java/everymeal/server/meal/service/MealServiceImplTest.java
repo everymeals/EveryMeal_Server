@@ -207,7 +207,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
 
         // then
         assertEquals(response.size(), 3);
-        assertEquals(response.get(1).getMenu(), "등록된 식단이 없습니다.");
+        assertEquals(response.get(1).menu(), "등록된 식단이 없습니다.");
     }
 
     @DisplayName("학교별 학생 식당 조회")
@@ -235,7 +235,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
                 mealService.getRestaurantList(universityName, campusName);
 
         // then
-        assertEquals(response.get(0).getRestaurantIdx(), restaurant.getIdx());
+        assertEquals(response.get(0).restaurantIdx(), restaurant.getIdx());
     }
 
     @Test
