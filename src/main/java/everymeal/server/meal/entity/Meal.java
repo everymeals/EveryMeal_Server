@@ -1,6 +1,7 @@
 package everymeal.server.meal.entity;
 
 
+import everymeal.server.review.entity.Review;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -9,8 +10,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.util.Set;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,6 +44,9 @@ public class Meal {
     private MealCategory category;
 
     @ManyToOne private Restaurant restaurant;
+
+    @OneToMany(mappedBy = "meal")
+    private Set<Review> reviews;
 
     @Builder
     public Meal(
