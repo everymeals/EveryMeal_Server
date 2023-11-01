@@ -78,7 +78,7 @@ class StoreServiceImplTest extends IntegrationTestSupport {
                 .y("y")
                 .grade(1.0)
                 .reviewCount(1)
-                .recommendedCnt(1)
+                .recommendedCount(1)
                 .university(university)
                 .build();
     }

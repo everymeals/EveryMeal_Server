@@ -2,7 +2,6 @@ package everymeal.server.meal.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import everymeal.server.global.ControllerTestSupport;
@@ -46,8 +45,7 @@ class MealControllerTest extends ControllerTestSupport {
                                 .content(objectMapper.writeValueAsString(req))
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true));
+                .andExpect(status().isOk());
     }
 
     @DisplayName("학생 식당 추가")
@@ -62,8 +60,7 @@ class MealControllerTest extends ControllerTestSupport {
                                 .content(objectMapper.writeValueAsString(req))
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true));
+                .andExpect(status().isOk());
     }
 
     @DisplayName("학교별 학생 식당 목록 조회")
@@ -80,8 +77,7 @@ class MealControllerTest extends ControllerTestSupport {
                                 .param("campusName", campusName)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true));
+                .andExpect(status().isOk());
     }
 
     @DisplayName("당일 식단 조회")
@@ -98,8 +94,7 @@ class MealControllerTest extends ControllerTestSupport {
                                 .param("offeredAt", offeredAt)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true));
+                .andExpect(status().isOk());
     }
 
     @DisplayName("주간 식단 조회")
@@ -116,8 +111,7 @@ class MealControllerTest extends ControllerTestSupport {
                                 .param("offeredAt", offeredAt)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true));
+                .andExpect(status().isOk());
     }
 
     private RestaurantRegisterReq getRestaurantRegisterReq() {

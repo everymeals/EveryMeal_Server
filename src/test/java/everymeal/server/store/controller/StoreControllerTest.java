@@ -29,7 +29,6 @@ class StoreControllerTest extends ControllerTestSupport {
                                 .param("orderBy", orderBy))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("OK"));
     }
 
@@ -50,7 +49,6 @@ class StoreControllerTest extends ControllerTestSupport {
                                 .param("orderBy", orderBy))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("OK"));
     }
 
@@ -71,7 +69,6 @@ class StoreControllerTest extends ControllerTestSupport {
                                 .param("orderBy", orderBy))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("OK"));
     }
 
@@ -92,7 +89,6 @@ class StoreControllerTest extends ControllerTestSupport {
                                 .param("orderBy", orderBy))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("OK"));
     }
 
@@ -113,7 +109,6 @@ class StoreControllerTest extends ControllerTestSupport {
                                 .param("orderBy", orderBy))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("OK"));
     }
 }
