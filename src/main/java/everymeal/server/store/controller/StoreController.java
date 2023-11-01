@@ -31,6 +31,7 @@ public class StoreController {
      * =============================================================================================
      */
     final String SORT_NAME = "name";
+
     final String SORT_DISTANCE = "distance";
     final String SORT_RECOMMENDEDCNOUNT = "recommendedCount";
     final String SORT_REVIEWCOUNT = "reviewCount";
