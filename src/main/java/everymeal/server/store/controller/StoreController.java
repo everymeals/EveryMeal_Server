@@ -1,5 +1,6 @@
 package everymeal.server.store.controller;
 
+import static everymeal.server.store.entity.StoreSortVo.*;
 
 import everymeal.server.global.dto.response.ApplicationResponse;
 import everymeal.server.store.controller.dto.response.StoreGetRes;
@@ -24,18 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class StoreController {
 
     private final StoreService storeService;
-
-    /**
-     * ============================================================================================
-     * GLOBAL STATIC CONSTANTS
-     * =============================================================================================
-     */
-    final String SORT_NAME = "name";
-
-    final String SORT_DISTANCE = "distance";
-    final String SORT_RECOMMENDEDCNOUNT = "recommendedCount";
-    final String SORT_REVIEWCOUNT = "reviewCount";
-    final String SORT_GRADE = "grade";
 
     @GetMapping("/{campusIdx}")
     @Operation(summary = "학교 주변 식당 조회", description = "학교 주변 식당을 조회합니다")
