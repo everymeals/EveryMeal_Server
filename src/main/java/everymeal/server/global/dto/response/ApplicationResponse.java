@@ -9,7 +9,6 @@ import lombok.Getter;
 @Builder
 public class ApplicationResponse<T> {
 
-    private boolean isSuccess;
     private LocalDateTime localDateTime;
     private String message;
     private T data; // == body
@@ -33,7 +32,6 @@ public class ApplicationResponse<T> {
     private static <T> ApplicationResponse<T> makeResponse(String message, T data) {
         return (ApplicationResponse<T>)
                 ApplicationResponse.builder()
-                        .isSuccess(true)
                         .localDateTime(LocalDateTime.now())
                         .message(message)
                         .data(data)

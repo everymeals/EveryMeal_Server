@@ -25,6 +25,17 @@ public class StoreController {
 
     private final StoreService storeService;
 
+    /**
+     * ============================================================================================
+     * GLOBAL STATIC CONSTANTS
+     * =============================================================================================
+     */
+    final String SORT_NAME = "name";
+    final String SORT_DISTANCE = "distance";
+    final String SORT_RECOMMENDEDCNOUNT = "recommendedCount";
+    final String SORT_REVIEWCOUNT = "reviewCount";
+    final String SORT_GRADE = "grade";
+
     @GetMapping("/{campusIdx}")
     @Operation(summary = "학교 주변 식당 조회", description = "학교 주변 식당을 조회합니다")
     public ApplicationResponse<Page<StoreGetRes>> getStores(
@@ -45,18 +56,18 @@ public class StoreController {
                             title = "정렬 기준",
                             description = "정렬 기준은 기획에 따라 변경 가능합니다.",
                             allowableValues = {
-                                "name",
-                                "distance",
-                                "grade",
-                                "reviewCount",
-                                "recommendedCnt"
+                                SORT_NAME,
+                                SORT_DISTANCE,
+                                SORT_RECOMMENDEDCNOUNT,
+                                SORT_REVIEWCOUNT,
+                                SORT_GRADE
                             })
                     String orderBy) {
         Sort sort = Sort.by(orderBy);
         sort =
                 switch (orderBy) {
-                    case "name", "distance" -> sort.ascending();
-                    case "recommendedCnt", "reviewCount", "grade" -> sort.descending();
+                    case SORT_NAME, SORT_DISTANCE -> sort.ascending();
+                    case SORT_RECOMMENDEDCNOUNT, SORT_REVIEWCOUNT, SORT_GRADE -> sort.descending();
                     default -> Sort.by(orderBy);
                 };
         return ApplicationResponse.ok(

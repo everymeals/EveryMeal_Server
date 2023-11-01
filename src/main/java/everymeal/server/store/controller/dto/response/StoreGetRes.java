@@ -12,7 +12,7 @@ public record StoreGetRes(
         Integer distance,
         Double grade,
         Integer reviewCount,
-        Integer recommendedCnt) {
+        Integer recommendedCount) {
 
     public static Page<StoreGetRes> of(Page<Store> stores) {
         return stores.map(
@@ -25,6 +25,6 @@ public record StoreGetRes(
                                 store.getDistance(),
                                 store.getGrade(),
                                 store.getReviewCount(),
-                                store.getRecommendedCnt()));
+                                store.getRecommendedCount()));
     }
 }

@@ -35,7 +35,7 @@ public class KakaoStoreVO {
                 .url(place_url)
                 .roadAddress(road_address_name)
                 .grade(0.0)
-                .recommendedCnt(0)
+                .recommendedCount(0)
                 .distance(distance)
                 .reviewCount(0)
                 .x(x)
