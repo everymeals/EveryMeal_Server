@@ -5,14 +5,10 @@ import everymeal.server.university.entity.University;
 import everymeal.server.university.entity.UniversityEnum;
 import java.util.List;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
 
 @Builder
-public record UniversityListGetRes(Long idx,
-    String universityName,
-    String campusName,
-    String universityShortName) {
+public record UniversityListGetRes(
+        Long idx, String universityName, String campusName, String universityShortName) {
 
     public static List<UniversityListGetRes> of(List<University> universities) {
         return universities.stream()
