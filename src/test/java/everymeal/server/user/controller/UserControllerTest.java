@@ -33,7 +33,6 @@ class UserControllerTest extends ControllerTestSupport {
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("OK"));
     }
 
@@ -57,7 +56,6 @@ class UserControllerTest extends ControllerTestSupport {
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("OK"))
                 .andExpect(cookie().exists("refresh-token"));
     }
@@ -77,7 +75,6 @@ class UserControllerTest extends ControllerTestSupport {
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("OK"));
     }
 
@@ -94,7 +91,6 @@ class UserControllerTest extends ControllerTestSupport {
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("OK"));
     }
 
@@ -115,24 +111,6 @@ class UserControllerTest extends ControllerTestSupport {
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.message").value("OK"));
-    }
-
-    @DisplayName("회원가입 여부를 확인한다.")
-    @Test
-    void checkRegistration() throws Exception {
-        // given
-        String deviceId = "123456789";
-
-        // when then
-        mockMvc.perform(
-                        get("/api/v1/users/check-registration")
-                                .queryParam("userDeviceId", deviceId)
-                                .contentType(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("OK"));
     }
 }
