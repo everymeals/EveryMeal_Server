@@ -13,6 +13,7 @@ import lombok.Setter;
 @Builder
 public class UserLoginRes {
 
+
     private String accessToken;
 
     @JsonInclude(Include.NON_NULL)

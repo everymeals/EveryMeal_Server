@@ -7,8 +7,8 @@ import everymeal.server.global.util.JwtUtil;
 import everymeal.server.global.util.MailUtil;
 import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
 import everymeal.server.user.controller.dto.request.UserEmailAuthReq;
-import everymeal.server.user.controller.dto.request.UserEmailAuthVerifyReq;
-import everymeal.server.user.controller.dto.request.UserSingReq;
+import everymeal.server.user.controller.dto.request.UserEmailLoginReq;
+import everymeal.server.user.controller.dto.request.UserEmailSingReq;
 import everymeal.server.user.controller.dto.response.UserEmailAuthRes;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
 import everymeal.server.user.entity.User;
@@ -31,17 +31,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Boolean signUp(UserSingReq request) {
-        User user = User.builder().deviceId(request.getDeviceId()).build();
+    public Boolean signUp(UserEmailSingReq request) {
+        String email = jwtUtil.getEmailTokenFromAuthCode(request.getEmailAuthToken());
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new ApplicationException(ExceptionList.USER_ALREADY_EXIST);
+        }
+
+        User user = User.builder().email(email).nickName(request.getNickname()).build();
         userRepository.save(user);
         return true;
     }
 
     @Override
-    public UserLoginRes login(UserSingReq request) {
+    public UserLoginRes login(UserEmailLoginReq request) {
+        String emailTokenFromAuthCode = jwtUtil.getEmailTokenFromAuthCode(request.getEmailAuthToken());
+        if (!request.getEmailAuthValue().equals(emailTokenFromAuthCode)) {
+            throw new ApplicationException(ExceptionList.USER_AUTH_FAIL);
+        }
+        String email = jwtUtil.getEmailTokenFromAuthCode(
+            request.getEmailAuthToken());
         User user =
                 userRepository
-                        .findByDeviceId(request.getDeviceId())
+                        .findByEmail(email)
                         .orElseThrow(() -> new ApplicationException(ExceptionList.USER_NOT_FOUND));
         String accessToken = jwtUtil.generateAccessToken(user.getIdx());
         String refreshToken = jwtUtil.generateRefreshToken(user.getIdx(), accessToken);
@@ -94,7 +105,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public Boolean verifyEmailAuth(
-            UserEmailAuthVerifyReq request, AuthenticatedUser authenticatedUser) {
+            UserEmailLoginReq request, AuthenticatedUser authenticatedUser) {
         String emailTokenFromAuthCode =
                 jwtUtil.getEmailTokenFromAuthCode(request.getEmailAuthToken());
         if (request.getEmailAuthValue().equals(emailTokenFromAuthCode)) {

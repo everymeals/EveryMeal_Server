@@ -6,8 +6,8 @@ import everymeal.server.global.util.authresolver.Auth;
 import everymeal.server.global.util.authresolver.AuthUser;
 import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
 import everymeal.server.user.controller.dto.request.UserEmailAuthReq;
-import everymeal.server.user.controller.dto.request.UserEmailAuthVerifyReq;
-import everymeal.server.user.controller.dto.request.UserSingReq;
+import everymeal.server.user.controller.dto.request.UserEmailLoginReq;
+import everymeal.server.user.controller.dto.request.UserEmailSingReq;
 import everymeal.server.user.controller.dto.response.UserEmailAuthRes;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
 import everymeal.server.user.service.UserService;
@@ -38,7 +38,7 @@ public class UserController {
 
     @Operation(summary = "회원가입")
     @PostMapping
-    public ApplicationResponse<Boolean> signUp(@RequestBody UserSingReq request) {
+    public ApplicationResponse<Boolean> signUp(@RequestBody UserEmailSingReq request) {
         return ApplicationResponse.ok(userService.signUp(request));
     }
 
@@ -57,7 +57,7 @@ public class UserController {
     })
     @PostMapping("/login")
     public ResponseEntity<ApplicationResponse<UserLoginRes>> login(
-            @RequestBody UserSingReq request) {
+            @RequestBody UserEmailLoginReq request) {
         UserLoginRes response = userService.login(request);
         ResponseCookie cookie =
                 ResponseCookie.from("refresh-token", response.getRefreshToken())
@@ -114,7 +114,7 @@ public class UserController {
             summary = "이메일 인증 확인",
             description = "이메일 인증을 확인합니다. <br> Request에는 이메일 인증 시 발송된 값이 담겨야 합니다.")
     public ApplicationResponse<Boolean> verifyEmailAuth(
-            @RequestBody UserEmailAuthVerifyReq request,
+            @RequestBody UserEmailLoginReq request,
             @AuthUser @Parameter(hidden = true) AuthenticatedUser authenticatedUser) {
         return ApplicationResponse.ok(userService.verifyEmailAuth(request, authenticatedUser));
     }

@@ -10,8 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import everymeal.server.global.ControllerTestSupport;
 import everymeal.server.user.controller.dto.request.UserEmailAuthReq;
-import everymeal.server.user.controller.dto.request.UserEmailAuthVerifyReq;
-import everymeal.server.user.controller.dto.request.UserSingReq;
+import everymeal.server.user.controller.dto.request.UserEmailLoginReq;
+import everymeal.server.user.controller.dto.request.UserEmailSingReq;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ class UserControllerTest extends ControllerTestSupport {
     @Test
     void signUp() throws Exception {
         // given
-        UserSingReq request = UserSingReq.builder().deviceId("123456789").build();
+        UserEmailSingReq request = UserEmailSingReq.builder().deviceId("123456789").build();
 
         // when then
         mockMvc.perform(
@@ -40,7 +40,7 @@ class UserControllerTest extends ControllerTestSupport {
     @Test
     void login() throws Exception {
         // given
-        UserSingReq request = UserSingReq.builder().deviceId("123456789").build();
+        UserEmailSingReq request = UserEmailSingReq.builder().deviceId("123456789").build();
 
         given(userService.login(any()))
                 .willReturn(
@@ -98,8 +98,8 @@ class UserControllerTest extends ControllerTestSupport {
     @Test
     void checkEmailAuth() throws Exception {
         // given
-        UserEmailAuthVerifyReq request =
-                UserEmailAuthVerifyReq.builder()
+        UserEmailLoginReq request =
+                UserEmailLoginReq.builder()
                         .emailAuthToken("testJwtToken")
                         .emailAuthValue("145734")
                         .build();

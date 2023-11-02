@@ -10,8 +10,8 @@ import everymeal.server.global.util.JwtUtil;
 import everymeal.server.global.util.MailUtil;
 import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
 import everymeal.server.user.controller.dto.request.UserEmailAuthReq;
-import everymeal.server.user.controller.dto.request.UserEmailAuthVerifyReq;
-import everymeal.server.user.controller.dto.request.UserSingReq;
+import everymeal.server.user.controller.dto.request.UserEmailLoginReq;
+import everymeal.server.user.controller.dto.request.UserEmailSingReq;
 import everymeal.server.user.controller.dto.response.UserEmailAuthRes;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
 import everymeal.server.user.entity.User;
@@ -37,7 +37,7 @@ class UserServiceImplTest extends IntegrationTestSupport {
     @Test
     void singUp() {
         // given
-        UserSingReq request = UserSingReq.builder().deviceId("123456789").build();
+        UserEmailSingReq request = UserEmailSingReq.builder().deviceId("123456789").build();
 
         // when
         Boolean response = userService.signUp(request);
@@ -53,7 +53,8 @@ class UserServiceImplTest extends IntegrationTestSupport {
     @Test
     void login() {
         // given
-        UserSingReq request = UserSingReq.builder().deviceId("123456789").build();
+        UserEmailLoginReq request = UserEmailLoginReq.builder().emailAuthValue("ey!gdsjgnsdjkr")
+            .emailAuthValue("145372").build();
         userService.signUp(request);
 
         // when
@@ -107,8 +108,8 @@ class UserServiceImplTest extends IntegrationTestSupport {
         userRepository.save(user);
 
         String token = jwtUtil.generateEmailToken(user.getIdx(), "test@gmail.com", "123456");
-        UserEmailAuthVerifyReq request =
-                UserEmailAuthVerifyReq.builder()
+        UserEmailLoginReq request =
+                UserEmailLoginReq.builder()
                         .emailAuthToken(token)
                         .emailAuthValue("123456")
                         .build();
@@ -135,8 +136,8 @@ class UserServiceImplTest extends IntegrationTestSupport {
         userRepository.save(user);
 
         String token = jwtUtil.generateEmailToken(user.getIdx(), "test@gmail.com", "123456");
-        UserEmailAuthVerifyReq request =
-                UserEmailAuthVerifyReq.builder()
+        UserEmailLoginReq request =
+                UserEmailLoginReq.builder()
                         .emailAuthToken(token)
                         .emailAuthValue("123456")
                         .build();
@@ -166,8 +167,8 @@ class UserServiceImplTest extends IntegrationTestSupport {
 
         String token = jwtUtil.generateEmailToken(user.getIdx(), "", "123456");
 
-        UserEmailAuthVerifyReq request =
-                UserEmailAuthVerifyReq.builder()
+        UserEmailLoginReq request =
+                UserEmailLoginReq.builder()
                         .emailAuthToken(token)
                         .emailAuthValue("1234567")
                         .build();

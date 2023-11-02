@@ -3,6 +3,7 @@ package everymeal.server.user.entity;
 
 import everymeal.server.global.entity.BaseEntity;
 import everymeal.server.university.entity.University;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,24 +23,27 @@ public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
-
-    private String deviceId;
-
     private String nickName;
-
+    @Column(unique = true)
     private String email;
-
     private Boolean isDeleted;
+    private String profileImgUrl;
+    private String nickname;
 
     @ManyToOne private University university;
 
     @Builder
-    public User(String deviceId, String nickName, String email, University university) {
-        this.deviceId = deviceId;
+    public User(String nickName, String email, Boolean isDeleted, String profileImgUrl,
+        String nickname,
+        University university) {
         this.nickName = nickName;
         this.email = email;
+        this.isDeleted = isDeleted;
+        this.profileImgUrl = profileImgUrl;
+        this.nickname = nickname;
         this.university = university;
     }
+
 
     public void setEmail(String email) {
         this.email = email;
