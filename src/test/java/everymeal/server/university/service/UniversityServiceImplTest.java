@@ -22,23 +22,6 @@ class UniversityServiceImplTest extends IntegrationTestSupport {
         universityRepository.deleteAllInBatch();
     }
 
-    @DisplayName("대학을 조회한다.")
-    @Test
-    void getUniversityList() {
-        // given
-        String universityName = "명지대학교";
-        String campusName = "인문캠퍼스";
-
-        // when
-        University save = universityRepository.save(getUniversity(universityName, campusName));
-
-        List<UniversityListGetRes> universityList =
-                universityService.getUniversityList(universityName, campusName);
-
-        // then
-        assertEquals(universityList.get(0).getUniversityName(), universityName);
-    }
-
     @DisplayName("대학을 추가한다.")
     @Test
     void addUniversity() {
@@ -55,6 +38,23 @@ class UniversityServiceImplTest extends IntegrationTestSupport {
                         universityName, campusName);
         assertEquals(response, true);
         assertEquals(universities.get(0).getName(), universityName);
+    }
+
+    @DisplayName("대학 리스트를 조회한다.")
+    @Test
+    void getUniversities() {
+        // given
+        String universityName = "명지대학교";
+        String campusName = "인문캠퍼스";
+
+        // when
+        University save = universityRepository.save(getUniversity(universityName, campusName));
+
+        List<UniversityListGetRes> universityList = universityService.getUniversities();
+
+        // then
+
+        assertEquals(universityList.get(0).universityName(), universityName);
     }
 
     private University getUniversity(String universityName, String campusName) {
