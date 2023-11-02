@@ -8,15 +8,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
 @Builder
-public class UniversityListGetRes {
-
-    private Long idx;
-    private String universityName;
-    private String campusName;
-    private String universityShortName;
+public record UniversityListGetRes(Long idx,
+    String universityName,
+    String campusName,
+    String universityShortName) {
 
     public static List<UniversityListGetRes> of(List<University> universities) {
         return universities.stream()

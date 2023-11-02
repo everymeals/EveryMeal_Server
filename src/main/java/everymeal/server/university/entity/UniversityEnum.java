@@ -9,7 +9,8 @@ import lombok.RequiredArgsConstructor;
 public enum UniversityEnum {
     MYONGJI_S("명지대학교", "명지대"),
     SUNGSIN("성신여자대학교", "성신여대"),
-    SEOULWOMEN("서울여자대학교", "서울여대");
+    SEOULWOMEN("서울여자대학교", "서울여대"),
+    EMPTY ("등록되지 않은 학교", "미등록");
 
     private String universityName;
     private String universityShortName;
@@ -25,6 +26,6 @@ public enum UniversityEnum {
                 return university.getUniversityShortName();
             }
         }
-        return null;
+        return EMPTY.getUniversityShortName();
     }
 }

@@ -53,7 +53,8 @@ class UniversityServiceImplTest extends IntegrationTestSupport {
         List<UniversityListGetRes> universityList = universityService.getUniversities();
 
         // then
-        assertEquals(universityList.get(0).getUniversityName(), universityName);
+
+        assertEquals(universityList.get(0).universityName(), universityName);
     }
 
     private University getUniversity(String universityName, String campusName) {
