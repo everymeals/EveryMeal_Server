@@ -6,27 +6,16 @@ import everymeal.server.meal.entity.MealCategory;
 import everymeal.server.meal.entity.MealStatus;
 import everymeal.server.meal.entity.MealType;
 import java.time.LocalDate;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-@Builder
-public class DayMealListGetRes {
-
-    private String menu;
-    private MealType mealType;
-    private MealStatus mealStatus;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private LocalDate offeredAt;
-
-    private Double price;
-    private MealCategory category;
-    private String restaurantName;
-}
+public record DayMealListGetRes(
+        String menu,
+        MealType mealType,
+        MealStatus mealStatus,
+        @JsonFormat(
+                        shape = JsonFormat.Shape.STRING,
+                        pattern = "yyyy-MM-dd",
+                        timezone = "Asia/Seoul")
+                LocalDate offeredAt,
+        Double price,
+        MealCategory category,
+        String restaurantName) {}

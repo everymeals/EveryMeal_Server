@@ -29,7 +29,7 @@ public class Store {
     private String category;
     private String kakaoId;
     private String phone;
-    private String distance;
+    private Integer distance;
     private String url;
     private String roadAddress;
     private String x;
@@ -37,7 +37,7 @@ public class Store {
 
     private Double grade;
     private Integer reviewCount;
-    private Integer recommendedCnt;
+    private Integer recommendedCount;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private University university;
@@ -50,14 +50,14 @@ public class Store {
             String category,
             String kakaoId,
             String phone,
-            String distance,
+            Integer distance,
             String url,
             String roadAddress,
             String x,
             String y,
             Double grade,
             Integer reviewCount,
-            Integer recommendedCnt,
+            Integer recommendedCount,
             University university) {
         this.name = name;
         this.address = address;
@@ -72,7 +72,7 @@ public class Store {
         this.y = y;
         this.grade = grade;
         this.reviewCount = reviewCount;
-        this.recommendedCnt = recommendedCnt;
+        this.recommendedCount = recommendedCount;
         this.university = university;
     }
 }

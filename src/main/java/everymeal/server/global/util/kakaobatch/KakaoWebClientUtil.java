@@ -1,4 +1,4 @@
-package everymeal.server.global.util;
+package everymeal.server.global.util.kakaobatch;
 
 
 import org.springframework.beans.factory.annotation.Value;

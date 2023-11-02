@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/api/v1/users")
@@ -43,7 +42,19 @@ public class UserController {
         return ApplicationResponse.ok(userService.signUp(request));
     }
 
-    @Operation(summary = "로그인")
+    @Operation(
+            summary = "로그인",
+            description = "로그인을 진행합니다. <br> 로그인 성공 시, refresh-token을 쿠키로 반환합니다.")
+    @ApiResponses({
+        @ApiResponse(
+                responseCode = "200",
+                description = "로그인 성공",
+                content = @Content(schema = @Schema(implementation = UserLoginRes.class))),
+        @ApiResponse(
+                responseCode = "404",
+                description = "(U0001)유저를 찾을 수 없습니다.",
+                content = @Content(schema = @Schema()))
+    })
     @PostMapping("/login")
     public ResponseEntity<ApplicationResponse<UserLoginRes>> login(
             @RequestBody UserSingReq request) {
@@ -67,6 +78,16 @@ public class UserController {
     @Operation(
             summary = "유저 이메일 인증 여부",
             description = "유저가 인증되었는지 여부를 반환합니다. <br> 인증되었다면 true, 아니라면 false를 반환합니다.")
+    @ApiResponses({
+        @ApiResponse(
+                responseCode = "200",
+                description = "로그인 성공",
+                content = @Content(schema = @Schema(implementation = Boolean.class))),
+        @ApiResponse(
+                responseCode = "404",
+                description = "(U0001)유저를 찾을 수 없습니다.",
+                content = @Content(schema = @Schema()))
+    })
     @SecurityRequirement(name = "bearerAuth")
     public ApplicationResponse<Boolean> isAuth(
             @AuthUser @Parameter(hidden = true) AuthenticatedUser authenticatedUser) {
@@ -96,23 +117,5 @@ public class UserController {
             @RequestBody UserEmailAuthVerifyReq request,
             @AuthUser @Parameter(hidden = true) AuthenticatedUser authenticatedUser) {
         return ApplicationResponse.ok(userService.verifyEmailAuth(request, authenticatedUser));
-    }
-
-    @GetMapping("/check-registration")
-    @Operation(
-            summary = "회원가입 여부 확인",
-            description = "회원가입 여부를 확인합니다. <br> 회원가입되어있다면 true, 아니라면 false를 반환합니다.")
-    @ApiResponses(
-            value = {
-                @ApiResponse(
-                        responseCode = "200",
-                        description = "회원가입 여부 확인 성공",
-                        content = @Content(schema = @Schema(implementation = Boolean.class))),
-            })
-    public ApplicationResponse<Boolean> checkRegistration(
-            @Schema(title = "유저 Device ID", description = "회원가입 여부를 확인할 기기값", example = "123456789")
-                    @RequestParam
-                    String userDeviceId) {
-        return ApplicationResponse.ok(userService.checkRegistration(userDeviceId));
     }
 }

@@ -5,12 +5,15 @@ import everymeal.server.global.dto.response.ApplicationResponse;
 import everymeal.server.global.util.aws.S3Util;
 import everymeal.server.global.util.aws.controller.dto.S3GetResignedUrlRes;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.io.File;
 import java.net.URL;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/api/v1/s3")
@@ -32,8 +35,17 @@ public class S3Controller {
         4. Url에 PutMapping 이미지 파일을 binary로 보낼 경우, S3에 저장됩니다.
         PS. Server에는 ImageKey로만 통신합합니다.
         """)
-    public ApplicationResponse<S3GetResignedUrlRes> getPresignedUrl() {
+    public ApplicationResponse<S3GetResignedUrlRes> getPresignedUrl(
+            @RequestParam(value = "fileDomain")
+                    @Schema(
+                            title = "파일 도메인",
+                            defaultValue = "store",
+                            example = "store",
+                            description = "store, meal, user 중 하나를 입력해주세요.",
+                            allowableValues = {"store", "meal", "user"})
+                    String fileDomain) {
         String fileName = UUID.randomUUID().toString();
+        fileName = fileDomain + File.separator + fileName;
         URL test = s3Util.getPresignedUrl(fileName);
         return ApplicationResponse.ok(
                 S3GetResignedUrlRes.builder().imageKey(fileName).url(test.toString()).build());
