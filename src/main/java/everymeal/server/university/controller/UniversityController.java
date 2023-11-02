@@ -23,19 +23,6 @@ public class UniversityController {
 
     private final UniversityService universityService;
 
-    @Operation(summary = "대학 목록 조회")
-    @GetMapping()
-    public ApplicationResponse<List<UniversityListGetRes>> getUniversities(
-            @Schema(title = "대학 이름", defaultValue = "명지대학교", example = "명지대학교")
-                    @RequestParam(value = "universityName")
-                    String universityName,
-            @Schema(title = "캠퍼스 이름", defaultValue = "인문캠퍼스", example = "인문캠퍼스")
-                    @RequestParam(value = "campusName")
-                    String campusName) {
-        return ApplicationResponse.ok(
-                universityService.getUniversityList(universityName, campusName));
-    }
-
     @Operation(summary = "대학 추가")
     @PostMapping()
     public ApplicationResponse<Boolean> addUniversity(
@@ -46,5 +33,11 @@ public class UniversityController {
                     @RequestParam(value = "campusName")
                     String campusName) {
         return ApplicationResponse.ok(universityService.addUniversity(universityName, campusName));
+    }
+
+    @Operation(summary = "대학 목록 조회")
+    @GetMapping()
+    public ApplicationResponse<List<UniversityListGetRes>> getUniversities() {
+        return ApplicationResponse.ok(universityService.getUniversities());
     }
 }

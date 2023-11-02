@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface UniversityService {
 
-    List<UniversityListGetRes> getUniversityList(String universityName, String campusName);
-
     Boolean addUniversity(String universityName, String campusName);
+
+    List<UniversityListGetRes> getUniversities();
 }
