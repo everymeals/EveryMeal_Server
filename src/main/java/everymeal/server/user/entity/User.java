@@ -16,7 +16,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Table(indexes = {@Index(name = "idx__email__nickname", columnList = "email")})
+@Table(
+        indexes = {
+            @Index(name = "idx__email", columnList = "email"),
+            @Index(name = "idx__nickname", columnList = "nickname")
+        })
 @Entity(name = "users")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class User extends BaseEntity {
