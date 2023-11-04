@@ -9,7 +9,7 @@ import everymeal.server.user.controller.dto.response.UserLoginRes;
 
 public interface UserService {
 
-    UserLoginRes signUp(UserEmailSingReq userDeviceId);
+    UserLoginRes signUp(UserEmailSingReq request);
 
     UserLoginRes login(UserEmailLoginReq request);
 

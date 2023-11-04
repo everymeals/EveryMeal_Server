@@ -73,7 +73,7 @@ class UserControllerTest extends ControllerTestSupport {
 
         // when then
         mockMvc.perform(
-                        post("/api/v1/users/send/email")
+                        post("/api/v1/users/email")
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
@@ -89,7 +89,7 @@ class UserControllerTest extends ControllerTestSupport {
 
         // when then
         mockMvc.perform(
-                        post("/api/v1/users/email/verify")
+                        get("/api/v1/users/email/verify")
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
@@ -107,7 +107,7 @@ class UserControllerTest extends ControllerTestSupport {
 
         // when then
         mockMvc.perform(
-                        get("/api/v1/users/email/check")
+                        get("/api/v1/users/email")
                                 .queryParam("email", "test@gmail.com")
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())

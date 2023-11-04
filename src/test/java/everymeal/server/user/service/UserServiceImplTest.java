@@ -225,6 +225,6 @@ class UserServiceImplTest extends IntegrationTestSupport {
     }
 
     private User createUser(String email, String nickname) {
-        return User.builder().email(email).nickName(nickname).build();
+        return User.builder().email(email).nickname(nickname).build();
     }
 }

@@ -88,7 +88,7 @@ public class UserController {
         return setRefreshToken(response);
     }
 
-    @PostMapping("/send/email")
+    @PostMapping("/email")
     @Operation(
             summary = "이메일 전송",
             description =
@@ -97,7 +97,7 @@ public class UserController {
         return ApplicationResponse.ok(userService.emailAuth(request));
     }
 
-    @PostMapping("/email/verify")
+    @GetMapping("/email/verify")
     @Operation(
             summary = "이메일 인증 확인",
             description = "이메일 인증을 확인합니다. <br> Request에는 이메일 인증 시 발송된 값이 담겨야 합니다.")
@@ -105,7 +105,7 @@ public class UserController {
         return ApplicationResponse.ok(userService.verifyEmailAuth(request));
     }
 
-    @GetMapping("/email/check")
+    @GetMapping("/email")
     @Operation(
             summary = "이미 가입된 유저인지 확인",
             description = "이미 가입된 유저인지 확인합니다. <br> 가입된 유저 true, 가입되지 않은 유저 false")

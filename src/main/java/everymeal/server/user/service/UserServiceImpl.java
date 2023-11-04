@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByEmail(email).isPresent()) {
             throw new ApplicationException(ExceptionList.USER_ALREADY_EXIST);
         }
-        if (userRepository.findByNickName(request.nickname()).isPresent()) {
+        if (userRepository.findByNickname(request.nickname()).isPresent()) {
             throw new ApplicationException(ExceptionList.NICKNAME_ALREADY_EXIST);
         }
 
@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
         User user =
                 User.builder()
                         .email(email)
-                        .nickName(request.nickname())
+                        .nickname(request.nickname())
                         .profileImgUrl(request.profileImgKey())
                         .university(university)
                         .build();
@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
         String accessToken = jwtUtil.generateAccessToken(user.getIdx());
         String refreshToken = jwtUtil.generateRefreshToken(user.getIdx(), accessToken);
         return new UserLoginRes(
-                accessToken, user.getNickName(), user.getProfileImgUrl(), refreshToken);
+                accessToken, user.getNickname(), user.getProfileImgUrl(), refreshToken);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
         String accessToken = jwtUtil.generateAccessToken(user.getIdx());
         String refreshToken = jwtUtil.generateRefreshToken(user.getIdx(), accessToken);
         return new UserLoginRes(
-                accessToken, user.getNickName(), user.getProfileImgUrl(), refreshToken);
+                accessToken, user.getNickname(), user.getProfileImgUrl(), refreshToken);
     }
 
     @Override

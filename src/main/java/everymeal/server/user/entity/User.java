@@ -8,6 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Builder;
@@ -15,7 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Table
+@Table(indexes = {@Index(name = "idx__email__nickname", columnList = "email")})
 @Entity(name = "users")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class User extends BaseEntity {
@@ -24,8 +25,8 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
 
-    @Column(unique = true)
-    private String nickName;
+    @Column(unique = true, length = 50)
+    private String nickname;
 
     @Column(unique = true)
     private String email;
@@ -37,15 +38,10 @@ public class User extends BaseEntity {
     @ManyToOne private University university;
 
     @Builder
-    public User(
-            String nickName,
-            String email,
-            Boolean isDeleted,
-            String profileImgUrl,
-            University university) {
-        this.nickName = nickName;
+    public User(String nickname, String email, String profileImgUrl, University university) {
+        this.nickname = nickname;
         this.email = email;
-        this.isDeleted = Boolean.TRUE;
+        this.isDeleted = Boolean.FALSE;
         this.profileImgUrl = profileImgUrl;
         this.university = university;
     }
