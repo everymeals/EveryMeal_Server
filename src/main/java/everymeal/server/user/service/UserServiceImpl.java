@@ -68,8 +68,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserLoginRes login(UserEmailLoginReq request) {
-        String emailTokenFromAuthCode =
-                jwtUtil.getEmailTokenFromAuthCode(request.emailAuthToken());
+        String emailTokenFromAuthCode = jwtUtil.getEmailTokenFromAuthCode(request.emailAuthToken());
         if (!request.emailAuthValue().equals(emailTokenFromAuthCode)) {
             throw new ApplicationException(ExceptionList.USER_AUTH_FAIL);
         }
@@ -81,7 +80,7 @@ public class UserServiceImpl implements UserService {
         String accessToken = jwtUtil.generateAccessToken(user.getIdx());
         String refreshToken = jwtUtil.generateRefreshToken(user.getIdx(), accessToken);
         return new UserLoginRes(
-            accessToken, user.getNickName(), user.getProfileImgUrl(), refreshToken);
+                accessToken, user.getNickName(), user.getProfileImgUrl(), refreshToken);
     }
 
     @Override
@@ -126,8 +125,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public Boolean verifyEmailAuth(UserEmailLoginReq request) {
-        String emailTokenFromAuthCode =
-                jwtUtil.getEmailTokenFromAuthCode(request.emailAuthToken());
+        String emailTokenFromAuthCode = jwtUtil.getEmailTokenFromAuthCode(request.emailAuthToken());
         if (!request.emailAuthValue().equals(emailTokenFromAuthCode)) {
             throw new ApplicationException(ExceptionList.USER_AUTH_FAIL);
         }
