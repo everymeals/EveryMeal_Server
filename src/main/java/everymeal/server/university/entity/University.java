@@ -36,8 +36,7 @@ public class University extends BaseEntity {
     private List<Store> stores = new ArrayList<>();
 
     @Builder
-    public University(Long idx, String name, String campusName, Boolean isDeleted) {
-        this.idx = idx;
+    public University(String name, String campusName) {
         this.name = name;
         this.campusName = campusName;
         this.isDeleted = Boolean.FALSE;

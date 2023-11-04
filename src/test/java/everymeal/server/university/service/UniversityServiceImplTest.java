@@ -61,7 +61,6 @@ class UniversityServiceImplTest extends IntegrationTestSupport {
         return University.builder()
                 .name(universityName)
                 .campusName(campusName)
-                .isDeleted(false)
                 .build();
     }
 }

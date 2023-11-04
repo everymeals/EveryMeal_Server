@@ -23,27 +23,32 @@ public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
+
+    @Column(unique = true)
     private String nickName;
+
     @Column(unique = true)
     private String email;
+
     private Boolean isDeleted;
+
     private String profileImgUrl;
-    private String nickname;
 
     @ManyToOne private University university;
 
     @Builder
-    public User(String nickName, String email, Boolean isDeleted, String profileImgUrl,
-        String nickname,
-        University university) {
+    public User(
+            String nickName,
+            String email,
+            Boolean isDeleted,
+            String profileImgUrl,
+            University university) {
         this.nickName = nickName;
         this.email = email;
-        this.isDeleted = isDeleted;
+        this.isDeleted = Boolean.TRUE;
         this.profileImgUrl = profileImgUrl;
-        this.nickname = nickname;
         this.university = university;
     }
-
 
     public void setEmail(String email) {
         this.email = email;

@@ -24,30 +24,35 @@ class UserControllerTest extends ControllerTestSupport {
     @Test
     void signUp() throws Exception {
         // given
-        UserEmailSingReq request = UserEmailSingReq.builder().deviceId("123456789").build();
+        UserEmailSingReq request =
+                new UserEmailSingReq("testNickname", "Token", "sendValue", 1L, "testImageKey");
+
+        given(userService.signUp(any()))
+                .willReturn(
+                        new UserLoginRes(
+                                "accessToken", "testNickname", "testImageKey", "refreshToken"));
 
         // when then
         mockMvc.perform(
-                        post("/api/v1/users")
+                        post("/api/v1/users/signup")
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("OK"));
+                .andExpect(jsonPath("$.message").value("OK"))
+                .andExpect(cookie().exists("refresh-token"));
     }
 
     @DisplayName("로그인을 진행한다.")
     @Test
     void login() throws Exception {
         // given
-        UserEmailSingReq request = UserEmailSingReq.builder().deviceId("123456789").build();
+        UserEmailLoginReq request = new UserEmailLoginReq("testJwtToken", "145734");
 
         given(userService.login(any()))
                 .willReturn(
-                        UserLoginRes.builder()
-                                .accessToken("accessToken")
-                                .refreshToken("refreshToken")
-                                .build());
+                        new UserLoginRes(
+                                "accessToken", "testNickname", "testImageKey", "refreshToken"));
 
         // when then
         mockMvc.perform(
@@ -60,33 +65,15 @@ class UserControllerTest extends ControllerTestSupport {
                 .andExpect(cookie().exists("refresh-token"));
     }
 
-    @DisplayName("유저 인증 여부를 확인한다.")
+    @DisplayName("이메일 전송합니다.")
     @Test
-    void checkUserAuth() throws Exception {
+    void emailAuth() throws Exception {
         // given
-        String accessToken = "eyTestToken1ojkfnsnjie432GFDdss";
-
-        given(userService.isAuth(any())).willReturn(true);
+        UserEmailAuthReq request = new UserEmailAuthReq("test@gmail.com");
 
         // when then
         mockMvc.perform(
-                        get("/api/v1/users/auth")
-                                .content(accessToken)
-                                .contentType(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("OK"));
-    }
-
-    @DisplayName("유저 인증을 진행한다.")
-    @Test
-    void authUser() throws Exception {
-        // given
-        UserEmailAuthReq request = UserEmailAuthReq.builder().email("test@gmail.com").build();
-
-        // when then
-        mockMvc.perform(
-                        post("/api/v1/users/email/auth")
+                        post("/api/v1/users/send/email")
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
@@ -94,20 +81,34 @@ class UserControllerTest extends ControllerTestSupport {
                 .andExpect(jsonPath("$.message").value("OK"));
     }
 
-    @DisplayName("이메일 인증 확인을 진행한다.")
+    @DisplayName("이메일 인증을 진행합니다.")
     @Test
-    void checkEmailAuth() throws Exception {
+    void verifyEmailAuth() throws Exception {
         // given
-        UserEmailLoginReq request =
-                UserEmailLoginReq.builder()
-                        .emailAuthToken("testJwtToken")
-                        .emailAuthValue("145734")
-                        .build();
+        UserEmailAuthReq request = new UserEmailAuthReq("test@gmail.com");
 
         // when then
         mockMvc.perform(
-                        post("/api/v1/users/email/auth/verify")
+                        post("/api/v1/users/email/verify")
                                 .content(objectMapper.writeValueAsString(request))
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("OK"));
+    }
+
+    @DisplayName("이미 가입된 유저인지 확인")
+    @Test
+    void checkUser() throws Exception {
+        // given
+        UserEmailAuthReq request = new UserEmailAuthReq("test@gmail.com");
+
+        given(userService.checkUser(any())).willReturn(true);
+
+        // when then
+        mockMvc.perform(
+                        get("/api/v1/users/email/check")
+                                .queryParam("email", "test@gmail.com")
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
