@@ -58,10 +58,6 @@ class UniversityServiceImplTest extends IntegrationTestSupport {
     }
 
     private University getUniversity(String universityName, String campusName) {
-        return University.builder()
-                .name(universityName)
-                .campusName(campusName)
-                .isDeleted(false)
-                .build();
+        return University.builder().name(universityName).campusName(campusName).build();
     }
 }
