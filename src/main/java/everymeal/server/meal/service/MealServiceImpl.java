@@ -158,7 +158,7 @@ public class MealServiceImpl implements MealService {
                                 () -> new ApplicationException(ExceptionList.UNIVERSITY_NOT_FOUND));
         // 학교와 식당 폐업 여부를 키로 조회
         List<Restaurant> restaurants =
-                restaurantRepository.findAllByUniversityAndUseYnTrue(university);
+                restaurantRepository.findAllByUniversityAndIsDeletedFalse(university);
         return RestaurantListGetRes.of(restaurants);
     }
     /**

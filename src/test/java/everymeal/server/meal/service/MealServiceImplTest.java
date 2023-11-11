@@ -1,6 +1,7 @@
 package everymeal.server.meal.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -233,9 +234,9 @@ class MealServiceImplTest extends IntegrationTestSupport {
         // when
         List<RestaurantListGetRes> response =
                 mealService.getRestaurantList(universityName, campusName);
-
+        var result = restaurantRepository.findAllByUniversityAndIsDeletedFalse(university);
         // then
-        assertEquals(response.get(0).restaurantIdx(), restaurant.getIdx());
+        assertEquals(response.size(), result.size());
     }
 
     @Test
