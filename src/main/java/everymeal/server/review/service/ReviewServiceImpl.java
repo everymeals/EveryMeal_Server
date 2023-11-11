@@ -94,7 +94,8 @@ public class ReviewServiceImpl implements ReviewService {
                     new ReviewPaging(
                             vo.getIdx(),
                             vo.getMeal().getRestaurant().getName(),
-                            vo.getMeal().getMealType().name(),
+                            vo.getMeal().getMealType().getValue(),
+                            vo.getMeal().getCategory().getValue(),
                             vo.getGrade(),
                             vo.getContent(),
                             strImgList,

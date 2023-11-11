@@ -12,6 +12,7 @@ public record ReviewPaging(
         Long reviewIdx,
         String restaurantName,
         String mealType,
+        String mealCategory,
         int grade,
         String content,
         List<String> imageList,
