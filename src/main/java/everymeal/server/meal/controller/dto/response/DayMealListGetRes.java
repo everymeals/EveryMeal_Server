@@ -8,6 +8,7 @@ import everymeal.server.meal.entity.MealType;
 import java.time.LocalDate;
 
 public record DayMealListGetRes(
+        Long mealIdx,
         String menu,
         MealType mealType,
         MealStatus mealStatus,

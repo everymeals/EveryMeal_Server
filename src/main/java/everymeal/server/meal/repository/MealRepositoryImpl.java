@@ -77,6 +77,7 @@ public class MealRepositoryImpl implements MealRepositoryCustom {
                                                 GroupBy.list(
                                                         Projections.constructor(
                                                                 DayMealListGetRes.class,
+                                                                qMeal.idx.as("mealIdx"),
                                                                 qMeal.menu.as("menu"),
                                                                 qMeal.mealType.as("mealType"),
                                                                 qMeal.mealStatus.as("mealStatus"),
@@ -92,6 +93,7 @@ public class MealRepositoryImpl implements MealRepositoryCustom {
             if (dayMeals == null || dayMeals.isEmpty()) {
                 resultList.add(
                         new DayMealListGetRes(
+                                0L,
                                 UN_REGISTERED_MEAL,
                                 mealType,
                                 MealStatus.CLOSED,
@@ -132,6 +134,7 @@ public class MealRepositoryImpl implements MealRepositoryCustom {
                                                 GroupBy.list(
                                                         Projections.constructor(
                                                                 DayMealListGetRes.class,
+                                                                qMeal.idx.as("mealIdx"),
                                                                 qMeal.menu.as("menu"),
                                                                 qMeal.mealType.as("mealType"),
                                                                 qMeal.mealStatus.as("mealStatus"),
@@ -150,6 +153,7 @@ public class MealRepositoryImpl implements MealRepositoryCustom {
                 if (dayMeals == null || dayMeals.isEmpty()) {
                     dayMealListGetResList.add(
                             new DayMealListGetRes(
+                                    0L,
                                     UN_REGISTERED_MEAL,
                                     mealType,
                                     MealStatus.CLOSED,
