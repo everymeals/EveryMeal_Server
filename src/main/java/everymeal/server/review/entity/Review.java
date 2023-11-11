@@ -34,10 +34,10 @@ public class Review extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
 
-    @Column(length = Integer.MAX_VALUE, columnDefinition = "리뷰 내용")
+    @Column(length = 300)
     private String content;
 
-    @Column(nullable = false, columnDefinition = "별점 1~5점")
+    @Column(nullable = false, length = 1)
     private int grade;
 
     private boolean isDeleted;
@@ -53,7 +53,7 @@ public class Review extends BaseEntity {
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL)
     private Set<ReviewMark> reviewMarks = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "review_idx")
     private List<Image> images = new ArrayList<>();
 
@@ -64,5 +64,16 @@ public class Review extends BaseEntity {
         this.images = images;
         this.user = user;
         this.meal = meal;
+        this.isDeleted = Boolean.FALSE;
+    }
+
+    public void updateEntity(String content, int grade, List<Image> images) {
+        this.content = content;
+        this.grade = grade;
+        this.images = images;
+    }
+
+    public void deleteEntity() {
+        this.isDeleted = Boolean.TRUE;
     }
 }
