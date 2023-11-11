@@ -35,11 +35,10 @@ public class JwtUtil {
     @Value("${jwt.validity.refresh-seconds}")
     private Long refreshTokenExpirationMs;
 
-    public String generateEmailToken(Long userId, String email, String sendAuthPassword) {
+    public String generateEmailToken(String email, String sendAuthPassword) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + (accessTokenExpirationMs * 2));
         Map<String, Object> claims = new HashMap<>();
-        claims.put("CLAIM_KEY_IDX", userId);
         claims.put("CLAIM_KEY_EMAIL", email);
         claims.put("CLAIM_KEY_SEND_AUTH_PASSWORD", sendAuthPassword);
         return Jwts.builder()
@@ -91,6 +90,14 @@ public class JwtUtil {
         Claims claims = getClaimsFromToken(tokenSubBearer(token), accessSecretKey);
         if (claims != null) {
             return claims.get("CLAIM_KEY_SEND_AUTH_PASSWORD").toString();
+        }
+        return null;
+    }
+
+    public String getEmailTokenFromEmail(String token) {
+        Claims claims = getClaimsFromToken(tokenSubBearer(token), accessSecretKey);
+        if (claims != null) {
+            return claims.get("CLAIM_KEY_EMAIL").toString();
         }
         return null;
     }

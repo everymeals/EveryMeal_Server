@@ -25,7 +25,10 @@ public class SwaggerConfig {
                 new Info()
                         .title("EveryMeal API Doc")
                         .version("v0.0.1")
-                        .description("EveryMeal API 명세서입니다.");
+                        .description(
+                                """
+                            EveryMeal API 명세서입니다.<br>
+                            스웨거 한계로 인해 Response에 공통 response의 data에 대한 정의가 되어있습니다. <br>""");
         return new OpenAPI().components(new Components()).info(info);
     }
 }

@@ -17,19 +17,17 @@ public class UniversityServiceImpl implements UniversityService {
     private final UniversityRepository universityRepository;
 
     @Override
-    public List<UniversityListGetRes> getUniversityList(String universityName, String campusName) {
-        List<University> universities =
-                universityRepository.findByNameAndCampusNameAndIsDeletedFalse(
-                        universityName, campusName);
-        return UniversityListGetRes.of(universities);
-    }
-
-    @Override
     @Transactional
     public Boolean addUniversity(String universityName, String campusName) {
         University university =
                 University.builder().name(universityName).campusName(campusName).build();
         universityRepository.save(university);
         return true;
+    }
+
+    @Override
+    public List<UniversityListGetRes> getUniversities() {
+        List<University> universities = universityRepository.findAllByIsDeletedFalse();
+        return UniversityListGetRes.of(universities);
     }
 }

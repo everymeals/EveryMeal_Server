@@ -18,6 +18,8 @@ public enum ExceptionList {
     USER_NOT_FOUND("U0001", HttpStatus.NOT_FOUND, "등록된 유저가 아닙니다."),
     USER_AUTH_TIME_OUT("U0002", HttpStatus.FORBIDDEN, "인증 시간이 만료되었습니다."),
     USER_AUTH_FAIL("U0003", HttpStatus.FORBIDDEN, "인증에 실패하였습니다."),
+    USER_ALREADY_EXIST("U0004", HttpStatus.CONFLICT, "이미 등록된 이메일입니다."),
+    NICKNAME_ALREADY_EXIST("U0005", HttpStatus.CONFLICT, "이미 등록된 닉네임입니다."),
 
     TOKEN_NOT_VALID("T0001", HttpStatus.NOT_ACCEPTABLE, "해당 토큰은 유효하지 않습니다."),
     TOKEN_EXPIRATION("T0002", HttpStatus.FORBIDDEN, "토큰이 만료되었습니다."),
