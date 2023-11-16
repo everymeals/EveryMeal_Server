@@ -9,14 +9,15 @@ import java.time.LocalDate;
 
 public record DayMealListGetRes(
         Long mealIdx,
-        String menu,
-        MealType mealType,
-        MealStatus mealStatus,
         @JsonFormat(
                         shape = JsonFormat.Shape.STRING,
                         pattern = "yyyy-MM-dd",
                         timezone = "Asia/Seoul")
                 LocalDate offeredAt,
+        MealStatus mealStatus,
+        MealType mealType,
+        String menu,
         Double price,
         MealCategory category,
-        String restaurantName) {}
+        String restaurantName,
+        String universityName) {}

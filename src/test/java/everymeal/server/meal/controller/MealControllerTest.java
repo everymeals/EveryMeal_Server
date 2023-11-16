@@ -37,7 +37,7 @@ class MealControllerTest extends ControllerTestSupport {
                             MealCategory.DEFAULT.name());
             list.add(mealReq);
         }
-        WeekMealRegisterReq req = new WeekMealRegisterReq(list, 1L);
+        WeekMealRegisterReq req = new WeekMealRegisterReq(list, 1L, "명지대학교", "MCC 식당");
 
         // when-then
         mockMvc.perform(
@@ -84,13 +84,15 @@ class MealControllerTest extends ControllerTestSupport {
     @Test
     void getDayMeal() throws Exception {
         // given
-        Long restaurantIdx = 1L;
+        String universityName = "명지대학교";
+        String campusName = "인문캠퍼스";
         String offeredAt = "2023-10-01";
 
         // when-then
         mockMvc.perform(
                         get("/api/v1/meals/day")
-                                .param("restaurantIdx", String.valueOf(restaurantIdx))
+                                .param("universityName", universityName)
+                                .param("campusName", campusName)
                                 .param("offeredAt", offeredAt)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
@@ -101,13 +103,13 @@ class MealControllerTest extends ControllerTestSupport {
     @Test
     void getWeekMeal() throws Exception {
         // given
-        Long restaurantIdx = 1L;
+        String universityName = "명지대학교";
         String offeredAt = "2023-10-01";
 
         // when-then
         mockMvc.perform(
                         get("/api/v1/meals/week")
-                                .param("restaurantIdx", String.valueOf(restaurantIdx))
+                                .param("universityName", universityName)
                                 .param("offeredAt", offeredAt)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
