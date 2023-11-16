@@ -7,6 +7,7 @@ import everymeal.server.meal.controller.dto.response.DayMealListGetRes;
 import everymeal.server.meal.controller.dto.response.RestaurantListGetRes;
 import everymeal.server.meal.controller.dto.response.WeekMealListGetRes;
 import java.util.List;
+import java.util.Map;
 
 public interface MealService {
 
@@ -16,7 +17,8 @@ public interface MealService {
 
     List<RestaurantListGetRes> getRestaurantList(String universityName, String campusName);
 
-    List<DayMealListGetRes> getDayMealList(Long restaurantIdx, String offeredAt);
+    Map<String, List<DayMealListGetRes>> getDayMealList(
+            String universityName, String campusName, String offeredAt);
 
-    List<WeekMealListGetRes> getWeekMealListTest(Long restaurantIdx, String offeredAt);
+    List<WeekMealListGetRes> getWeekMealListTest(String universityName, String offeredAt);
 }
