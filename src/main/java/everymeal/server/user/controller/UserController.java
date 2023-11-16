@@ -70,7 +70,11 @@ public class UserController {
 
     @Operation(
             summary = "로그인",
-            description = "로그인을 진행합니다. <br> 로그인 성공 시, refresh-token을 쿠키로 반환합니다.")
+            description = """
+                로그인을 진행합니다. <br> 로그인 성공 시, refresh-token을 쿠키로 반환합니다.<br>
+                테스트용 계정 로그인 <br>
+                emailAuthToken : eyJhbGciOiJIUzUxMiJ9.eyJDTEFJTV9LRVlfRU1BSUwiOiJiZV9tYW5AbmF2ZXIuY29tIiwiQ0xBSU1fS0VZX1NFTkRfQVVUSF9QQVNTV09SRCI6IjYwMTAxNSIsImlhdCI6MTY5OTc2ODE5MH0.svqkfcczKTpcAWu8t9iMzZYI1CKd8s0p3Cj7f_eOBzRbW1Qy06IupiccGDk4Q2ABe8SEgn5ZjtZ6tsc4etRKDg <br>
+                emailAuthValue : 601015""")
     @ApiResponses({
         @ApiResponse(
                 responseCode = "200",
@@ -124,9 +128,8 @@ public class UserController {
                         .maxAge(60 * 60 * 24 * 30L)
                         .secure(true)
                         .build();
-        response.withoutRefreshToken();
         return ResponseEntity.ok()
                 .header("Set-Cookie", cookie.toString())
-                .body(ApplicationResponse.ok(response));
+                .body(ApplicationResponse.ok(response.withoutRefreshToken()));
     }
 }
