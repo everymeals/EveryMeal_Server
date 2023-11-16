@@ -2,6 +2,7 @@ package everymeal.server.store.repository;
 
 
 import everymeal.server.store.entity.Store;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,5 +14,11 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
     Optional<Store> findByKakaoId(String kakaoId);
 
-    Page<Store> findByUniversityIdx(Long universityIdx, Pageable pageable);
+//    Page<Store> findByUniversityIdxOrderByIdxDesc(Long universityIdx, Pageable pageable);
+//    Page<Store> findByUniversityIdxOrderByIdxDesc(Long universityIdx, Pageable pageable, Long cursorId);
+
+    List<Store> findByUniversityIdxOrderByIdxDesc(Long universityIdx, Pageable pageable);
+    List<Store> findByUniversityIdxAndIdxLessThanOrderByIdxDesc(Long universityIdx, Long idx, Pageable pageable);
+    Boolean existsByIdxLessThanAndUniversityIdx(Long idx, Long universityIdx);
+
 }

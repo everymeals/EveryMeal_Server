@@ -2,6 +2,7 @@ package everymeal.server.store.controller.dto.response;
 
 
 import everymeal.server.store.entity.Store;
+import java.util.List;
 import org.springframework.data.domain.Page;
 
 public record StoreGetRes(
@@ -15,8 +16,8 @@ public record StoreGetRes(
         Integer reviewCount,
         Integer recommendedCount) {
 
-    public static Page<StoreGetRes> of(Page<Store> stores) {
-        return stores.map(
+    public static List<StoreGetRes> of(List<Store> stores) {
+        return stores.stream().map(
                 store ->
                         new StoreGetRes(
                                 store.getIdx(),
@@ -27,6 +28,6 @@ public record StoreGetRes(
                                 store.getDistance(),
                                 store.getGrade(),
                                 store.getReviewCount(),
-                                store.getRecommendedCount()));
+                                store.getRecommendedCount())).toList();
     }
 }

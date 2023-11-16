@@ -3,6 +3,7 @@ package everymeal.server.store.controller;
 import static everymeal.server.store.entity.StoreSortVo.*;
 
 import everymeal.server.global.dto.response.ApplicationResponse;
+import everymeal.server.global.dto.response.Cursor;
 import everymeal.server.store.controller.dto.response.StoreGetRes;
 import everymeal.server.store.service.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,13 +29,10 @@ public class StoreController {
 
     @GetMapping("/{campusIdx}")
     @Operation(summary = "학교 주변 식당 조회", description = "학교 주변 식당을 조회합니다")
-    public ApplicationResponse<Page<StoreGetRes>> getStores(
+    public ApplicationResponse<Cursor<StoreGetRes>> getStores(
             @PathVariable(value = "campusIdx")
                     @Schema(title = "캠퍼스 키 값", description = "캠퍼스 키 값", example = "1")
                     Long campusIdx,
-            @RequestParam(value = "offset", defaultValue = "0")
-                    @Schema(title = "페이지 번호", example = "0", description = "0부터 시작합니다")
-                    Integer offset,
             @RequestParam(value = "limit", defaultValue = "10")
                     @Schema(
                             title = "Data 갯수",
@@ -52,7 +50,14 @@ public class StoreController {
                                 SORT_REVIEWCOUNT,
                                 SORT_GRADE
                             })
-                    String orderBy) {
+                    String orderBy,
+            @RequestParam(value = "cursorId", required = false)
+                @Schema(
+                        title = "커서 아이디",
+                        description = "커서 키 값"
+                )
+                    Long cursorId
+    ) {
         Sort sort = Sort.by(orderBy);
         sort =
                 switch (orderBy) {
@@ -60,7 +65,8 @@ public class StoreController {
                     case SORT_RECOMMENDEDCNOUNT, SORT_REVIEWCOUNT, SORT_GRADE -> sort.descending();
                     default -> Sort.by(orderBy);
                 };
+
         return ApplicationResponse.ok(
-                storeService.getStores(campusIdx, PageRequest.of(offset, limit, sort)));
+                storeService.getStores(campusIdx, PageRequest.of(0, limit, sort), cursorId));
     }
 }

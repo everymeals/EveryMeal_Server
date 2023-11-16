@@ -43,4 +43,26 @@ public class Store {
     @ManyToOne(fetch = FetchType.LAZY)
     private University university;
 
+    @Builder
+    public Store(String name, String address, String categoryGroup, String category,
+        String categoryDetail, String kakaoId, String phone, Integer distance, String url,
+        String roadAddress, String x, String y, Double grade, Integer reviewCount,
+        Integer recommendedCount, University university) {
+        this.name = name;
+        this.address = address;
+        this.categoryGroup = categoryGroup;
+        this.category = category;
+        this.categoryDetail = categoryDetail;
+        this.kakaoId = kakaoId;
+        this.phone = phone;
+        this.distance = distance;
+        this.url = url;
+        this.roadAddress = roadAddress;
+        this.x = x;
+        this.y = y;
+        this.grade = grade;
+        this.reviewCount = reviewCount;
+        this.recommendedCount = recommendedCount;
+        this.university = university;
+    }
 }

@@ -3,6 +3,7 @@ package everymeal.server.store.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import everymeal.server.global.IntegrationTestSupport;
+import everymeal.server.global.dto.response.Cursor;
 import everymeal.server.store.controller.dto.response.StoreGetRes;
 import everymeal.server.store.entity.Store;
 import everymeal.server.store.repository.StoreRepository;
@@ -52,12 +53,12 @@ class StoreServiceImplTest extends IntegrationTestSupport {
                         createEntity("store2", 2, university),
                         createEntity("store3", 1, university));
         storeRepository.saveAll(entity);
-
+        Long cursorId = null;
         // when
-        Page<StoreGetRes> stores = storeService.getStores(campusIdx, pageRequest);
+        Cursor<StoreGetRes> stores = storeService.getStores(campusIdx, pageRequest, cursorId);
 
         // then
-        assertThat(stores.getContent())
+        assertThat(stores.getContents())
                 .hasSize(3)
                 .extracting("name")
                 .containsExactly("store3", "store2", "store1");
