@@ -14,6 +14,7 @@ import everymeal.server.meal.entity.MealCategory;
 import everymeal.server.meal.entity.MealStatus;
 import everymeal.server.meal.entity.MealType;
 import everymeal.server.meal.entity.Restaurant;
+import everymeal.server.meal.repository.MealDao;
 import everymeal.server.meal.repository.MealRepository;
 import everymeal.server.meal.repository.MealRepositoryCustom;
 import everymeal.server.meal.repository.RestaurantRepository;
@@ -24,6 +25,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,16 +36,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class MealServiceImpl implements MealService {
 
-    private final MealRepository mealRepository;
-    private final MealRepositoryCustom mealRepositoryCustom;
-    private final UniversityRepository universityRepository;
-    private final RestaurantRepository restaurantRepository;
     /**
      * ============================================================================================
-     * GLOBAL STATIC CONSTANTS
-     * =============================================================================================
+     * DI
+     * ============================================================================================
      */
-    private final String TIME_PARSING_INFO = "T00:00:00";
+    private final MealRepository mealRepository; // 기본 JPA 제공 DAO
+
+    private final MealRepositoryCustom mealRepositoryCustom; // QueryDsl DAO
+    private final MealDao mealDao; // JPQL DAO
+    private final UniversityRepository universityRepository;
+    private final RestaurantRepository restaurantRepository;
 
     /**
      * ============================================================================================
@@ -82,7 +86,7 @@ public class MealServiceImpl implements MealService {
      * ============================================================================================
      * 학식 식단 등록 ( 주간, 하루 모두 등록 가능 )
      *
-     * @param weekMealRegisterReq 식단 등록 요청 DTO
+     * @param request 식단 등록 요청 DTO
      * @return true
      *     <p>식당이 없는 경우,
      * @throws ApplicationException 404 존재하지 않는 식당입니다. <br>
@@ -92,33 +96,35 @@ public class MealServiceImpl implements MealService {
      */
     @Override
     @Transactional
-    public Boolean createWeekMeal(WeekMealRegisterReq weekMealRegisterReq) {
+    public Boolean createWeekMeal(WeekMealRegisterReq request) {
         // 식당 조회
         Restaurant restaurant =
                 restaurantRepository
-                        .findById(weekMealRegisterReq.restaurantIdx())
+                        .findById(request.restaurantIdx())
                         .orElseThrow(
                                 () -> new ApplicationException(ExceptionList.RESTAURANT_NOT_FOUND));
         // REQ 데이터 제공 날짜 기준 오름차순 정렬
-        weekMealRegisterReq
-                .registerReqList()
-                .sort(Comparator.comparing(MealRegisterReq::offeredAt));
+        request.registerReqList().sort(Comparator.comparing(MealRegisterReq::offeredAt));
         // 식단 등록
         List<Meal> mealList = new ArrayList<>();
-        for (MealRegisterReq req : weekMealRegisterReq.registerReqList()) {
+        for (MealRegisterReq req : request.registerReqList()) {
             // 제공날짜, 학생식당, 식사분류가 동일한 데이터가 이미 존재하면, 덮어쓰기 불가능 오류
             if (!mealRepositoryCustom
                     .findAllByOfferedAtOnDateAndMealType(
-                            req.offeredAt(), MealType.valueOf(req.mealType()), restaurant)
+                            req.offeredAt(),
+                            MealType.valueOf(req.mealType()),
+                            request.universityName())
                     .isEmpty()) {
                 throw new ApplicationException(ExceptionList.INVALID_MEAL_OFFEREDAT_REQUEST);
             } else {
                 LocalDate iOfferedAt = LocalDate.from(req.offeredAt());
+                // nullable 데이터 기본값 바인딩
                 MealStatus mealStatus =
                         req.mealStatus() == null
                                 ? MealStatus.OPEN
                                 : MealStatus.valueOf(req.mealStatus());
                 Double price = req.price() == null ? 0.0 : req.price();
+                // 데이터 생성
                 Meal meal =
                         Meal.builder()
                                 .mealStatus(mealStatus)
@@ -132,7 +138,7 @@ public class MealServiceImpl implements MealService {
                 mealList.add(meal);
             }
         }
-        mealRepository.saveAll(mealList);
+        mealDao.saveAll(mealList);
         return true;
     }
     /**
@@ -158,7 +164,7 @@ public class MealServiceImpl implements MealService {
                                 () -> new ApplicationException(ExceptionList.UNIVERSITY_NOT_FOUND));
         // 학교와 식당 폐업 여부를 키로 조회
         List<Restaurant> restaurants =
-                restaurantRepository.findAllByUniversityAndUseYnTrue(university);
+                restaurantRepository.findAllByUniversityAndIsDeletedFalse(university);
         return RestaurantListGetRes.of(restaurants);
     }
     /**
@@ -166,33 +172,26 @@ public class MealServiceImpl implements MealService {
      * 학식 식단 Day 조회 <br>
      * 등록되지 않은 식단 데이터는 아침/점심/저녁 포맷팅에 맞게 응답 데이터를 생성해서 반환합니다.
      *
-     * @param restaurantIdx 식당 아이디
-     * @param offeredAt 제공 일자 --- yyyy-MM-dd
-     * @return List<DayMealListGetRes>
-     *     <p>식당이 없는 경우,
-     * @throws ApplicationException 404 존재하지 않는 식당입니다. <br>
+     * @param universityName
+     * @param campusName
+     * @param offeredAt 제공 일자 --yyyy-MM-dd
+     * @return Map<String, List<DayMealListGetRes>>
      *     =========================================================================================
      */
     @Override
-    public List<DayMealListGetRes> getDayMealList(Long restaurantIdx, String offeredAt) {
-        // offeredAt을 LocalDate로 바꿉니다.
-        LocalDate ldOfferedAt = LocalDate.parse(offeredAt);
-
-        // 학생 식당 등록 여부 판단
-        Restaurant restaurant =
-                restaurantRepository
-                        .findById(restaurantIdx)
-                        .orElseThrow(
-                                () -> new ApplicationException(ExceptionList.RESTAURANT_NOT_FOUND));
-
-        return mealRepositoryCustom.findAllByOfferedAtOnDate(ldOfferedAt, restaurant);
+    public Map<String, List<DayMealListGetRes>> getDayMealList(
+            String universityName, String campusName, String offeredAt) {
+        return mealDao.findDayListByOfferedAtAndUniversity(
+                Optional.of(offeredAt),
+                Optional.ofNullable(universityName),
+                Optional.ofNullable(campusName));
     }
     /**
      * ============================================================================================
      * 학식 식단 Week 조회 <br>
      * 등록되지 않은 식단 데이터는 아침/점심/저녁 포맷팅에 맞게 응답 데이터를 생성해서 반환합니다.
      *
-     * @param restaurantIdx 식당 아이디
+     * @param universityName 식당 아이디
      * @param offeredAt 제공 일자 --- yyyy-MM-dd
      * @return List<WeekMealListGetResTest>
      *     <p>식당이 없는 경우,
@@ -200,12 +199,7 @@ public class MealServiceImpl implements MealService {
      *     =========================================================================================
      */
     @Override
-    public List<WeekMealListGetRes> getWeekMealListTest(Long restaurantIdx, String offeredAt) {
-        Restaurant restaurant =
-                restaurantRepository
-                        .findById(restaurantIdx)
-                        .orElseThrow(
-                                () -> new ApplicationException(ExceptionList.RESTAURANT_NOT_FOUND));
+    public List<WeekMealListGetRes> getWeekMealListTest(String universityName, String offeredAt) {
 
         // 현재 날짜와 시간을 가져옵니다.
         LocalDate ldOfferedAt = LocalDate.parse(offeredAt);
@@ -231,6 +225,6 @@ public class MealServiceImpl implements MealService {
                             DayOfWeek.SUNDAY.getValue() - (long) currentDayOfWeek.getValue());
         }
 
-        return mealRepositoryCustom.getWeekMealList(restaurant, monday, sunday);
+        return mealRepositoryCustom.getWeekMealList(universityName, monday, sunday);
     }
 }

@@ -2,7 +2,10 @@ package everymeal.server.user.entity;
 
 
 import everymeal.server.global.entity.BaseEntity;
+import everymeal.server.review.entity.Review;
+import everymeal.server.review.entity.ReviewMark;
 import everymeal.server.university.entity.University;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,7 +13,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,6 +46,12 @@ public class User extends BaseEntity {
     private String profileImgUrl;
 
     @ManyToOne private University university;
+
+    @OneToMany(mappedBy = "user")
+    private Set<Review> reviews;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    Set<ReviewMark> reviewMarks = new HashSet<>();
 
     @Builder
     public User(String nickname, String email, String profileImgUrl, University university) {

@@ -14,11 +14,11 @@ import everymeal.server.meal.entity.MealCategory;
 import everymeal.server.meal.entity.MealStatus;
 import everymeal.server.meal.entity.MealType;
 import everymeal.server.meal.entity.QMeal;
-import everymeal.server.meal.entity.Restaurant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.h2.util.StringUtils;
 
 @RequiredArgsConstructor
 public class MealRepositoryImpl implements MealRepositoryCustom {
@@ -35,19 +35,19 @@ public class MealRepositoryImpl implements MealRepositoryCustom {
      *
      * @param offeredAt 제공일자
      * @param mealType 식사구분 ( 조식/중식/석식 )
-     * @param restaurant 학생식당
+     * @param universityName 학교
      * @return List<Meal>
      *     =========================================================================================
      */
     @Override
     public List<Meal> findAllByOfferedAtOnDateAndMealType(
-            LocalDate offeredAt, MealType mealType, Restaurant restaurant) {
+            LocalDate offeredAt, MealType mealType, String universityName) {
         QMeal qMeal = meal;
         var queryResult =
                 jpaQueryFactory
                         .selectFrom(qMeal)
                         .where(
-                                qMeal.restaurant.eq(restaurant),
+                                isEqUniversityName(universityName),
                                 isEqOfferedAt(offeredAt),
                                 isEqMealType(mealType))
                         .fetch();
@@ -59,32 +59,35 @@ public class MealRepositoryImpl implements MealRepositoryCustom {
      * 일별 식사구분에 따른 식사 데이터 조회 <br>
      *
      * @param offeredAt 제공일자
-     * @param restaurant 식당
+     * @param universityName 식당
      * @return List<Meal>
      *     =========================================================================================
      */
     @Override
     public List<DayMealListGetRes> findAllByOfferedAtOnDate(
-            LocalDate offeredAt, Restaurant restaurant) {
+            LocalDate offeredAt, String universityName) {
         QMeal qMeal = meal;
         var queryResult =
                 jpaQueryFactory
                         .selectFrom(qMeal)
-                        .where(qMeal.restaurant.eq(restaurant), isEqOfferedAt(offeredAt))
+                        .where(isEqUniversityName(universityName), isEqOfferedAt(offeredAt))
                         .transform(
                                 groupBy(qMeal.mealType)
-                                        .as(
+                                        .as( // groupby 식당으로!
                                                 GroupBy.list(
                                                         Projections.constructor(
                                                                 DayMealListGetRes.class,
-                                                                qMeal.menu.as("menu"),
-                                                                qMeal.mealType.as("mealType"),
-                                                                qMeal.mealStatus.as("mealStatus"),
+                                                                qMeal.idx.as("mealIdx"),
                                                                 qMeal.offeredAt.as("offeredAt"),
+                                                                qMeal.mealStatus.as("mealStatus"),
+                                                                qMeal.mealType.as("mealType"),
+                                                                qMeal.menu.as("menu"),
                                                                 qMeal.price.as("price"),
                                                                 qMeal.category.as("category"),
                                                                 qMeal.restaurant.name.as(
-                                                                        "restaurantName")))));
+                                                                        "restaurantName"),
+                                                                qMeal.restaurant.university.name.as(
+                                                                        "universityName")))));
 
         List<DayMealListGetRes> resultList = new ArrayList<>();
         for (MealType mealType : MealType.values()) {
@@ -92,13 +95,15 @@ public class MealRepositoryImpl implements MealRepositoryCustom {
             if (dayMeals == null || dayMeals.isEmpty()) {
                 resultList.add(
                         new DayMealListGetRes(
-                                UN_REGISTERED_MEAL,
-                                mealType,
-                                MealStatus.CLOSED,
+                                0L,
                                 offeredAt,
+                                MealStatus.CLOSED,
+                                mealType,
+                                UN_REGISTERED_MEAL,
                                 0.0,
                                 MealCategory.DEFAULT,
-                                restaurant.getName()));
+                                universityName,
+                                universityName));
             } else {
                 resultList.addAll(dayMeals);
             }
@@ -109,7 +114,7 @@ public class MealRepositoryImpl implements MealRepositoryCustom {
      * ============================================================================================
      * 주간 식사 데이터 조회 <br>
      *
-     * @param restaurant 식당
+     * @param universityName
      * @param monday 월요일
      * @param sunday 일요일
      * @return List<WeekMealListGetResTest>
@@ -117,29 +122,30 @@ public class MealRepositoryImpl implements MealRepositoryCustom {
      */
     @Override
     public List<WeekMealListGetRes> getWeekMealList(
-            Restaurant restaurant, LocalDate monday, LocalDate sunday) {
+            String universityName, LocalDate monday, LocalDate sunday) {
         QMeal qMeal = meal;
         var transform =
                 jpaQueryFactory
                         .selectFrom(qMeal)
-                        .where(
-                                qMeal.restaurant
-                                        .eq(restaurant)
-                                        .and(qMeal.offeredAt.between(monday, sunday)))
+                        .where(qMeal.offeredAt.between(monday, sunday))
                         .transform(
                                 groupBy(qMeal.offeredAt, qMeal.mealType)
                                         .as(
                                                 GroupBy.list(
                                                         Projections.constructor(
                                                                 DayMealListGetRes.class,
-                                                                qMeal.menu.as("menu"),
-                                                                qMeal.mealType.as("mealType"),
-                                                                qMeal.mealStatus.as("mealStatus"),
+                                                                qMeal.idx.as("mealIdx"),
                                                                 qMeal.offeredAt.as("offeredAt"),
+                                                                qMeal.mealStatus.as("mealStatus"),
+                                                                qMeal.mealType.as("mealType"),
+                                                                qMeal.menu.as("menu"),
                                                                 qMeal.price.as("price"),
                                                                 qMeal.category.as("category"),
                                                                 qMeal.restaurant.name.as(
-                                                                        "restaurantName")))));
+                                                                        "restaurantName"),
+                                                                qMeal.restaurant.university.name.as(
+                                                                        "universityName")))));
+
         LocalDate currentInstant = monday;
         List<WeekMealListGetRes> result = new ArrayList<>();
         while (!currentInstant.isAfter(sunday)) {
@@ -150,13 +156,15 @@ public class MealRepositoryImpl implements MealRepositoryCustom {
                 if (dayMeals == null || dayMeals.isEmpty()) {
                     dayMealListGetResList.add(
                             new DayMealListGetRes(
-                                    UN_REGISTERED_MEAL,
-                                    mealType,
-                                    MealStatus.CLOSED,
+                                    0L,
                                     currentInstant,
+                                    MealStatus.CLOSED,
+                                    mealType,
+                                    UN_REGISTERED_MEAL,
                                     0.0,
                                     MealCategory.DEFAULT,
-                                    restaurant.getName()));
+                                    universityName,
+                                    universityName));
                 } else {
                     dayMealListGetResList.addAll(dayMeals);
                 }
@@ -179,5 +187,12 @@ public class MealRepositoryImpl implements MealRepositoryCustom {
     /** mealType 과 동일한 경우 */
     private BooleanExpression isEqMealType(MealType mealType) {
         return meal.mealType.eq(mealType);
+    }
+
+    /** universityName와 동일한 경우 */
+    private BooleanExpression isEqUniversityName(String universityName) {
+        if (StringUtils.isNullOrEmpty(universityName)) {
+            return null;
+        } else return meal.restaurant.university.name.eq(universityName);
     }
 }

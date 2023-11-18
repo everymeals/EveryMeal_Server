@@ -8,14 +8,16 @@ import everymeal.server.meal.entity.MealType;
 import java.time.LocalDate;
 
 public record DayMealListGetRes(
-        String menu,
-        MealType mealType,
-        MealStatus mealStatus,
+        Long mealIdx,
         @JsonFormat(
                         shape = JsonFormat.Shape.STRING,
                         pattern = "yyyy-MM-dd",
                         timezone = "Asia/Seoul")
                 LocalDate offeredAt,
+        MealStatus mealStatus,
+        MealType mealType,
+        String menu,
         Double price,
         MealCategory category,
-        String restaurantName) {}
+        String restaurantName,
+        String universityName) {}
