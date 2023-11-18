@@ -138,7 +138,7 @@ public class MealServiceImpl implements MealService {
                 mealList.add(meal);
             }
         }
-        mealRepository.saveAll(mealList);
+        mealDao.saveAll(mealList);
         return true;
     }
     /**
