@@ -45,4 +45,9 @@ public class S3Util {
         request.setMethod(HttpMethod.PUT);
         return amazonS3.generatePresignedUrl(request);
     }
+
+    public String getImgUrl(String fileName) {
+        URL url = amazonS3.getUrl(bucket, runningName+File.separator+fileName);
+        return url.toString();
+    }
 }
