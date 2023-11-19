@@ -21,7 +21,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,10 +44,7 @@ public class StoreController {
                     @Schema(title = "캠퍼스 키 값", description = "캠퍼스 키 값", example = "1")
                     Long campusIdx,
             @RequestParam(value = "page", defaultValue = "0")
-                    @Schema(
-                            title = "페이지 번호",
-                            example = "0",
-                            description = "페이지 번호는 0부터 시작합니다.")
+                    @Schema(title = "페이지 번호", example = "0", description = "페이지 번호는 0부터 시작합니다.")
                     Integer page,
             @RequestParam(value = "limit", defaultValue = "10")
                     @Schema(

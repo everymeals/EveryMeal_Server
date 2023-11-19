@@ -47,7 +47,7 @@ public class S3Util {
     }
 
     public String getImgUrl(String fileName) {
-        URL url = amazonS3.getUrl(bucket, runningName+File.separator+fileName);
+        URL url = amazonS3.getUrl(bucket, runningName + File.separator + fileName);
         return url.toString();
     }
 }

@@ -1,8 +1,5 @@
 package everymeal.server.store.controller.dto.response;
 
-
-import java.util.List;
-
 public record StoreGetRes(
         Long idx,
         String name,

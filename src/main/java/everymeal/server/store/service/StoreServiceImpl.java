@@ -18,8 +18,12 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public Page<StoreGetRes> getStores(
-        Long campusIdx, Pageable pageable, String group, Long userIdx, String order,
-        Integer grade) {
+            Long campusIdx,
+            Pageable pageable,
+            String group,
+            Long userIdx,
+            String order,
+            Integer grade) {
         return storeRepositoryCustom.getStores(campusIdx, pageable, group, userIdx, order, grade);
     }
 }

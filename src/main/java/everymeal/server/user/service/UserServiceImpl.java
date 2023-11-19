@@ -65,8 +65,10 @@ public class UserServiceImpl implements UserService {
         String accessToken = jwtUtil.generateAccessToken(user.getIdx());
         String refreshToken = jwtUtil.generateRefreshToken(user.getIdx(), accessToken);
         return new UserLoginRes(
-                accessToken, user.getNickname(),
-            s3Util.getImgUrl(user.getProfileImgUrl()), refreshToken);
+                accessToken,
+                user.getNickname(),
+                s3Util.getImgUrl(user.getProfileImgUrl()),
+                refreshToken);
     }
 
     @Override
@@ -83,7 +85,10 @@ public class UserServiceImpl implements UserService {
         String accessToken = jwtUtil.generateAccessToken(user.getIdx());
         String refreshToken = jwtUtil.generateRefreshToken(user.getIdx(), accessToken);
         return new UserLoginRes(
-                accessToken, user.getNickname(), s3Util.getImgUrl(user.getProfileImgUrl()), refreshToken);
+                accessToken,
+                user.getNickname(),
+                s3Util.getImgUrl(user.getProfileImgUrl()),
+                refreshToken);
     }
 
     @Override
