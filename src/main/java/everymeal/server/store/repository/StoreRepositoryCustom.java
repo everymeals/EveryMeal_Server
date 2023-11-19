@@ -8,5 +8,5 @@ import org.springframework.data.domain.Pageable;
 public interface StoreRepositoryCustom {
 
     Page<StoreGetRes> getStores(Long campusIdx, Pageable pageable, String group, Long userIdx,
-        String order);
+        String order, Integer grade);
 }

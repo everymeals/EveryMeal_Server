@@ -73,9 +73,15 @@ public class StoreController {
                     @Schema(
                             title = "그룹",
                             description = "그룹",
-                            allowableValues = {"recommend", "restaurant", "cafe", "bar", "etc"})
+                            allowableValues = {"etc", "recommend", "restaurant", "cafe", "bar"})
                     String group,
-            @Parameter(hidden = true) @AuthUser AuthenticatedUser authenticatedUser) {
+            @Parameter(hidden = true) @AuthUser AuthenticatedUser authenticatedUser,
+            @RequestParam(value = "grade", required = false)
+                    @Schema(
+                            title = "평점",
+                            description = "평점",
+                            allowableValues = {"1", "2", "3", "4", "5"})
+                    Integer grade) {
 
         return ApplicationResponse.ok(
                 storeService.getStores(
@@ -83,6 +89,7 @@ public class StoreController {
                         PageRequest.of(page, limit),
                         group,
                         authenticatedUser == null ? null : authenticatedUser.getIdx(),
-                        order));
+                        order,
+                        grade));
     }
 }

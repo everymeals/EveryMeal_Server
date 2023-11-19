@@ -12,6 +12,7 @@ import static everymeal.server.user.entity.QLike.like;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
@@ -33,7 +34,8 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
 
     @Override
     public Page<StoreGetRes> getStores(
-        Long universityIdx, Pageable pageable, String group, Long userIdx, String order) {
+        Long universityIdx, Pageable pageable, String group, Long userIdx, String order,
+        Integer grade) {
         List<StoreGetRes> fetch = query
             .select(
                 Projections.constructor(
@@ -54,6 +56,7 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
             .where(store.university.idx.eq(universityIdx)
                 .and(store.isDeleted.eq(false))
                 .and(getWhereCase(group))
+                .and(getGradeCase(grade))
             )
             .orderBy(getOrderCase(order))
             .offset(pageable.getOffset())
@@ -70,6 +73,22 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
         return new PageImpl<>(fetch, pageable, count);
     }
 
+    private BooleanBuilder getGradeCase(Integer grade) {
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        if (grade == null) {
+            return booleanBuilder;
+        }
+        BooleanExpression expression = switch (grade){
+            case 1 -> store.grade.between(0, 1);
+            case 2 -> store.grade.between(1, 2);
+            case 3 -> store.grade.between(2, 3);
+            case 4 -> store.grade.between(3, 4);
+            case 5 -> store.grade.between(4, 5);
+            default -> null;
+        };
+        return booleanBuilder.and(expression);
+    }
+
     private BooleanBuilder getWhereCase(String group) {
         BooleanBuilder whereClause = new BooleanBuilder();
         BooleanExpression expression = switch (group){
@@ -78,7 +97,7 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
                     .or(store.categoryDetail.eq("중식")
                     .or(store.categoryDetail.eq("일식"))
                     .or(store.categoryDetail.eq("양식")));
-            case "cafe" -> store.categoryDetail.eq("카페");
+            case "cafe" -> store.categoryDetail.eq("카페").or(store.categoryDetail.eq("디저트"));
             case "bar" -> store.categoryDetail.eq("술집");
             default -> store.categoryDetail.eq("기타")
                 .or(store.categoryDetail.eq("패스트푸드")

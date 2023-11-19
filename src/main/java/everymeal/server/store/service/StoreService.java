@@ -8,5 +8,5 @@ import org.springframework.data.domain.Pageable;
 public interface StoreService {
 
     Page<StoreGetRes> getStores(Long campusIdx, Pageable of, String group, Long userIdx,
-        String order);
+        String order, Integer grade);
 }
