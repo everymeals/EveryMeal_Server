@@ -1,6 +1,7 @@
 package everymeal.server.store.entity;
 
 
+import everymeal.server.global.entity.BaseEntity;
 import everymeal.server.university.entity.University;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -17,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Table
 @Entity
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-public class Store {
+public class Store extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,14 +41,29 @@ public class Store {
     private Integer reviewCount;
     private Integer recommendedCount;
 
+    private Boolean isDeleted;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private University university;
 
     @Builder
-    public Store(String name, String address, String categoryGroup, String category,
-        String categoryDetail, String kakaoId, String phone, Integer distance, String url,
-        String roadAddress, String x, String y, Double grade, Integer reviewCount,
-        Integer recommendedCount, University university) {
+    public Store(
+            String name,
+            String address,
+            String categoryGroup,
+            String category,
+            String categoryDetail,
+            String kakaoId,
+            String phone,
+            Integer distance,
+            String url,
+            String roadAddress,
+            String x,
+            String y,
+            Double grade,
+            Integer reviewCount,
+            Integer recommendedCount,
+            University university) {
         this.name = name;
         this.address = address;
         this.categoryGroup = categoryGroup;
@@ -64,5 +80,6 @@ public class Store {
         this.reviewCount = reviewCount;
         this.recommendedCount = recommendedCount;
         this.university = university;
+        this.isDeleted = Boolean.FALSE;
     }
 }

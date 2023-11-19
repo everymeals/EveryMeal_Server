@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @SecurityScheme(
-        name = "bearerAuth",
+        name = "jwt-user-auth",
         description = "JWT auth bearer token",
         scheme = "bearer",
         type = SecuritySchemeType.HTTP,
