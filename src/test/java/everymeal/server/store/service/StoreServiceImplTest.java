@@ -57,7 +57,7 @@ class StoreServiceImplTest extends IntegrationTestSupport {
 
         // when
         Page<StoreGetRes> stores =
-                storeService.getStores(campusIdx, pageRequest, "etc", null, SORT_NAME, null);
+                storeService.getStores(campusIdx, pageRequest, "etc", 1L, SORT_NAME, 1);
 
         // then
         assertThat(stores.getContent())
