@@ -42,3 +42,7 @@ springdoc:
     groups:
       enabled: true
     enabled: true
+
+mybatis:
+  type-aliases-package: everymeal.server
+  mapper-locations: mybatis/mappers/*.xml

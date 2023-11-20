@@ -3,6 +3,7 @@ package everymeal.server.review.entity;
 
 import everymeal.server.global.entity.BaseEntity;
 import everymeal.server.meal.entity.Meal;
+import everymeal.server.store.entity.Store;
 import everymeal.server.user.entity.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -50,6 +51,10 @@ public class Review extends BaseEntity {
     @JoinColumn(name = "meal_idx")
     private Meal meal;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_idx")
+    private Store store;
+
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL)
     private Set<ReviewMark> reviewMarks = new HashSet<>();
 
@@ -58,13 +63,15 @@ public class Review extends BaseEntity {
     private List<Image> images = new ArrayList<>();
 
     @Builder
-    public Review(String content, int grade, List<Image> images, User user, Meal meal) {
+    public Review(
+            String content, int grade, List<Image> images, User user, Meal meal, Store store) {
         this.content = content;
         this.grade = grade;
         this.images = images;
         this.user = user;
         this.meal = meal;
         this.isDeleted = Boolean.FALSE;
+        this.store = store;
     }
 
     public void updateEntity(String content, int grade, List<Image> images) {

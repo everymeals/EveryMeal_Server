@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="everymeal.server.store.repository.StoreMapper">
+
+
+  <select id="getStores">
+    SELECT *
+    FROM (
+    SELECT
+      s.idx as 'idx',
+      s.name as 'name',
+      s.address as 'address',
+      s.phone as 'phoneNumber',
+      s.category_detail as 'categoryDetail',
+      s.distance as 'distance',
+      s.grade as 'grade',
+      s.review_count as 'reviewCount',
+      s.recommended_count as 'recommendedCount',
+      GROUP_CONCAT(i.image_url SEPARATOR ',') AS 'images',
+      IF(
+          (
+            SELECT COUNT(*)
+            FROM likes
+            WHERE user_idx = #{userIdx}
+              AND store_idx = s.idx
+          ) = 0,
+          false,
+          true
+        ) AS 'isLiked'
+    FROM
+      store s
+    LEFT JOIN reviews r ON s.idx = r.store_idx AND r.is_deleted = false
+    LEFT JOIN images i ON r.idx = i.review_idx AND i.is_deleted = false
+    WHERE
+      s.university_idx = #{universityIdx}
+      AND s.is_deleted = FALSE
+      AND (
+      CASE
+        WHEN #{group} = 'recommend' THEN s.recommended_count > 0
+        WHEN #{group} = 'restaurant' THEN s.category_detail IN ('한식', '중식', '일식', '양식')
+        WHEN #{group} = 'cafe' THEN s.category_detail IN ('카페', '디저트')
+        WHEN #{group} = 'bar' THEN s.category_detail = '술집'
+        ELSE s.category_detail IN ('기타', '패스트푸드', '분식')
+        END
+      )
+      AND (
+      CASE
+        WHEN #{grade} = 1 THEN s.grade BETWEEN 0 AND 1
+        WHEN #{grade} = 2 THEN s.grade BETWEEN 1 AND 2
+        WHEN #{grade} = 3 THEN s.grade BETWEEN 2 AND 3
+        WHEN #{grade} = 4 THEN s.grade BETWEEN 3 AND 4
+        WHEN #{grade} = 5 THEN s.grade BETWEEN 4 AND 5
+        ELSE s.grade BETWEEN 0 AND 5
+        END
+      )
+    GROUP BY s.idx, s.name, s.address, s.phone, s.category_detail, s.distance, s.grade, s.review_count, s.recommended_count
+    ORDER BY
+      CASE #{order}
+        WHEN 'name' THEN s.name
+        WHEN 'distance' THEN s.distance
+        WHEN 'recommendedCount' THEN s.recommended_count
+        WHEN 'reviewCount' THEN s.review_count
+        WHEN 'grade' THEN s.grade
+        WHEN 'registDate' THEN s.created_at
+        ELSE s.idx
+        END DESC
+         ) a
+      LIMIT #{limit}
+    OFFSET #{offset}
+  </select>
+
+  <select id="getStoreCount">
+    SELECT COUNT(*) AS total
+    FROM (
+        SELECT
+            s.idx as 'idx',
+            s.name as 'name',
+            s.address as 'address',
+            s.phone as 'phoneNumber',
+            s.category_detail as 'categoryDetail',
+            s.distance as 'distance',
+            s.grade as 'grade',
+            s.review_count as 'reviewCount',
+            s.recommended_count as 'recommendedCount',
+            GROUP_CONCAT(i.image_url SEPARATOR ' ') AS 'images',
+            IF(
+                (
+                  SELECT COUNT(*)
+                  FROM likes
+                  WHERE user_idx = #{userIdx}
+                    AND store_idx = s.idx
+                ) = 0,
+                false,
+                true
+              ) AS 'isLiked'
+    FROM
+      store s
+        LEFT JOIN reviews r ON s.idx = r.store_idx AND r.is_deleted = false
+        LEFT JOIN images i ON r.idx = i.review_idx AND i.is_deleted = false
+    WHERE
+      s.university_idx = #{universityIdx}
+      AND s.is_deleted = FALSE
+      AND (
+      CASE
+        WHEN #{group} = 'recommend' THEN s.recommended_count > 0
+        WHEN #{group} = 'restaurant' THEN s.category_detail IN ('한식', '중식', '일식', '양식')
+        WHEN #{group} = 'cafe' THEN s.category_detail IN ('카페', '디저트')
+        WHEN #{group} = 'bar' THEN s.category_detail = '술집'
+        ELSE s.category_detail IN ('기타', '패스트푸드', '분식')
+        END
+      )
+      AND (
+      CASE
+        WHEN #{grade} = 1 THEN s.grade BETWEEN 0 AND 1
+        WHEN #{grade} = 2 THEN s.grade BETWEEN 1 AND 2
+        WHEN #{grade} = 3 THEN s.grade BETWEEN 2 AND 3
+        WHEN #{grade} = 4 THEN s.grade BETWEEN 3 AND 4
+        WHEN #{grade} = 5 THEN s.grade BETWEEN 4 AND 5
+        ELSE s.grade BETWEEN 0 AND 5
+        END
+      )
+    GROUP BY s.idx, s.name, s.address, s.phone, s.category_detail, s.distance, s.grade, s.review_count, s.recommended_count
+    ORDER BY
+      CASE #{order}
+        WHEN 'name' THEN s.name
+        WHEN 'distance' THEN s.distance
+        WHEN 'recommendedCount' THEN s.recommended_count
+        WHEN 'reviewCount' THEN s.review_count
+        WHEN 'grade' THEN s.grade
+        WHEN 'registDate' THEN s.created_at
+        ELSE s.idx
+        END DESC
+         ) total
+  </select>
+
+</mapper>

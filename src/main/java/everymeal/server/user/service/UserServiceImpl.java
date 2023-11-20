@@ -132,9 +132,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Boolean verifyEmailAuth(UserEmailLoginReq request) {
-        String emailTokenFromAuthCode = jwtUtil.getEmailTokenFromAuthCode(request.emailAuthToken());
-        if (!request.emailAuthValue().equals(emailTokenFromAuthCode)) {
+    public Boolean verifyEmailAuth(String emailAuthToken, String emailAuthValue) {
+        String emailTokenFromAuthCode = jwtUtil.getEmailTokenFromAuthCode(emailAuthToken);
+        if (!emailAuthValue.equals(emailTokenFromAuthCode)) {
             throw new ApplicationException(ExceptionList.USER_AUTH_FAIL);
         }
         return true;

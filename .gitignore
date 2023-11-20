@@ -45,5 +45,5 @@ application-secret.yml
 /src/main/resources/application-secret.yml
 /src/main/resources/application-dev.yml
 /src/main/resources/application-prod.yml
-
+/src/test/resources/application.yml
 /src/main/generated

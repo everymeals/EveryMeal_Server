@@ -15,7 +15,7 @@ public interface UserService {
 
     UserEmailAuthRes emailAuth(UserEmailAuthReq request);
 
-    Boolean verifyEmailAuth(UserEmailLoginReq request);
+    Boolean verifyEmailAuth(String emailAuthToken, String emailAuthValue);
 
     Boolean checkUser(String email);
 }

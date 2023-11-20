@@ -43,9 +43,9 @@ public class StoreController {
             @PathVariable(value = "campusIdx")
                     @Schema(title = "캠퍼스 키 값", description = "캠퍼스 키 값", example = "1")
                     Long campusIdx,
-            @RequestParam(value = "page", defaultValue = "0")
+            @RequestParam(value = "offset", defaultValue = "0")
                     @Schema(title = "페이지 번호", example = "0", description = "페이지 번호는 0부터 시작합니다.")
-                    Integer page,
+                    Integer offset,
             @RequestParam(value = "limit", defaultValue = "10")
                     @Schema(
                             title = "Data 갯수",
@@ -82,7 +82,7 @@ public class StoreController {
         return ApplicationResponse.ok(
                 storeService.getStores(
                         campusIdx,
-                        PageRequest.of(page, limit),
+                        PageRequest.of(offset, limit),
                         group,
                         authenticatedUser == null ? null : authenticatedUser.getIdx(),
                         order,

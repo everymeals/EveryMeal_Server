@@ -18,6 +18,7 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import everymeal.server.store.controller.dto.response.StoreGetRes;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,6 +31,8 @@ import org.springframework.stereotype.Repository;
 public class StoreRepositoryImpl implements StoreRepositoryCustom {
     private final JPAQueryFactory query;
 
+    private EntityManager entityManager;
+
     @Override
     public Page<StoreGetRes> getStores(
             Long universityIdx,
@@ -38,7 +41,8 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
             Long userIdx,
             String order,
             Integer grade) {
-        List<StoreGetRes> fetch =
+
+        List<StoreGetRes> result =
                 query.select(
                                 Projections.constructor(
                                         StoreGetRes.class,
@@ -51,6 +55,10 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
                                         store.grade,
                                         store.reviewCount,
                                         store.recommendedCount,
+                                        Expressions.stringTemplate(
+                                                        "group_concat({0}, ' ')", store.images)
+                                                .countDistinct()
+                                                .as("likeCount"),
                                         getStoreLikeCheck(userIdx)))
                         .from(store)
                         .where(
@@ -75,7 +83,7 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
                                         .and(store.isDeleted.eq(false)))
                         .fetchOne();
 
-        return new PageImpl<>(fetch, pageable, count);
+        return new PageImpl<>(result, pageable, count);
     }
 
     private BooleanBuilder getGradeCase(Integer grade) {

@@ -2,14 +2,22 @@ package everymeal.server.store.entity;
 
 
 import everymeal.server.global.entity.BaseEntity;
+import everymeal.server.review.entity.Image;
+import everymeal.server.review.entity.Review;
 import everymeal.server.university.entity.University;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,6 +53,13 @@ public class Store extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private University university;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "store_idx")
+    private List<Image> images = new ArrayList<>();
+
+    @OneToMany(mappedBy = "store")
+    private Set<Review> reviews;
 
     @Builder
     public Store(

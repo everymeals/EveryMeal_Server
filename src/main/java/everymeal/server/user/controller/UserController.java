@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -106,8 +107,18 @@ public class UserController {
     @Operation(
             summary = "이메일 인증 확인",
             description = "이메일 인증을 확인합니다. <br> Request에는 이메일 인증 시 발송된 값이 담겨야 합니다.")
-    public ApplicationResponse<Boolean> verifyEmailAuth(@RequestBody UserEmailLoginReq request) {
-        return ApplicationResponse.ok(userService.verifyEmailAuth(request));
+    public ApplicationResponse<Boolean> verifyEmailAuth(
+            @Schema(
+                            description = "이메일 인증 API에서 반환된 토큰 값",
+                            defaultValue = "eyBdvsjfgsdkgb",
+                            example = "eyBdvsjfgsdkgb")
+                    @NotBlank(message = "이메일 인증 토큰을 입력해주세요.")
+                    @RequestParam
+                    String emailAuthToken,
+            @Schema(description = "이메일 유저가 입력한 인증 값", defaultValue = "123456", example = "123456")
+                    @NotBlank(message = "인증번호를 입력해주세요.")
+                    String emailAuthValue) {
+        return ApplicationResponse.ok(userService.verifyEmailAuth(emailAuthToken, emailAuthValue));
     }
 
     @GetMapping("/email")
