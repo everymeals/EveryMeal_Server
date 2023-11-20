@@ -30,6 +30,16 @@ jobs:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
+
+      - name: Start MySQL
+        uses: samin/mysql-action@v1.3
+        with:
+          host port: 3303
+          container port: 3303
+          mysql database: 'test_db'
+          mysql user: 'test'
+          mysql password: 'test_pw'
+
       - name: Make application-secret.yml
         run: |
           cd ./src/main/resources
