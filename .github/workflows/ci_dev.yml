@@ -54,6 +54,7 @@ jobs:
           touch ./application.yml
           echo "${{ secrets.PROPERTIES_SECRET_TEST }}" > ./application.yml
         shell: bash
+
       - name: Build and analyze
         run: ./gradlew test sonar --info
         env:
