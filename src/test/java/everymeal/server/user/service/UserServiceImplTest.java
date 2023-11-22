@@ -232,14 +232,15 @@ class UserServiceImplTest extends IntegrationTestSupport {
         String token = jwtUtil.generateEmailToken("test@gmail.com", "12345");
 
         University university =
-            universityRepository.save(
-                University.builder().name("명지대학교").campusName("인문캠퍼스").build());
+                universityRepository.save(
+                        University.builder().name("명지대학교").campusName("인문캠퍼스").build());
         UserEmailSingReq request =
-            new UserEmailSingReq("nickname", token, "12345", university.getIdx(), "imageKey");
+                new UserEmailSingReq("nickname", token, "12345", university.getIdx(), "imageKey");
 
         UserLoginRes userLoginRes = userService.signUp(request);
 
-        AuthenticatedUser user = jwtUtil.getAuthenticateUserFromAccessToken(userLoginRes.accessToken());
+        AuthenticatedUser user =
+                jwtUtil.getAuthenticateUserFromAccessToken(userLoginRes.accessToken());
 
         // when
         var response = userService.getUserProfile(user);

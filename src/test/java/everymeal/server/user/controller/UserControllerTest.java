@@ -22,8 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 class UserControllerTest extends ControllerTestSupport {
-    @Mock
-    UserJwtResolver userJwtResolver;
+    @Mock UserJwtResolver userJwtResolver;
 
     @DisplayName("회원가입을 진행한다.")
     @Test
@@ -128,13 +127,11 @@ class UserControllerTest extends ControllerTestSupport {
     void getUserProfile() throws Exception {
         // given
         given(userJwtResolver.resolveArgument(any(), any(), any(), any()))
-            .willReturn(AuthenticatedUser.builder().idx(1L).build());
+                .willReturn(AuthenticatedUser.builder().idx(1L).build());
         // when-then
-        mockMvc.perform(
-                get("/api/v1/users/profile")
-                    .contentType(MediaType.APPLICATION_JSON))
-            .andDo(MockMvcResultHandlers.print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.message").value("OK"));
+        mockMvc.perform(get("/api/v1/users/profile").contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("OK"));
     }
 }
