@@ -46,6 +46,7 @@ jobs:
           touch ./application-secret.yml
           echo "${{ secrets.PROPERTIES_SECRET }}" > ./application-secret.yml
         shell: bash
+
       - name: Make test application.yml
         run: |
           mkdir /src/test/resources
