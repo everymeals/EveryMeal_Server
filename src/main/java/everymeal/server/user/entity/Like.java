@@ -1,6 +1,7 @@
 package everymeal.server.user.entity;
 
 
+import everymeal.server.global.entity.BaseEntity;
 import everymeal.server.store.entity.Store;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,10 +14,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Table
+@Table(name = "likes")
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Scrap {
+public class Like extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

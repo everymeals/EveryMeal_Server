@@ -13,5 +13,5 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
     Optional<Store> findByKakaoId(String kakaoId);
 
-    Page<Store> findByUniversityIdx(Long universityIdx, Pageable pageable);
+    Page<Store> findByUniversityIdxOrderByIdxDesc(Long universityIdx, Pageable pageable);
 }

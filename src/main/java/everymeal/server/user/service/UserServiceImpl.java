@@ -5,6 +5,7 @@ import everymeal.server.global.exception.ApplicationException;
 import everymeal.server.global.exception.ExceptionList;
 import everymeal.server.global.util.JwtUtil;
 import everymeal.server.global.util.MailUtil;
+import everymeal.server.global.util.aws.S3Util;
 import everymeal.server.university.entity.University;
 import everymeal.server.university.repository.UniversityRepository;
 import everymeal.server.user.controller.dto.request.UserEmailAuthReq;
@@ -30,6 +31,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
     private final MailUtil mailUtil;
+    private final S3Util s3Util;
 
     @Override
     @Transactional
@@ -63,7 +65,10 @@ public class UserServiceImpl implements UserService {
         String accessToken = jwtUtil.generateAccessToken(user.getIdx());
         String refreshToken = jwtUtil.generateRefreshToken(user.getIdx(), accessToken);
         return new UserLoginRes(
-                accessToken, user.getNickname(), user.getProfileImgUrl(), refreshToken);
+                accessToken,
+                user.getNickname(),
+                s3Util.getImgUrl(user.getProfileImgUrl()),
+                refreshToken);
     }
 
     @Override
@@ -80,7 +85,10 @@ public class UserServiceImpl implements UserService {
         String accessToken = jwtUtil.generateAccessToken(user.getIdx());
         String refreshToken = jwtUtil.generateRefreshToken(user.getIdx(), accessToken);
         return new UserLoginRes(
-                accessToken, user.getNickname(), user.getProfileImgUrl(), refreshToken);
+                accessToken,
+                user.getNickname(),
+                s3Util.getImgUrl(user.getProfileImgUrl()),
+                refreshToken);
     }
 
     @Override
@@ -124,9 +132,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Boolean verifyEmailAuth(UserEmailLoginReq request) {
-        String emailTokenFromAuthCode = jwtUtil.getEmailTokenFromAuthCode(request.emailAuthToken());
-        if (!request.emailAuthValue().equals(emailTokenFromAuthCode)) {
+    public Boolean verifyEmailAuth(String emailAuthToken, String emailAuthValue) {
+        String emailTokenFromAuthCode = jwtUtil.getEmailTokenFromAuthCode(emailAuthToken);
+        if (!emailAuthValue.equals(emailTokenFromAuthCode)) {
             throw new ApplicationException(ExceptionList.USER_AUTH_FAIL);
         }
         return true;

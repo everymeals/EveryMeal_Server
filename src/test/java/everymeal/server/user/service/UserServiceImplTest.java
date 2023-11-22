@@ -8,6 +8,7 @@ import everymeal.server.global.exception.ApplicationException;
 import everymeal.server.global.exception.ExceptionList;
 import everymeal.server.global.util.JwtUtil;
 import everymeal.server.global.util.MailUtil;
+import everymeal.server.global.util.aws.S3Util;
 import everymeal.server.university.entity.University;
 import everymeal.server.university.repository.UniversityRepository;
 import everymeal.server.user.controller.dto.request.UserEmailAuthReq;
@@ -30,6 +31,7 @@ class UserServiceImplTest extends IntegrationTestSupport {
     @Autowired private JwtUtil jwtUtil;
     @MockBean private MailUtil mailUtil;
     @Autowired private UniversityRepository universityRepository;
+    @Autowired private S3Util s3Util;
 
     @AfterEach
     void tearDown() {
@@ -53,7 +55,7 @@ class UserServiceImplTest extends IntegrationTestSupport {
 
         // then
         assertThat(userLoginRes.nickname()).isEqualTo(request.nickname());
-        assertThat(userLoginRes.profileImg()).isEqualTo(request.profileImgKey());
+        assertThat(userLoginRes.profileImg()).isEqualTo(s3Util.getImgUrl(request.profileImgKey()));
     }
 
     @DisplayName("회원가입에서 이메일 토큰에서 추출한 값과 요청 값이 다를 경우 에러가 발생한다.")
@@ -187,10 +189,8 @@ class UserServiceImplTest extends IntegrationTestSupport {
         // given
         String token = jwtUtil.generateEmailToken("test@gmail.com", "12345");
 
-        UserEmailLoginReq request = new UserEmailLoginReq(token, "12345");
-
         // when
-        Boolean response = userService.verifyEmailAuth(request);
+        Boolean response = userService.verifyEmailAuth(token, "12345");
 
         // then
         assertThat(response).isTrue();
@@ -201,12 +201,12 @@ class UserServiceImplTest extends IntegrationTestSupport {
     void verifyEmailAuthNotMatched() {
         // given
         String token = jwtUtil.generateEmailToken("test@gmail.com", "67891");
-        UserEmailLoginReq request = new UserEmailLoginReq(token, "12345");
 
         // when then
         ApplicationException applicationException =
                 assertThrows(
-                        ApplicationException.class, () -> userService.verifyEmailAuth(request));
+                        ApplicationException.class,
+                        () -> userService.verifyEmailAuth(token, "12345"));
 
         assertEquals(applicationException.getErrorCode(), ExceptionList.USER_AUTH_FAIL.getCODE());
     }

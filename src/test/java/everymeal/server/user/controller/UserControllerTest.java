@@ -85,12 +85,15 @@ class UserControllerTest extends ControllerTestSupport {
     @Test
     void verifyEmailAuth() throws Exception {
         // given
-        UserEmailAuthReq request = new UserEmailAuthReq("test@gmail.com");
+
+        String emailAuthToken = "testToken";
+        String emailAuthValue = "testValue";
 
         // when then
         mockMvc.perform(
                         get("/api/v1/users/email/verify")
-                                .content(objectMapper.writeValueAsString(request))
+                                .param("emailAuthToken", emailAuthToken)
+                                .param("emailAuthValue", emailAuthValue)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
