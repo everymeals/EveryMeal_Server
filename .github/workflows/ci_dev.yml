@@ -49,11 +49,6 @@ jobs:
 
       - name: Make test application.yml
         run: |
-          if [ ! -d "src/test/resources" ]; then
-            mkdir src/test/resources
-          fi
-          echo "Current directory: $(pwd)"
-          echo "Contents of src/test/resources before: $(ls -al src/test/resources)"
           cd ./src/test/resources
           touch ./application.yml
           echo "${{ secrets.PROPERTIES_SECRET_TEST }}" > ./application.yml
