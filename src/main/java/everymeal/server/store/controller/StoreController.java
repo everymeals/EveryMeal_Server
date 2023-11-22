@@ -65,11 +65,18 @@ public class StoreController {
                                 SORT_RECENT
                             })
                     String order,
-            @RequestParam(value = "group")
+            @RequestParam(value = "group", required = false, defaultValue = "all")
                     @Schema(
                             title = "그룹",
                             description = "그룹",
-                            allowableValues = {"etc", "recommend", "restaurant", "cafe", "bar"})
+                            allowableValues = {
+                                "all",
+                                "etc",
+                                "recommend",
+                                "restaurant",
+                                "cafe",
+                                "bar"
+                            })
                     String group,
             @Parameter(hidden = true) @AuthUser AuthenticatedUser authenticatedUser,
             @RequestParam(value = "grade", required = false)

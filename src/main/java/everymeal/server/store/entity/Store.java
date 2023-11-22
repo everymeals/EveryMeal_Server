@@ -34,8 +34,11 @@ public class Store extends BaseEntity {
 
     private String name;
     private String address;
+    // 카카오에서 제공하는 카테고리
     private String categoryGroup;
+    // 조회할때 쓰인 음식점, 카페에 대한 카테고리
     private String category;
+    // 조회 기반에 따라 세분화된 카테고리
     private String categoryDetail;
     private String kakaoId;
     private String phone;
