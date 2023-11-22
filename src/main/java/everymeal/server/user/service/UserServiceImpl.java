@@ -5,6 +5,7 @@ import everymeal.server.global.exception.ApplicationException;
 import everymeal.server.global.exception.ExceptionList;
 import everymeal.server.global.util.JwtUtil;
 import everymeal.server.global.util.MailUtil;
+import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
 import everymeal.server.global.util.aws.S3Util;
 import everymeal.server.university.entity.University;
 import everymeal.server.university.repository.UniversityRepository;
@@ -13,10 +14,13 @@ import everymeal.server.user.controller.dto.request.UserEmailLoginReq;
 import everymeal.server.user.controller.dto.request.UserEmailSingReq;
 import everymeal.server.user.controller.dto.response.UserEmailAuthRes;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
+import everymeal.server.user.controller.dto.response.UserProfileRes;
 import everymeal.server.user.entity.User;
+import everymeal.server.user.repository.UserMapper;
 import everymeal.server.user.repository.UserRepository;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Map;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,6 +36,7 @@ public class UserServiceImpl implements UserService {
     private final JwtUtil jwtUtil;
     private final MailUtil mailUtil;
     private final S3Util s3Util;
+    private final UserMapper userMapper;
 
     @Override
     @Transactional
@@ -143,5 +148,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean checkUser(String email) {
         return userRepository.findByEmail(email).isPresent();
+    }
+
+    @Override
+    public UserProfileRes getUserProfile(AuthenticatedUser authenticatedUser) {
+        Map<String, Object> result = userMapper.getUserProfile(authenticatedUser.getIdx());
+        return UserProfileRes.of(result);
     }
 }

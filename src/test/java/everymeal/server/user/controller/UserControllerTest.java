@@ -9,16 +9,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import everymeal.server.global.ControllerTestSupport;
+import everymeal.server.global.util.authresolver.UserJwtResolver;
+import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
 import everymeal.server.user.controller.dto.request.UserEmailAuthReq;
 import everymeal.server.user.controller.dto.request.UserEmailLoginReq;
 import everymeal.server.user.controller.dto.request.UserEmailSingReq;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 class UserControllerTest extends ControllerTestSupport {
+    @Mock
+    UserJwtResolver userJwtResolver;
 
     @DisplayName("회원가입을 진행한다.")
     @Test
@@ -116,5 +121,20 @@ class UserControllerTest extends ControllerTestSupport {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("OK"));
+    }
+
+    @DisplayName("인증된 유저의 프로필 정보 조회")
+    @Test
+    void getUserProfile() throws Exception {
+        // given
+        given(userJwtResolver.resolveArgument(any(), any(), any(), any()))
+            .willReturn(AuthenticatedUser.builder().idx(1L).build());
+        // when-then
+        mockMvc.perform(
+                get("/api/v1/users/profile")
+                    .contentType(MediaType.APPLICATION_JSON))
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.message").value("OK"));
     }
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="everymeal.server.user.repository.UserMapper">
+
+  <select id="getUserProfile">
+    SELECT
+      u.idx as userId,
+      u.nickname as nickName,
+      u.profile_img_url as profileImgUrl,
+      u2.name as universityName
+    FROM users u
+           INNER JOIN university u2 ON u.university_idx = u2.idx AND u2.is_deleted = false
+    WHERE u.is_deleted = false AND u.idx = #{idx}
+  </select>
+
+</mapper>

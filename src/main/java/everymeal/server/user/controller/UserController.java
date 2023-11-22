@@ -2,17 +2,23 @@ package everymeal.server.user.controller;
 
 
 import everymeal.server.global.dto.response.ApplicationResponse;
+import everymeal.server.global.util.authresolver.Auth;
+import everymeal.server.global.util.authresolver.AuthUser;
+import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
 import everymeal.server.user.controller.dto.request.UserEmailAuthReq;
 import everymeal.server.user.controller.dto.request.UserEmailLoginReq;
 import everymeal.server.user.controller.dto.request.UserEmailSingReq;
 import everymeal.server.user.controller.dto.response.UserEmailAuthRes;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
+import everymeal.server.user.controller.dto.response.UserProfileRes;
 import everymeal.server.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -128,6 +134,15 @@ public class UserController {
     public ApplicationResponse<Boolean> checkUser(
             @Schema(description = "이메일", example = "test@gmail.com") @RequestParam String email) {
         return ApplicationResponse.ok(userService.checkUser(email));
+    }
+
+    @Auth(require = true)
+    @GetMapping("/profile")
+    @SecurityRequirement(name = "jwt-user-auth")
+    @Operation(summary = "인증된 사용자의 프로필 정보 조회", description = "인증된 사용자의 프로필 정보를 조회합니다.")
+    public ApplicationResponse<UserProfileRes> getUserProfile(
+            @Parameter(hidden = true) @AuthUser AuthenticatedUser authenticatedUser) {
+        return ApplicationResponse.ok(userService.getUserProfile(authenticatedUser));
     }
 
     private ResponseEntity<ApplicationResponse<UserLoginRes>> setRefreshToken(

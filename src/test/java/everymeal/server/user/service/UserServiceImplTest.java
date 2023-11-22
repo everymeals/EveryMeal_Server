@@ -8,6 +8,7 @@ import everymeal.server.global.exception.ApplicationException;
 import everymeal.server.global.exception.ExceptionList;
 import everymeal.server.global.util.JwtUtil;
 import everymeal.server.global.util.MailUtil;
+import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
 import everymeal.server.global.util.aws.S3Util;
 import everymeal.server.university.entity.University;
 import everymeal.server.university.repository.UniversityRepository;
@@ -222,6 +223,29 @@ class UserServiceImplTest extends IntegrationTestSupport {
 
         // then
         assertThat(response).isTrue();
+    }
+
+    @DisplayName("인증된 유저의 프로필 확인")
+    @Test
+    void getUserProfile() {
+        // given
+        String token = jwtUtil.generateEmailToken("test@gmail.com", "12345");
+
+        University university =
+            universityRepository.save(
+                University.builder().name("명지대학교").campusName("인문캠퍼스").build());
+        UserEmailSingReq request =
+            new UserEmailSingReq("nickname", token, "12345", university.getIdx(), "imageKey");
+
+        UserLoginRes userLoginRes = userService.signUp(request);
+
+        AuthenticatedUser user = jwtUtil.getAuthenticateUserFromAccessToken(userLoginRes.accessToken());
+
+        // when
+        var response = userService.getUserProfile(user);
+
+        // then
+        assertEquals(response.nickName(), request.nickname());
     }
 
     private User createUser(String email, String nickname) {
