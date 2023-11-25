@@ -3,6 +3,9 @@ on:
   pull_request:
     branches:
     - develop
+
+permissions: write-all
+
 jobs:
   sonarcloud:
     name: SonarCloud
@@ -51,6 +54,7 @@ jobs:
         run: |
           pwd
           mkdir -p ./src/test/resources
+          echo "hello? "
           cd ./src/test/resources
           touch ./application.yml
           echo "${{ secrets.PROPERTIES_SECRET_TEST }}" > ./application.yml
