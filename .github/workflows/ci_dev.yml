@@ -52,9 +52,9 @@ jobs:
 
       - name: Make test application.yml
         run: |
-          touch ./src/test/resources/application.yml
-          echo "${{ secrets.PROPERTIES_SECRET_TEST }}" > ./src/test/resources/application.yml
-        shell: bash
+          mkdir -p src/test/resources
+          echo "${{ secrets.PROPERTIES_SECRET_TEST }}" | base64 --decode > src/test/resources/application.yml
+#        shell: bash
 
       - name: Build and analyze
         run: ./gradlew test sonar --info
