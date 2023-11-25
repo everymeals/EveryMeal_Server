@@ -16,10 +16,13 @@ import everymeal.server.user.controller.dto.request.UserEmailAuthReq;
 import everymeal.server.user.controller.dto.request.UserEmailLoginReq;
 import everymeal.server.user.controller.dto.request.UserEmailSingReq;
 import everymeal.server.user.controller.dto.request.UserProfileUpdateReq;
+import everymeal.server.user.controller.dto.request.WithdrawalReq;
 import everymeal.server.user.controller.dto.response.UserEmailAuthRes;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
 import everymeal.server.user.entity.User;
+import everymeal.server.user.entity.WithdrawalReason;
 import everymeal.server.user.repository.UserRepository;
+import everymeal.server.user.repository.WithdrawalRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,9 +37,11 @@ class UserServiceImplTest extends IntegrationTestSupport {
     @MockBean private MailUtil mailUtil;
     @Autowired private UniversityRepository universityRepository;
     @Autowired private S3Util s3Util;
+    @Autowired private WithdrawalRepository withdrawalRepository;
 
     @AfterEach
     void tearDown() {
+        withdrawalRepository.deleteAllInBatch();
         userRepository.deleteAllInBatch();
     }
 
@@ -312,6 +317,34 @@ class UserServiceImplTest extends IntegrationTestSupport {
         assertEquals(
                 applicationException.getErrorCode(),
                 ExceptionList.NICKNAME_ALREADY_EXIST.getCODE());
+    }
+
+    @DisplayName("회원 탈퇴 - 정해진 사유를 선택한 경우")
+    @Test
+    void withdrawal() {
+        // given
+        String token = jwtUtil.generateEmailToken("test@gmail.com", "12345");
+
+        University university =
+                universityRepository.save(
+                        University.builder().name("명지대학교").campusName("인문캠퍼스").build());
+        UserEmailSingReq request =
+                new UserEmailSingReq("연유크림", token, "12345", university.getIdx(), "imageKey");
+
+        UserLoginRes userLoginRes = userService.signUp(request);
+
+        AuthenticatedUser user =
+                jwtUtil.getAuthenticateUserFromAccessToken(userLoginRes.accessToken());
+
+        WithdrawalReq withdrawalReq =
+                new WithdrawalReq(WithdrawalReason.ERRORS_OCCUR_FREQUENTLY, "");
+
+        // when then
+        var result = userService.withdrawal(user, withdrawalReq);
+        var withdrawalUser = userRepository.findByNickname("연유크림").get();
+
+        assertEquals(result, Boolean.TRUE);
+        assertEquals(withdrawalUser.getIsDeleted(), Boolean.TRUE);
     }
 
     private User createUser(String email, String nickname) {

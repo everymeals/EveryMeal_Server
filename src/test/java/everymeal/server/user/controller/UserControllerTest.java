@@ -16,7 +16,9 @@ import everymeal.server.user.controller.dto.request.UserEmailAuthReq;
 import everymeal.server.user.controller.dto.request.UserEmailLoginReq;
 import everymeal.server.user.controller.dto.request.UserEmailSingReq;
 import everymeal.server.user.controller.dto.request.UserProfileUpdateReq;
+import everymeal.server.user.controller.dto.request.WithdrawalReq;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
+import everymeal.server.user.entity.WithdrawalReason;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -149,6 +151,25 @@ class UserControllerTest extends ControllerTestSupport {
         // when-then
         mockMvc.perform(
                         put("/api/v1/users/profile")
+                                .content(objectMapper.writeValueAsString(request))
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("OK"));
+    }
+
+    @DisplayName("회원 탈퇴")
+    @Test
+    void withdrawal() throws Exception {
+        // given
+        WithdrawalReq request = new WithdrawalReq(WithdrawalReason.ERRORS_OCCUR_FREQUENTLY, "");
+
+        given(userJwtResolver.resolveArgument(any(), any(), any(), any()))
+                .willReturn(AuthenticatedUser.builder().idx(1L).build());
+
+        // when-then
+        mockMvc.perform(
+                        post("/api/v1/users/withdrawal")
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())

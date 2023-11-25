@@ -14,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.HashSet;
 import java.util.Set;
@@ -53,6 +54,9 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     Set<ReviewMark> reviewMarks = new HashSet<>();
 
+    @OneToOne(mappedBy = "user")
+    private Withdrawal withdrawal;
+
     @Builder
     public User(String nickname, String email, String profileImgUrl, University university) {
         this.nickname = nickname;
@@ -69,5 +73,9 @@ public class User extends BaseEntity {
     public void updateProfile(String nickname, String profileImgUrl) {
         this.nickname = nickname;
         this.profileImgUrl = profileImgUrl;
+    }
+    /** 회원 탈퇴 */
+    public void setIsDeleted() {
+        this.isDeleted = Boolean.TRUE;
     }
 }

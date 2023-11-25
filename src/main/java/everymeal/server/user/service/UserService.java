@@ -6,6 +6,7 @@ import everymeal.server.user.controller.dto.request.UserEmailAuthReq;
 import everymeal.server.user.controller.dto.request.UserEmailLoginReq;
 import everymeal.server.user.controller.dto.request.UserEmailSingReq;
 import everymeal.server.user.controller.dto.request.UserProfileUpdateReq;
+import everymeal.server.user.controller.dto.request.WithdrawalReq;
 import everymeal.server.user.controller.dto.response.UserEmailAuthRes;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
 import everymeal.server.user.controller.dto.response.UserProfileRes;
@@ -26,4 +27,6 @@ public interface UserService {
 
     Boolean updateUserProfile(
             AuthenticatedUser authenticatedUser, UserProfileUpdateReq userProfileUpdateReq);
+
+    Boolean withdrawal(AuthenticatedUser authenticatedUser, WithdrawalReq request);
 }
