@@ -12,6 +12,7 @@ import everymeal.server.university.repository.UniversityRepository;
 import everymeal.server.user.controller.dto.request.UserEmailAuthReq;
 import everymeal.server.user.controller.dto.request.UserEmailLoginReq;
 import everymeal.server.user.controller.dto.request.UserEmailSingReq;
+import everymeal.server.user.controller.dto.request.UserProfileUpdateReq;
 import everymeal.server.user.controller.dto.response.UserEmailAuthRes;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
 import everymeal.server.user.controller.dto.response.UserProfileRes;
@@ -21,6 +22,7 @@ import everymeal.server.user.repository.UserRepository;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -153,6 +155,24 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserProfileRes getUserProfile(AuthenticatedUser authenticatedUser) {
         Map<String, Object> result = userMapper.getUserProfile(authenticatedUser.getIdx());
-        return UserProfileRes.of(result);
+        String profileImgUrl = s3Util.getImgUrl((String) result.get("profileImgUrl"));
+        return UserProfileRes.of(result, profileImgUrl);
+    }
+
+    @Override
+    @Transactional
+    public Boolean updateUserProfile(
+            AuthenticatedUser authenticatedUser, UserProfileUpdateReq request) {
+        User user =
+                userRepository
+                        .findById(authenticatedUser.getIdx())
+                        .orElseThrow(() -> new ApplicationException(ExceptionList.USER_NOT_FOUND));
+        // 닉네임 중복 검사
+        Optional<User> duplicatedNickName = userRepository.findByNickname(request.nickName());
+        if (duplicatedNickName.isPresent() && user != duplicatedNickName.get()) {
+            throw new ApplicationException(ExceptionList.NICKNAME_ALREADY_EXIST);
+        }
+        user.updateProfile(request.nickName(), request.profileImageKey());
+        return true;
     }
 }

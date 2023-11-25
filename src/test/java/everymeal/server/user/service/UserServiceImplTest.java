@@ -15,6 +15,7 @@ import everymeal.server.university.repository.UniversityRepository;
 import everymeal.server.user.controller.dto.request.UserEmailAuthReq;
 import everymeal.server.user.controller.dto.request.UserEmailLoginReq;
 import everymeal.server.user.controller.dto.request.UserEmailSingReq;
+import everymeal.server.user.controller.dto.request.UserProfileUpdateReq;
 import everymeal.server.user.controller.dto.response.UserEmailAuthRes;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
 import everymeal.server.user.entity.User;
@@ -247,6 +248,70 @@ class UserServiceImplTest extends IntegrationTestSupport {
 
         // then
         assertEquals(response.nickName(), request.nickname());
+    }
+
+    @DisplayName("인증된 사용자의 프로필 정보 수정")
+    @Test
+    void updateUserProfile() {
+        // given
+        String token = jwtUtil.generateEmailToken("test@gmail.com", "12345");
+
+        University university =
+                universityRepository.save(
+                        University.builder().name("명지대학교").campusName("인문캠퍼스").build());
+        UserEmailSingReq request =
+                new UserEmailSingReq("nickname", token, "12345", university.getIdx(), "imageKey");
+
+        UserLoginRes userLoginRes = userService.signUp(request);
+
+        AuthenticatedUser user =
+                jwtUtil.getAuthenticateUserFromAccessToken(userLoginRes.accessToken());
+
+        UserProfileUpdateReq userProfileUpdateReq = new UserProfileUpdateReq("연유크림", "imageKey2");
+
+        // when
+        var response = userService.updateUserProfile(user, userProfileUpdateReq);
+
+        var updatedUser = userService.getUserProfile(user);
+
+        // then
+        assertTrue(response);
+        assertEquals(updatedUser.nickName(), userProfileUpdateReq.nickName());
+        assertEquals(
+                updatedUser.profileImgUrl(),
+                s3Util.getImgUrl(userProfileUpdateReq.profileImageKey()));
+    }
+
+    @DisplayName("인증된 사용자의 프로필 정보 수정 - 닉네임 중복")
+    @Test
+    void updateUserProfile_duplicated() {
+        // given
+        String token = jwtUtil.generateEmailToken("test@gmail.com", "12345");
+
+        University university =
+                universityRepository.save(
+                        University.builder().name("명지대학교").campusName("인문캠퍼스").build());
+        UserEmailSingReq request =
+                new UserEmailSingReq("nickname", token, "12345", university.getIdx(), "imageKey");
+
+        UserLoginRes userLoginRes = userService.signUp(request);
+
+        userRepository.saveAndFlush(createUser("hello@world.com", "연유크림"));
+
+        AuthenticatedUser user =
+                jwtUtil.getAuthenticateUserFromAccessToken(userLoginRes.accessToken());
+
+        UserProfileUpdateReq userProfileUpdateReq = new UserProfileUpdateReq("연유크림", "imageKey2");
+
+        // when then
+        ApplicationException applicationException =
+                assertThrows(
+                        ApplicationException.class,
+                        () -> userService.updateUserProfile(user, userProfileUpdateReq));
+
+        assertEquals(
+                applicationException.getErrorCode(),
+                ExceptionList.NICKNAME_ALREADY_EXIST.getCODE());
     }
 
     private User createUser(String email, String nickname) {

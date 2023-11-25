@@ -5,6 +5,7 @@ import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
 import everymeal.server.user.controller.dto.request.UserEmailAuthReq;
 import everymeal.server.user.controller.dto.request.UserEmailLoginReq;
 import everymeal.server.user.controller.dto.request.UserEmailSingReq;
+import everymeal.server.user.controller.dto.request.UserProfileUpdateReq;
 import everymeal.server.user.controller.dto.response.UserEmailAuthRes;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
 import everymeal.server.user.controller.dto.response.UserProfileRes;
@@ -22,4 +23,7 @@ public interface UserService {
     Boolean checkUser(String email);
 
     UserProfileRes getUserProfile(AuthenticatedUser authenticatedUser);
+
+    Boolean updateUserProfile(
+            AuthenticatedUser authenticatedUser, UserProfileUpdateReq userProfileUpdateReq);
 }

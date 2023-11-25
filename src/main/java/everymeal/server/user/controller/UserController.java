@@ -8,6 +8,7 @@ import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
 import everymeal.server.user.controller.dto.request.UserEmailAuthReq;
 import everymeal.server.user.controller.dto.request.UserEmailLoginReq;
 import everymeal.server.user.controller.dto.request.UserEmailSingReq;
+import everymeal.server.user.controller.dto.request.UserProfileUpdateReq;
 import everymeal.server.user.controller.dto.response.UserEmailAuthRes;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
 import everymeal.server.user.controller.dto.response.UserProfileRes;
@@ -26,6 +27,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -143,6 +145,26 @@ public class UserController {
     public ApplicationResponse<UserProfileRes> getUserProfile(
             @Parameter(hidden = true) @AuthUser AuthenticatedUser authenticatedUser) {
         return ApplicationResponse.ok(userService.getUserProfile(authenticatedUser));
+    }
+
+    @Auth(require = true)
+    @PutMapping("/profile")
+    @SecurityRequirement(name = "jwt-user-auth")
+    @Operation(summary = "인증된 사용자의 프로필 정보 수정", description = "인증된 사용자의 프로필 정보를 수정합니다.")
+    @ApiResponses({
+        @ApiResponse(
+                responseCode = "409",
+                description =
+                        """
+                    (U0005)이미 등록된 닉네임입니다.<br>
+                    """,
+                content = @Content(schema = @Schema())),
+    })
+    public ApplicationResponse<Boolean> updateUserProfile(
+            @Parameter(hidden = true) @AuthUser AuthenticatedUser authenticatedUser,
+            @RequestBody UserProfileUpdateReq userProfileUpdateReq) {
+        return ApplicationResponse.ok(
+                userService.updateUserProfile(authenticatedUser, userProfileUpdateReq));
     }
 
     private ResponseEntity<ApplicationResponse<UserLoginRes>> setRefreshToken(
