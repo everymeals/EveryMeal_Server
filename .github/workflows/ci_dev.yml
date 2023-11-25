@@ -3,6 +3,9 @@ on:
   pull_request:
     branches:
     - develop
+
+permissions: write-all
+
 jobs:
   sonarcloud:
     name: SonarCloud
@@ -46,12 +49,13 @@ jobs:
           touch ./application-secret.yml
           echo "${{ secrets.PROPERTIES_SECRET }}" > ./application-secret.yml
         shell: bash
+
       - name: Make test application.yml
-          run: |
-            cd ./src/test/resources
-            touch ./application.yml
-            echo "${{ secrets.PROPERTIES_SECRET_TEST }}" > ./application.yml
-          shell: bash
+        run: |
+          mkdir -p src/test/resources
+          echo "${{ secrets.PROPERTIES_SECRET_TEST }}" | base64 --decode > src/test/resources/application.yml
+#        shell: bash
+
       - name: Build and analyze
         run: ./gradlew test sonar --info
         env:
