@@ -53,7 +53,6 @@ jobs:
       - name: Make test application.yml
         run: |
           pwd
-          mkdir -p ./src/test/resources
           echo "hello? "
           cd ./src/test/resources
           touch ./application.yml
