@@ -52,9 +52,8 @@ jobs:
 
       - name: Make test application.yml
         run: |
-          pwd
-          echo "hello? "
           cd ./src/test/resources
+          find / -name "application-test.yml"
           touch ./application.yml
           echo "${{ secrets.PROPERTIES_SECRET_TEST }}" > ./application.yml
         shell: bash
