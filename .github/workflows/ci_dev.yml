@@ -49,6 +49,8 @@ jobs:
 
       - name: Make test application.yml
         run: |
+          pwd
+          mkdir -p ./src/test/resources
           cd ./src/test/resources
           touch ./application.yml
           echo "${{ secrets.PROPERTIES_SECRET_TEST }}" > ./application.yml
