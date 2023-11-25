@@ -196,7 +196,7 @@ public class UserServiceImpl implements UserService {
                             .user(user)
                             .build();
         } else // 기타를 선택한 경우
-            withdrawal =
+        withdrawal =
                     Withdrawal.builder()
                             .withdrawalReason(request.withdrawalReason())
                             .etcReason(request.etcReason()) // 글자수 제한이 있는지 처리 X
