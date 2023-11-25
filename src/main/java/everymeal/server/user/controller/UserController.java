@@ -151,15 +151,12 @@ public class UserController {
     @PutMapping("/profile")
     @SecurityRequirement(name = "jwt-user-auth")
     @Operation(summary = "인증된 사용자의 프로필 정보 수정", description = "인증된 사용자의 프로필 정보를 수정합니다.")
-    @ApiResponses({
-        @ApiResponse(
-                responseCode = "409",
-                description =
-                        """
+    @ApiResponse(
+            responseCode = "409",
+            description = """
                     (U0005)이미 등록된 닉네임입니다.<br>
                     """,
-                content = @Content(schema = @Schema())),
-    })
+            content = @Content(schema = @Schema()))
     public ApplicationResponse<Boolean> updateUserProfile(
             @Parameter(hidden = true) @AuthUser AuthenticatedUser authenticatedUser,
             @RequestBody UserProfileUpdateReq userProfileUpdateReq) {
