@@ -25,7 +25,7 @@ public class Withdrawal extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private WithdrawalReason withdrawalReason;
 
-    @Column(nullable = true, length = 100)
+    @Column(nullable = true, columnDefinition = "TEXT")
     private String etcReason;
 
     @MapsId

@@ -199,7 +199,7 @@ public class UserServiceImpl implements UserService {
         withdrawal =
                     Withdrawal.builder()
                             .withdrawalReason(request.withdrawalReason())
-                            .etcReason(request.etcReason()) // 글자수 제한이 있는지 처리 X
+                            .etcReason(request.etcReason())
                             .user(user)
                             .build();
         withdrawalRepository.save(withdrawal); // 탈퇴 관련 정보 저장
