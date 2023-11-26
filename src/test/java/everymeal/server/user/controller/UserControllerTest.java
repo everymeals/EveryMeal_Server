@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -14,6 +15,7 @@ import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
 import everymeal.server.user.controller.dto.request.UserEmailAuthReq;
 import everymeal.server.user.controller.dto.request.UserEmailLoginReq;
 import everymeal.server.user.controller.dto.request.UserEmailSingReq;
+import everymeal.server.user.controller.dto.request.UserProfileUpdateReq;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -130,6 +132,25 @@ class UserControllerTest extends ControllerTestSupport {
                 .willReturn(AuthenticatedUser.builder().idx(1L).build());
         // when-then
         mockMvc.perform(get("/api/v1/users/profile").contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("OK"));
+    }
+
+    @DisplayName("인증된 유저의 프로필 정보 수정")
+    @Test
+    void updateUserProfile() throws Exception {
+        // given
+        UserProfileUpdateReq request = new UserProfileUpdateReq("연유크림", "imageKey");
+
+        given(userJwtResolver.resolveArgument(any(), any(), any(), any()))
+                .willReturn(AuthenticatedUser.builder().idx(1L).build());
+
+        // when-then
+        mockMvc.perform(
+                        put("/api/v1/users/profile")
+                                .content(objectMapper.writeValueAsString(request))
+                                .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("OK"));
