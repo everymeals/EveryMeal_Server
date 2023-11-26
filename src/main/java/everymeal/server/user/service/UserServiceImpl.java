@@ -13,12 +13,16 @@ import everymeal.server.user.controller.dto.request.UserEmailAuthReq;
 import everymeal.server.user.controller.dto.request.UserEmailLoginReq;
 import everymeal.server.user.controller.dto.request.UserEmailSingReq;
 import everymeal.server.user.controller.dto.request.UserProfileUpdateReq;
+import everymeal.server.user.controller.dto.request.WithdrawalReq;
 import everymeal.server.user.controller.dto.response.UserEmailAuthRes;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
 import everymeal.server.user.controller.dto.response.UserProfileRes;
 import everymeal.server.user.entity.User;
+import everymeal.server.user.entity.Withdrawal;
+import everymeal.server.user.entity.WithdrawalReason;
 import everymeal.server.user.repository.UserMapper;
 import everymeal.server.user.repository.UserRepository;
+import everymeal.server.user.repository.WithdrawalRepository;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Map;
@@ -39,6 +43,7 @@ public class UserServiceImpl implements UserService {
     private final MailUtil mailUtil;
     private final S3Util s3Util;
     private final UserMapper userMapper;
+    private final WithdrawalRepository withdrawalRepository;
 
     @Override
     @Transactional
@@ -173,6 +178,32 @@ public class UserServiceImpl implements UserService {
             throw new ApplicationException(ExceptionList.NICKNAME_ALREADY_EXIST);
         }
         user.updateProfile(request.nickName(), request.profileImageKey());
+        return true;
+    }
+
+    @Override
+    @Transactional
+    public Boolean withdrawal(AuthenticatedUser authenticatedUser, WithdrawalReq request) {
+        User user =
+                userRepository
+                        .findById(authenticatedUser.getIdx())
+                        .orElseThrow(() -> new ApplicationException(ExceptionList.USER_NOT_FOUND));
+        Withdrawal withdrawal;
+        if (request.withdrawalReason() != WithdrawalReason.ETC) { // 기타를 제외한 경우
+            withdrawal =
+                    Withdrawal.builder()
+                            .withdrawalReason(request.withdrawalReason())
+                            .user(user)
+                            .build();
+        } else // 기타를 선택한 경우
+        withdrawal =
+                    Withdrawal.builder()
+                            .withdrawalReason(request.withdrawalReason())
+                            .etcReason(request.etcReason())
+                            .user(user)
+                            .build();
+        withdrawalRepository.save(withdrawal); // 탈퇴 관련 정보 저장
+        user.setIsDeleted(); // 논리 삭제
         return true;
     }
 }

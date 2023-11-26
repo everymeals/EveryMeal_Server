@@ -9,6 +9,7 @@ import everymeal.server.user.controller.dto.request.UserEmailAuthReq;
 import everymeal.server.user.controller.dto.request.UserEmailLoginReq;
 import everymeal.server.user.controller.dto.request.UserEmailSingReq;
 import everymeal.server.user.controller.dto.request.UserProfileUpdateReq;
+import everymeal.server.user.controller.dto.request.WithdrawalReq;
 import everymeal.server.user.controller.dto.response.UserEmailAuthRes;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
 import everymeal.server.user.controller.dto.response.UserProfileRes;
@@ -162,6 +163,22 @@ public class UserController {
             @RequestBody UserProfileUpdateReq userProfileUpdateReq) {
         return ApplicationResponse.ok(
                 userService.updateUserProfile(authenticatedUser, userProfileUpdateReq));
+    }
+
+    @Auth(require = true)
+    @PostMapping("/withdrawal")
+    @SecurityRequirement(name = "jwt-user-auth")
+    @Operation(summary = "회원탈퇴", description = "서비스 회원 탈퇴를 합니다.")
+    @ApiResponse(
+            responseCode = "404",
+            description = """
+                    (U0001)등록된 유저가 아닙니다.<br>
+                    """,
+            content = @Content(schema = @Schema()))
+    public ApplicationResponse<Boolean> withdrawal(
+            @Parameter(hidden = true) @AuthUser AuthenticatedUser authenticatedUser,
+            @RequestBody WithdrawalReq withdrawalReq) {
+        return ApplicationResponse.ok(userService.withdrawal(authenticatedUser, withdrawalReq));
     }
 
     private ResponseEntity<ApplicationResponse<UserLoginRes>> setRefreshToken(
