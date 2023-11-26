@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -128,6 +129,46 @@ class StoreControllerTest extends ControllerTestSupport {
                                 .param("limit", String.valueOf(limit))
                                 .param("order", order)
                                 .param("group", group))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("OK"));
+    }
+
+    @DisplayName("인증된 사용자의 저장 목록 조회")
+    @Test
+    void getUserLikesStore() throws Exception {
+        // given
+        Long campusIdx = 1L;
+        int offset = 0;
+        int limit = 10;
+        String group = "all";
+
+        given(userJwtResolver.resolveArgument(any(), any(), any(), any()))
+                .willReturn(AuthenticatedUser.builder().idx(1L).build());
+
+        // when then
+        mockMvc.perform(
+                        get("/api/v1/stores/likes")
+                                .param("campusIdx", String.valueOf(campusIdx))
+                                .param("offset", String.valueOf(offset))
+                                .param("limit", String.valueOf(limit))
+                                .param("group", group))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("OK"));
+    }
+
+    @DisplayName("가게 저장 / 저장 해제")
+    @Test
+    void likesStore_like() throws Exception {
+        // given
+        Long storeIdx = 1L;
+
+        given(userJwtResolver.resolveArgument(any(), any(), any(), any()))
+                .willReturn(AuthenticatedUser.builder().idx(1L).build());
+
+        // when then
+        mockMvc.perform(post("/api/v1/stores/likes/{storeIdx}", storeIdx))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("OK"));

@@ -11,11 +11,14 @@ import everymeal.server.global.dto.response.ApplicationResponse;
 import everymeal.server.global.util.authresolver.Auth;
 import everymeal.server.global.util.authresolver.AuthUser;
 import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
+import everymeal.server.store.controller.dto.response.LikedStoreGetRes;
 import everymeal.server.store.controller.dto.response.StoreGetRes;
 import everymeal.server.store.service.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -94,5 +98,60 @@ public class StoreController {
                         authenticatedUser == null ? null : authenticatedUser.getIdx(),
                         order,
                         grade));
+    }
+
+    @Auth(require = true)
+    @GetMapping("/likes")
+    @SecurityRequirement(name = "jwt-user-auth")
+    @Operation(summary = "인증된 사용자의 저장 목록 조회", description = "인증된 사용자의 저장 목록을 조회합니다.")
+    public ApplicationResponse<Page<LikedStoreGetRes>> getUserLikesStore(
+            @RequestParam(value = "campusIdx")
+                    @Schema(title = "캠퍼스 키 값", description = "캠퍼스 키 값", example = "1")
+                    Long campusIdx,
+            @RequestParam(value = "offset", defaultValue = "0")
+                    @Schema(title = "페이지 번호", example = "0", description = "페이지 번호는 0부터 시작합니다.")
+                    Integer offset,
+            @RequestParam(value = "limit", defaultValue = "10")
+                    @Schema(
+                            title = "Data 갯수",
+                            example = "10",
+                            description = "한 페이지에 보여지는 데이터 수 입니다.")
+                    Integer limit,
+            @RequestParam(value = "group", required = false, defaultValue = "all")
+                    @Schema(
+                            title = "그룹",
+                            description = "그룹",
+                            allowableValues = {
+                                "all",
+                                "etc",
+                                "recommend",
+                                "restaurant",
+                                "cafe",
+                                "bar"
+                            })
+                    String group,
+            @Parameter(hidden = true) @AuthUser AuthenticatedUser authenticatedUser) {
+        return ApplicationResponse.ok(
+                storeService.getUserLikesStore(
+                        campusIdx, PageRequest.of(offset, limit), group, authenticatedUser));
+    }
+
+    @Auth(require = true)
+    @PostMapping("/likes/{storeIdx}")
+    @SecurityRequirement(name = "jwt-user-auth")
+    @Operation(summary = "인증된 사용자의 가게 저장 및 저장해제", description = "가게를 저장 혹은 저장을 해제합니다.")
+    @ApiResponse(
+            responseCode = "404",
+            description = """
+      (U0001)유저를 찾을 수 없습니다.
+      (S0001)등록된 가게가 아닙니다.
+      """,
+            content = @Content(schema = @Schema()))
+    public ApplicationResponse<Boolean> likesStore(
+            @PathVariable(value = "storeIdx")
+                    @Schema(title = "가게 키 값", description = "가게 키 값", example = "386")
+                    Long storeIdx,
+            @Parameter(hidden = true) @AuthUser AuthenticatedUser authenticatedUser) {
+        return ApplicationResponse.ok(storeService.likesStore(storeIdx, authenticatedUser));
     }
 }
