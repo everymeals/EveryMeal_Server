@@ -102,10 +102,11 @@ public class StoreServiceImpl implements StoreService {
         Optional<Like> isLikedStore = likeRepository.findByUserAndStore(user, store);
         if (isLikedStore.isPresent()) {
             likeRepository.delete(isLikedStore.get());
+            return false;
         } else {
             Like like = Like.builder().store(store).user(user).build();
             likeRepository.save(like);
+            return true;
         }
-        return true;
     }
 }
