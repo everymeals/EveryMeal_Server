@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,4 +27,10 @@ public class Like extends BaseEntity {
     @ManyToOne private Store store;
 
     @ManyToOne private User user;
+
+    @Builder
+    public Like(Store store, User user) {
+        this.store = store;
+        this.user = user;
+    }
 }

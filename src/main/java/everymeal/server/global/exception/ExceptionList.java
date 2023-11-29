@@ -24,7 +24,9 @@ public enum ExceptionList {
     TOKEN_NOT_VALID("T0001", HttpStatus.NOT_ACCEPTABLE, "해당 토큰은 유효하지 않습니다."),
     TOKEN_EXPIRATION("T0002", HttpStatus.FORBIDDEN, "토큰이 만료되었습니다."),
 
-    REVIEW_NOT_FOUND("R0001", HttpStatus.NOT_FOUND, "등록된 리뷰가 아닙니다."),
+    REVIEW_NOT_FOUND("RV0001", HttpStatus.NOT_FOUND, "등록된 리뷰가 아닙니다."),
+
+    STORE_NOT_FOUND("S0001", HttpStatus.NOT_FOUND, "등록된 가게가 아닙니다."),
     ;
 
     public final String CODE;

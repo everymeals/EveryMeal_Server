@@ -28,4 +28,22 @@ public interface StoreMapper {
             @Param("userIdx") Long userIdx,
             @Param("order") String order,
             @Param("grade") Integer grade);
+
+    List<Map<String, Object>> getUserLikesStore(
+            @Param("universityIdx") Long universityIdx,
+            @Param("limit") Integer limit,
+            @Param("offset") Long offset,
+            @Param("group") String group,
+            @Param("userIdx") Long userIdx,
+            @Param("order") String order,
+            @Param("grade") Integer grade);
+
+    Long getUserLikesStoreCount(
+            @Param("universityIdx") Long universityIdx,
+            @Param("limit") Integer limit,
+            @Param("offset") Long offset,
+            @Param("group") String group,
+            @Param("userIdx") Long userIdx,
+            @Param("order") String order,
+            @Param("grade") Integer grade);
 }

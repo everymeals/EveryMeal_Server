@@ -1,21 +1,37 @@
 package everymeal.server.store.service;
 
+import static everymeal.server.global.exception.ExceptionList.STORE_NOT_FOUND;
 
+import everymeal.server.global.exception.ApplicationException;
+import everymeal.server.global.exception.ExceptionList;
+import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
+import everymeal.server.store.controller.dto.response.LikedStoreGetRes;
 import everymeal.server.store.controller.dto.response.StoreGetRes;
+import everymeal.server.store.entity.Store;
 import everymeal.server.store.repository.StoreMapper;
+import everymeal.server.store.repository.StoreRepository;
+import everymeal.server.user.entity.Like;
+import everymeal.server.user.entity.User;
+import everymeal.server.user.repository.LikeRepository;
+import everymeal.server.user.repository.UserRepository;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class StoreServiceImpl implements StoreService {
 
     private final StoreMapper storeMapper;
+    private final LikeRepository likeRepository;
+    private final UserRepository userRepository;
+    private final StoreRepository storeRepository;
 
     @Override
     public Page<StoreGetRes> getStores(
@@ -45,5 +61,52 @@ public class StoreServiceImpl implements StoreService {
                         order,
                         grade);
         return new PageImpl<>(result, pageable, count);
+    }
+
+    @Override
+    public Page<LikedStoreGetRes> getUserLikesStore(
+            Long campusIdx, Pageable pageable, String group, AuthenticatedUser authenticatedUser) {
+        List<Map<String, Object>> stores =
+                storeMapper.getUserLikesStore(
+                        campusIdx,
+                        pageable.getPageSize(),
+                        pageable.getOffset(),
+                        group,
+                        authenticatedUser.getIdx(),
+                        "name",
+                        null);
+        List<LikedStoreGetRes> result = LikedStoreGetRes.of(stores);
+        Long count =
+                storeMapper.getUserLikesStoreCount(
+                        campusIdx,
+                        pageable.getPageSize(),
+                        pageable.getOffset(),
+                        group,
+                        authenticatedUser.getIdx(),
+                        "name",
+                        null);
+        return new PageImpl<>(result, pageable, count);
+    }
+
+    @Override
+    @Transactional
+    public Boolean likesStore(Long storeIdx, AuthenticatedUser authenticatedUser) {
+        User user =
+                userRepository
+                        .findById(authenticatedUser.getIdx())
+                        .orElseThrow(() -> new ApplicationException(ExceptionList.USER_NOT_FOUND));
+        Store store =
+                storeRepository
+                        .findById(storeIdx)
+                        .orElseThrow(() -> new ApplicationException(STORE_NOT_FOUND));
+        Optional<Like> isLikedStore = likeRepository.findByUserAndStore(user, store);
+        if (isLikedStore.isPresent()) {
+            likeRepository.delete(isLikedStore.get());
+            return false;
+        } else {
+            Like like = Like.builder().store(store).user(user).build();
+            likeRepository.save(like);
+            return true;
+        }
     }
 }
