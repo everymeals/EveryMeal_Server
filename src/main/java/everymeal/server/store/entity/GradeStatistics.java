@@ -11,4 +11,10 @@ public class GradeStatistics implements Serializable {
     private Double grade;
     private Integer reviewCount;
     private Integer recommendedCount;
+
+    public GradeStatistics() {
+        this.grade = 0.0;
+        this.reviewCount = 0;
+        this.recommendedCount = 0;
+    }
 }
