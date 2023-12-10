@@ -8,6 +8,7 @@ import everymeal.server.global.util.JwtUtil;
 import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
 import everymeal.server.store.controller.dto.response.LikedStoreGetRes;
 import everymeal.server.store.controller.dto.response.StoreGetRes;
+import everymeal.server.store.entity.GradeStatistics;
 import everymeal.server.store.entity.Store;
 import everymeal.server.store.repository.StoreMapper;
 import everymeal.server.store.repository.StoreRepository;
@@ -208,9 +209,7 @@ class StoreServiceImplTest extends IntegrationTestSupport {
                 .roadAddress("roadAddress")
                 .x("x")
                 .y("y")
-                .grade(1.0)
-                .reviewCount(1)
-                .recommendedCount(1)
+                .gradeStatistics(new GradeStatistics())
                 .university(university)
                 .categoryDetail("기타")
                 .build();

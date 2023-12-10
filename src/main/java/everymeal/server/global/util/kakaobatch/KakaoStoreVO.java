@@ -1,6 +1,7 @@
 package everymeal.server.global.util.kakaobatch;
 
 
+import everymeal.server.store.entity.GradeStatistics;
 import everymeal.server.store.entity.Store;
 import everymeal.server.university.entity.University;
 import lombok.Getter;
@@ -34,10 +35,8 @@ public class KakaoStoreVO {
                 .phone(phone)
                 .url(place_url)
                 .roadAddress(road_address_name)
-                .grade(0.0)
-                .recommendedCount(0)
+                .gradeStatistics(new GradeStatistics())
                 .distance(distance)
-                .reviewCount(0)
                 .x(x)
                 .y(y)
                 .university(university)

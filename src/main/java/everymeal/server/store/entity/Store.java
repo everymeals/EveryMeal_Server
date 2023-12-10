@@ -6,6 +6,7 @@ import everymeal.server.review.entity.Image;
 import everymeal.server.review.entity.Review;
 import everymeal.server.university.entity.University;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -47,12 +48,9 @@ public class Store extends BaseEntity {
     private String roadAddress;
     private String x;
     private String y;
-
-    private Double grade;
-    private Integer reviewCount;
-    private Integer recommendedCount;
-
     private Boolean isDeleted;
+
+    @Embedded private GradeStatistics gradeStatistics;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private University university;
@@ -78,9 +76,7 @@ public class Store extends BaseEntity {
             String roadAddress,
             String x,
             String y,
-            Double grade,
-            Integer reviewCount,
-            Integer recommendedCount,
+            GradeStatistics gradeStatistics,
             University university) {
         this.name = name;
         this.address = address;
@@ -94,9 +90,7 @@ public class Store extends BaseEntity {
         this.roadAddress = roadAddress;
         this.x = x;
         this.y = y;
-        this.grade = grade;
-        this.reviewCount = reviewCount;
-        this.recommendedCount = recommendedCount;
+        this.gradeStatistics = gradeStatistics;
         this.university = university;
         this.isDeleted = Boolean.FALSE;
     }
