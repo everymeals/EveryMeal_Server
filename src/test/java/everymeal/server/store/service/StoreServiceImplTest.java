@@ -198,19 +198,19 @@ class StoreServiceImplTest extends IntegrationTestSupport {
     void searchStore() {
         // given
         University save =
-            universityRepository.save(
-                University.builder().name("서울대학교").campusName("관악캠퍼스").build());
+                universityRepository.save(
+                        University.builder().name("서울대학교").campusName("관악캠퍼스").build());
         List<University> universities =
-            universityRepository.findByNameAndCampusNameAndIsDeletedFalse("서울대학교", "관악캠퍼스");
+                universityRepository.findByNameAndCampusNameAndIsDeletedFalse("서울대학교", "관악캠퍼스");
         University university = universities.get(0);
 
         Long campusIdx = university.getIdx();
 
         List<Store> entity =
-            List.of(
-                createEntity("치킨", 3, university, "기타"),
-                createEntity("떡볶이", 2, university, "기타"),
-                createEntity("BBQ 치킨", 1, university, "기타"));
+                List.of(
+                        createEntity("치킨", 3, university, "기타"),
+                        createEntity("떡볶이", 2, university, "기타"),
+                        createEntity("BBQ 치킨", 1, university, "기타"));
         storeRepository.saveAll(entity);
         storeRepository.flush();
         entityManager.clear();
@@ -218,13 +218,13 @@ class StoreServiceImplTest extends IntegrationTestSupport {
         // when
 
         Page<StoreGetRes> stores =
-            storeService.getStoresKeyword(campusIdx, "치킨", null, PageRequest.of(0, 10));
+                storeService.getStoresKeyword(campusIdx, "치킨", null, PageRequest.of(0, 10));
 
         // then
         assertThat(stores.getContent())
-            .hasSize(2)
-            .extracting("name")
-            .containsExactly("치킨", "BBQ 치킨");
+                .hasSize(2)
+                .extracting("name")
+                .containsExactly("치킨", "BBQ 치킨");
     }
 
     @DisplayName("가게 키워드 검색 - 카테고리 디테일")
@@ -233,19 +233,19 @@ class StoreServiceImplTest extends IntegrationTestSupport {
     void searchStoreForCategory() {
         // given
         University save =
-            universityRepository.save(
-                University.builder().name("서울대학교").campusName("관악캠퍼스").build());
+                universityRepository.save(
+                        University.builder().name("서울대학교").campusName("관악캠퍼스").build());
         List<University> universities =
-            universityRepository.findByNameAndCampusNameAndIsDeletedFalse("서울대학교", "관악캠퍼스");
+                universityRepository.findByNameAndCampusNameAndIsDeletedFalse("서울대학교", "관악캠퍼스");
         University university = universities.get(0);
 
         Long campusIdx = university.getIdx();
 
         List<Store> entity =
-            List.of(
-                createEntity("샌드위치", 3, university, "치킨"),
-                createEntity("BBQ", 2, university, "치킨"),
-                createEntity("카페", 1, university, "기타"));
+                List.of(
+                        createEntity("샌드위치", 3, university, "치킨"),
+                        createEntity("BBQ", 2, university, "치킨"),
+                        createEntity("카페", 1, university, "기타"));
         storeRepository.saveAll(entity);
         storeRepository.flush();
         entityManager.clear();
@@ -253,22 +253,21 @@ class StoreServiceImplTest extends IntegrationTestSupport {
         // when
 
         Page<StoreGetRes> stores =
-            storeService.getStoresKeyword(campusIdx, "치킨", null, PageRequest.of(0, 10));
+                storeService.getStoresKeyword(campusIdx, "치킨", null, PageRequest.of(0, 10));
 
         // then
         assertThat(stores.getContent())
-            .hasSize(2)
-            .extracting("name")
-            .containsExactly("샌드위치", "BBQ");
+                .hasSize(2)
+                .extracting("name")
+                .containsExactly("샌드위치", "BBQ");
     }
-
 
     private Like createLikeEntity(Store store, User user) {
         return Like.builder().store(store).user(user).build();
     }
 
-    private Store createEntity(String name, int distance, University university,
-        String categoryDetail) {
+    private Store createEntity(
+            String name, int distance, University university, String categoryDetail) {
         return Store.builder()
                 .name(name)
                 .address("address")
