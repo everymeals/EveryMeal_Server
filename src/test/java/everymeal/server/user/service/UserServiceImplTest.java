@@ -21,6 +21,7 @@ import everymeal.server.user.controller.dto.response.UserEmailAuthRes;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
 import everymeal.server.user.entity.User;
 import everymeal.server.user.entity.WithdrawalReason;
+import everymeal.server.user.repository.UserMapper;
 import everymeal.server.user.repository.UserRepository;
 import everymeal.server.user.repository.WithdrawalRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -38,6 +39,8 @@ class UserServiceImplTest extends IntegrationTestSupport {
     @Autowired private UniversityRepository universityRepository;
     @Autowired private S3Util s3Util;
     @Autowired private WithdrawalRepository withdrawalRepository;
+
+    @Autowired private UserMapper userMapper;
 
     @AfterEach
     void tearDown() {
