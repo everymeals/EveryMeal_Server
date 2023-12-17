@@ -15,14 +15,4 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     Optional<Store> findByKakaoId(String kakaoId);
 
     Page<Store> findByUniversityIdxOrderByIdxDesc(Long universityIdx, Pageable pageable);
-
-    @Query(
-            value =
-                    """
-                SELECT s
-                FROM Store s
-                WHERE s.university = :campusIdx
-                AND s.name LIKE CONCAT('%', :keyword, '%')
-                """)
-    Page<Store> getStoresKeyword(Long campusIdx, String keyword, Long userIdx, Pageable pageable);
 }
