@@ -77,7 +77,7 @@ public class MealRepositoryImpl implements MealRepositoryCustom {
                                                 GroupBy.list(
                                                         Projections.constructor(
                                                                 DayMealListGetRes.class,
-                                                                qMeal.idx.as("mealIdx"),
+                                                                qMeal.idx.as("restaurantIdx"),
                                                                 qMeal.offeredAt.as("offeredAt"),
                                                                 qMeal.mealStatus.as("mealStatus"),
                                                                 qMeal.mealType.as("mealType"),
@@ -134,7 +134,7 @@ public class MealRepositoryImpl implements MealRepositoryCustom {
                                                 GroupBy.list(
                                                         Projections.constructor(
                                                                 DayMealListGetRes.class,
-                                                                qMeal.idx.as("mealIdx"),
+                                                                qMeal.idx.as("restaurantIdx"),
                                                                 qMeal.offeredAt.as("offeredAt"),
                                                                 qMeal.mealStatus.as("mealStatus"),
                                                                 qMeal.mealType.as("mealType"),

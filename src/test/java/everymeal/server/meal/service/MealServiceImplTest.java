@@ -10,23 +10,22 @@ import everymeal.server.global.exception.ExceptionList;
 import everymeal.server.meal.controller.dto.request.MealRegisterReq;
 import everymeal.server.meal.controller.dto.request.RestaurantRegisterReq;
 import everymeal.server.meal.controller.dto.request.WeekMealRegisterReq;
-import everymeal.server.meal.controller.dto.response.DayMealListGetRes;
 import everymeal.server.meal.controller.dto.response.RestaurantListGetRes;
-import everymeal.server.meal.controller.dto.response.WeekMealListGetRes;
 import everymeal.server.meal.entity.Meal;
 import everymeal.server.meal.entity.MealCategory;
 import everymeal.server.meal.entity.MealStatus;
 import everymeal.server.meal.entity.MealType;
 import everymeal.server.meal.entity.Restaurant;
+import everymeal.server.meal.repository.MealMapper;
 import everymeal.server.meal.repository.MealRepository;
 import everymeal.server.meal.repository.MealRepositoryCustom;
 import everymeal.server.meal.repository.RestaurantRepository;
 import everymeal.server.university.entity.University;
 import everymeal.server.university.repository.UniversityRepository;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,6 +38,8 @@ class MealServiceImplTest extends IntegrationTestSupport {
     @Autowired private MealRepository mealRepository;
 
     @Autowired private MealRepositoryCustom mealRepositoryCustom;
+
+    @Autowired private MealMapper mealMapper;
 
     @Autowired private RestaurantRepository restaurantRepository;
     @Autowired private UniversityRepository universityRepository;
@@ -144,7 +145,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
             MealRegisterReq lunch =
                     new MealRegisterReq(
                             "갈비탕, 깍두기, 흰쌀밥",
-                            MealType.BREAKFAST.name(),
+                            MealType.LUNCH.name(),
                             MealStatus.OPEN.name(),
                             offeredAt,
                             10000.0,
@@ -152,7 +153,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
             MealRegisterReq dinner =
                     new MealRegisterReq(
                             "갈비탕, 깍두기, 흰쌀밥",
-                            MealType.BREAKFAST.name(),
+                            MealType.DINNER.name(),
                             MealStatus.OPEN.name(),
                             offeredAt,
                             10000.0,
@@ -168,11 +169,12 @@ class MealServiceImplTest extends IntegrationTestSupport {
 
         // when
         String offeredAt = today.toString().split("T")[0];
-        List<WeekMealListGetRes> response =
-                mealService.getWeekMealListTest(req.universityName(), offeredAt);
+        var response =
+                mealService.getDayMealListV2(
+                        req.universityName(), university.getCampusName(), offeredAt);
 
         // then
-        assertEquals(response.size(), 7);
+        assertEquals(response.get(offeredAt).get(restaurant.getName()).size(), 3);
     }
 
     @DisplayName("하루 식단 조회")
@@ -206,8 +208,8 @@ class MealServiceImplTest extends IntegrationTestSupport {
 
         // when
         String offeredAt = LocalDate.now().toString().split("T")[0];
-        Map<String, List<DayMealListGetRes>> response =
-                mealService.getDayMealList(
+        var response =
+                mealService.getDayMealListV2(
                         university.getName(), university.getCampusName(), offeredAt);
 
         // then
@@ -247,7 +249,17 @@ class MealServiceImplTest extends IntegrationTestSupport {
     void createRestaurantWhenUniversityIsNotFound() throws Exception {
         // given
         RestaurantRegisterReq invalidReq =
-                new RestaurantRegisterReq("서울대학교", "서울캠퍼스", "서울시 관악구 관악로", "유령식당");
+                new RestaurantRegisterReq(
+                        "서울대학교",
+                        "서울캠퍼스",
+                        "서울시 관악구 관악로",
+                        "유령식당",
+                        LocalTime.of(8, 0),
+                        LocalTime.of(10, 30),
+                        LocalTime.of(11, 0),
+                        LocalTime.of(14, 30),
+                        LocalTime.of(17, 0),
+                        LocalTime.of(18, 30));
         // when-then
         ApplicationException applicationException =
                 assertThrows(
@@ -340,7 +352,17 @@ class MealServiceImplTest extends IntegrationTestSupport {
     }
 
     private RestaurantRegisterReq getRestaurantRegisterReq() {
-        return new RestaurantRegisterReq("명지대학교", "인문캠퍼스", "서울시 서대문구 남가좌동 거북골로 34", "MCC 식당");
+        return new RestaurantRegisterReq(
+                "명지대학교",
+                "인문캠퍼스",
+                "서울시 서대문구 남가좌동 거북골로 34",
+                "MCC 식당",
+                LocalTime.of(8, 0),
+                LocalTime.of(10, 30),
+                LocalTime.of(11, 0),
+                LocalTime.of(14, 30),
+                LocalTime.of(17, 0),
+                LocalTime.of(18, 30));
     }
 
     private University getUniversity(String universityName, String campusName) {
