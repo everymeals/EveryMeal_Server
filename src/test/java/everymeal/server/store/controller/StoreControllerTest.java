@@ -13,12 +13,12 @@ import everymeal.server.global.util.authresolver.UserJwtResolver;
 import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 class StoreControllerTest extends ControllerTestSupport {
 
-    @Mock UserJwtResolver userJwtResolver;
+    @MockBean UserJwtResolver userJwtResolver;
 
     @DisplayName("가게 목록을 거리순으로 조회한다.")
     @Test

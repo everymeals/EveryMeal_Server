@@ -133,7 +133,10 @@ public class StoreController {
             @Parameter(hidden = true) @AuthUser AuthenticatedUser authenticatedUser) {
         return ApplicationResponse.ok(
                 storeService.getUserLikesStore(
-                        campusIdx, PageRequest.of(offset, limit), group, authenticatedUser));
+                        campusIdx,
+                        PageRequest.of(offset, limit),
+                        group,
+                        authenticatedUser.getIdx()));
     }
 
     @Auth(require = true)
@@ -152,6 +155,7 @@ public class StoreController {
                     @Schema(title = "가게 키 값", description = "가게 키 값", example = "386")
                     Long storeIdx,
             @Parameter(hidden = true) @AuthUser AuthenticatedUser authenticatedUser) {
-        return ApplicationResponse.ok(storeService.likesStore(storeIdx, authenticatedUser));
+        return ApplicationResponse.ok(
+                storeService.likesStore(storeIdx, authenticatedUser.getIdx()));
     }
 }
