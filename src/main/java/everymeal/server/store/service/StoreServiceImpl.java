@@ -9,16 +9,19 @@ import everymeal.server.store.controller.dto.response.StoreGetRes;
 import everymeal.server.store.entity.Store;
 import everymeal.server.store.repository.StoreMapper;
 import everymeal.server.store.repository.StoreRepository;
+import everymeal.server.store.repository.StoreRepositoryCustom;
 import everymeal.server.user.entity.Like;
 import everymeal.server.user.entity.User;
 import everymeal.server.user.repository.LikeRepository;
 import everymeal.server.user.repository.UserRepository;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +34,7 @@ public class StoreServiceImpl implements StoreService {
     private final LikeRepository likeRepository;
     private final UserRepository userRepository;
     private final StoreRepository storeRepository;
+    private final StoreRepositoryCustom storeRepositoryCustom;
 
     @Override
     public Page<StoreGetRes> getStores(
@@ -107,5 +111,22 @@ public class StoreServiceImpl implements StoreService {
             likeRepository.save(like);
             return true;
         }
+    }
+
+    @Override
+    public Page<StoreGetRes> getStoresKeyword(
+            Long campusIdx, String keyword, Long userIdx, PageRequest pageRequest) {
+        Map<String, Object> parameter = new HashMap<>();
+        parameter.put("universityIdx", campusIdx);
+        parameter.put("keyword", keyword);
+        parameter.put("userIdx", userIdx);
+        parameter.put("limit", pageRequest.getPageSize());
+        parameter.put("offset", pageRequest.getOffset());
+
+        List<Map<String, Object>> storesKeyword = storeMapper.getStoresKeyword(parameter);
+        Long storesKeywordCnt = storeMapper.getStoresKeywordCnt(parameter);
+
+        List<StoreGetRes> result = StoreGetRes.of(storesKeyword);
+        return new PageImpl<>(result, pageRequest, storesKeywordCnt);
     }
 }

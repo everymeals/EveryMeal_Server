@@ -56,9 +56,9 @@ class StoreServiceImplTest extends IntegrationTestSupport {
 
         List<Store> entity =
                 List.of(
-                        createEntity("store1", 3, university),
-                        createEntity("store2", 2, university),
-                        createEntity("store3", 1, university));
+                        createEntity("store1", 3, university, "기타"),
+                        createEntity("store2", 2, university, "기타"),
+                        createEntity("store3", 1, university, "기타"));
         storeRepository.saveAll(entity);
         storeRepository.flush();
         entityManager.clear();
@@ -90,9 +90,9 @@ class StoreServiceImplTest extends IntegrationTestSupport {
 
         List<Store> entity =
                 List.of(
-                        createEntity("store1", 3, save),
-                        createEntity("store2", 2, save),
-                        createEntity("store3", 1, save));
+                        createEntity("store1", 3, save, "기타"),
+                        createEntity("store2", 2, save, "기타"),
+                        createEntity("store3", 1, save, "기타"));
 
         User userEntity = userRepository.save(getUser(save, 1));
         List<Like> likes =
@@ -125,7 +125,7 @@ class StoreServiceImplTest extends IntegrationTestSupport {
                 universityRepository.save(
                         University.builder().name("서울대학교").campusName("관악캠퍼스").build());
 
-        Store store = createEntity("store1", 3, save);
+        Store store = createEntity("store1", 3, save, "기타");
         storeRepository.saveAndFlush(store);
         User userEntity = userRepository.save(getUser(save, 1));
 
@@ -145,7 +145,7 @@ class StoreServiceImplTest extends IntegrationTestSupport {
                 universityRepository.save(
                         University.builder().name("서울대학교").campusName("관악캠퍼스").build());
 
-        Store store = createEntity("store1", 3, save);
+        Store store = createEntity("store1", 3, save, "기타");
         storeRepository.saveAndFlush(store);
         User userEntity = userRepository.save(getUser(save, 1));
         Like like = createLikeEntity(store, userEntity);
@@ -157,11 +157,82 @@ class StoreServiceImplTest extends IntegrationTestSupport {
         assertThat(!result.isPresent());
     }
 
+    @DisplayName("가게 키워드 검색 - 이름")
+    @Test
+    @Transactional
+    void searchStore() {
+        // given
+        University save =
+                universityRepository.save(
+                        University.builder().name("서울대학교").campusName("관악캠퍼스").build());
+        List<University> universities =
+                universityRepository.findByNameAndCampusNameAndIsDeletedFalse("서울대학교", "관악캠퍼스");
+        University university = universities.get(0);
+
+        Long campusIdx = university.getIdx();
+
+        List<Store> entity =
+                List.of(
+                        createEntity("치킨", 3, university, "기타"),
+                        createEntity("떡볶이", 2, university, "기타"),
+                        createEntity("BBQ 치킨", 1, university, "기타"));
+        storeRepository.saveAll(entity);
+        storeRepository.flush();
+        entityManager.clear();
+
+        // when
+
+        Page<StoreGetRes> stores =
+                storeService.getStoresKeyword(campusIdx, "치킨", null, PageRequest.of(0, 10));
+
+        // then
+        assertThat(stores.getContent())
+                .hasSize(2)
+                .extracting("name")
+                .containsExactly("치킨", "BBQ 치킨");
+    }
+
+    @DisplayName("가게 키워드 검색 - 카테고리 디테일")
+    @Test
+    @Transactional
+    void searchStoreForCategory() {
+        // given
+        University save =
+                universityRepository.save(
+                        University.builder().name("서울대학교").campusName("관악캠퍼스").build());
+        List<University> universities =
+                universityRepository.findByNameAndCampusNameAndIsDeletedFalse("서울대학교", "관악캠퍼스");
+        University university = universities.get(0);
+
+        Long campusIdx = university.getIdx();
+
+        List<Store> entity =
+                List.of(
+                        createEntity("샌드위치", 3, university, "치킨"),
+                        createEntity("BBQ", 2, university, "치킨"),
+                        createEntity("카페", 1, university, "기타"));
+        storeRepository.saveAll(entity);
+        storeRepository.flush();
+        entityManager.clear();
+
+        // when
+
+        Page<StoreGetRes> stores =
+                storeService.getStoresKeyword(campusIdx, "치킨", null, PageRequest.of(0, 10));
+
+        // then
+        assertThat(stores.getContent())
+                .hasSize(2)
+                .extracting("name")
+                .containsExactly("샌드위치", "BBQ");
+    }
+
     private Like createLikeEntity(Store store, User user) {
         return Like.builder().store(store).user(user).build();
     }
 
-    private Store createEntity(String name, int distance, University university) {
+    private Store createEntity(
+            String name, int distance, University university, String categoryDetail) {
         return Store.builder()
                 .name(name)
                 .address("address")
@@ -176,7 +247,7 @@ class StoreServiceImplTest extends IntegrationTestSupport {
                 .y("y")
                 .gradeStatistics(new GradeStatistics())
                 .university(university)
-                .categoryDetail("기타")
+                .categoryDetail(categoryDetail)
                 .build();
     }
 
