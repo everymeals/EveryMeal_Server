@@ -154,4 +154,33 @@ public class StoreController {
             @Parameter(hidden = true) @AuthUser AuthenticatedUser authenticatedUser) {
         return ApplicationResponse.ok(storeService.likesStore(storeIdx, authenticatedUser));
     }
+
+    @Auth(require = false)
+    @GetMapping("/{campusIdx}/{keyword}")
+    @SecurityRequirement(name = "jwt-user-auth")
+    @Operation(summary = "주변 식당 키워드 검색 API", description = "주변 식당 키워드 검색합니다")
+    public ApplicationResponse<Page<StoreGetRes>> getStoresKeyword(
+            @Schema(title = "캠퍼스 키 값", description = "캠퍼스 키 값", example = "1")
+                    @PathVariable(value = "campusIdx")
+                    Long campusIdx,
+            @Schema(title = "키워드", description = "키워드", example = "치킨")
+                    @PathVariable(value = "keyword")
+                    String keyword,
+            @Parameter(hidden = true) AuthenticatedUser authenticatedUser,
+            @RequestParam(value = "offset", defaultValue = "0")
+                    @Schema(title = "페이지 번호", example = "0", description = "페이지 번호는 0부터 시작합니다.")
+                    Integer offset,
+            @RequestParam(value = "limit", defaultValue = "10")
+                    @Schema(
+                            title = "Data 갯수",
+                            example = "10",
+                            description = "한 페이지에 보여지는 데이터 수 입니다.")
+                    Integer limit) {
+        return ApplicationResponse.ok(
+                storeService.getStoresKeyword(
+                        campusIdx,
+                        keyword,
+                        authenticatedUser.getIdx(),
+                        PageRequest.of(offset, limit)));
+    }
 }

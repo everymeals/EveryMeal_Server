@@ -173,4 +173,23 @@ class StoreControllerTest extends ControllerTestSupport {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("OK"));
     }
+
+    @DisplayName("주변 식당 키워드 검색")
+    @Test
+    void searchStores() throws Exception {
+        // given
+        Long campusIdx = 1L;
+        String keyword = "테스트";
+        int offset = 0;
+        int limit = 10;
+
+        // when then
+        mockMvc.perform(
+                        get("/api/v1/stores/{campusIdx}/{keyword}", campusIdx, keyword)
+                                .param("offset", String.valueOf(offset))
+                                .param("limit", String.valueOf(limit)))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("OK"));
+    }
 }

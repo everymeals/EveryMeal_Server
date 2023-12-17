@@ -46,4 +46,8 @@ public interface StoreMapper {
             @Param("userIdx") Long userIdx,
             @Param("order") String order,
             @Param("grade") Integer grade);
+
+    List<Map<String, Object>> getStoresKeyword(Map<String, Object> parameter);
+
+    Long getStoresKeywordCnt(Map<String, Object> parameter);
 }
