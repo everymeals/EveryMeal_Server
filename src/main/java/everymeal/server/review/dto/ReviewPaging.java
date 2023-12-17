@@ -11,8 +11,9 @@ import java.util.List;
 public record ReviewPaging(
         Long reviewIdx,
         String restaurantName,
-        String mealType,
-        String mealCategory,
+        String nickName,
+        String profileImage,
+        Boolean isTodayReview,
         int grade,
         String content,
         List<String> imageList,

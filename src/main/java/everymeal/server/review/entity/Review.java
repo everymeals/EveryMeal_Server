@@ -2,7 +2,7 @@ package everymeal.server.review.entity;
 
 
 import everymeal.server.global.entity.BaseEntity;
-import everymeal.server.meal.entity.Meal;
+import everymeal.server.meal.entity.Restaurant;
 import everymeal.server.store.entity.Store;
 import everymeal.server.user.entity.User;
 import jakarta.persistence.CascadeType;
@@ -43,13 +43,16 @@ public class Review extends BaseEntity {
 
     private boolean isDeleted;
 
+    @Column(nullable = false)
+    private boolean isTodayReview;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_idx")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "meal_idx")
-    private Meal meal;
+    @JoinColumn(name = "restaurant_idx")
+    private Restaurant restaurant;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_idx")
@@ -64,23 +67,37 @@ public class Review extends BaseEntity {
 
     @Builder
     public Review(
-            String content, int grade, List<Image> images, User user, Meal meal, Store store) {
+            String content,
+            int grade,
+            List<Image> images,
+            User user,
+            Restaurant restaurant,
+            Store store) {
         this.content = content;
         this.grade = grade;
         this.images = images;
         this.user = user;
-        this.meal = meal;
+        this.restaurant = restaurant;
         this.isDeleted = Boolean.FALSE;
         this.store = store;
+        this.isTodayReview = Boolean.FALSE;
     }
 
-    public void updateEntity(String content, int grade, List<Image> images) {
+    public void updateEntity(String content, int grade, List<Image> images, Boolean todayReview) {
         this.content = content;
         this.grade = grade;
+        if (images != null) {
+            this.images.clear();
+        }
         this.images = images;
+        this.isTodayReview = todayReview;
     }
 
     public void deleteEntity() {
         this.isDeleted = Boolean.TRUE;
+    }
+
+    public void updateTodayReview(boolean isTodayReview) {
+        this.isTodayReview = isTodayReview;
     }
 }
