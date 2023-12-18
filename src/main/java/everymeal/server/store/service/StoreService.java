@@ -17,7 +17,6 @@ public interface StoreService {
             Long campusIdx, Pageable of, String group, Long userIdx);
 
     Boolean likesStore(Long storeIdx, Long userIdx);
-    Boolean likesStore(Long storeIdx, AuthenticatedUser authenticatedUser);
 
     Page<StoreGetRes> getStoresKeyword(
             Long campusIdx, String keyword, Long idx, PageRequest pageRequest);

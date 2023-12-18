@@ -3,7 +3,7 @@
 <mapper namespace="everymeal.server.store.repository.StoreMapper">
 
 
-  <select id="getStores">
+  <select id="getStores" resultType="java.util.Map">
     SELECT *
     FROM (
     SELECT
@@ -71,7 +71,7 @@
     OFFSET #{offset}
   </select>
 
-  <select id="getStoreCount">
+  <select id="getStoreCount" resultType="java.lang.Long">
     SELECT COUNT(*) AS total
     FROM (
         SELECT
@@ -136,7 +136,7 @@
          ) total
   </select>
 
-  <select id="getUserLikesStore">
+  <select id="getUserLikesStore" resultType="java.util.Map">
     SELECT *
     FROM (
       SELECT
@@ -200,7 +200,7 @@
       LIMIT #{limit}
     OFFSET #{offset}
   </select>
-  <select id="getUserLikesStoreCount">
+  <select id="getUserLikesStoreCount" resultType="java.lang.Long">
     SELECT
       COUNT(*) AS total
     FROM (

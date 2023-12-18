@@ -19,6 +19,7 @@ import everymeal.server.user.repository.LikeRepository;
 import everymeal.server.user.repository.UserRepository;
 import jakarta.persistence.EntityManager;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,14 @@ class StoreServiceImplTest extends IntegrationTestSupport {
     @Autowired private EntityManager entityManager;
     @Autowired private UserRepository userRepository;
     @Autowired private LikeRepository likeRepository;
+
+    @AfterEach
+    void tearDown() {
+        likeRepository.deleteAll();
+        storeRepository.deleteAll();
+        universityRepository.deleteAll();
+        userRepository.deleteAll();
+    }
 
     @DisplayName("캠퍼스 기준 식당 가져오기")
     @Transactional
