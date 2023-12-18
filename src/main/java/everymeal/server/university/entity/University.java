@@ -2,9 +2,7 @@ package everymeal.server.university.entity;
 
 
 import everymeal.server.global.entity.BaseEntity;
-import everymeal.server.store.entity.GradeStatistics;
 import everymeal.server.store.entity.Store;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -33,8 +31,6 @@ public class University extends BaseEntity {
     private String campusName;
 
     private Boolean isDeleted;
-
-    @Embedded private GradeStatistics gradeStatistics;
 
     @OneToMany(mappedBy = "university", fetch = FetchType.LAZY)
     private List<Store> stores = new ArrayList<>();

@@ -4,7 +4,6 @@ import static everymeal.server.global.exception.ExceptionList.STORE_NOT_FOUND;
 
 import everymeal.server.global.exception.ApplicationException;
 import everymeal.server.global.exception.ExceptionList;
-import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
 import everymeal.server.store.controller.dto.response.LikedStoreGetRes;
 import everymeal.server.store.controller.dto.response.StoreGetRes;
 import everymeal.server.store.entity.Store;
@@ -69,14 +68,14 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public Page<LikedStoreGetRes> getUserLikesStore(
-            Long campusIdx, Pageable pageable, String group, AuthenticatedUser authenticatedUser) {
+            Long campusIdx, Pageable pageable, String group, Long userIdx) {
         List<Map<String, Object>> stores =
                 storeMapper.getUserLikesStore(
                         campusIdx,
                         pageable.getPageSize(),
                         pageable.getOffset(),
                         group,
-                        authenticatedUser.getIdx(),
+                        userIdx,
                         "name",
                         null);
         List<LikedStoreGetRes> result = LikedStoreGetRes.of(stores);
@@ -86,7 +85,7 @@ public class StoreServiceImpl implements StoreService {
                         pageable.getPageSize(),
                         pageable.getOffset(),
                         group,
-                        authenticatedUser.getIdx(),
+                        userIdx,
                         "name",
                         null);
         return new PageImpl<>(result, pageable, count);
@@ -94,10 +93,10 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     @Transactional
-    public Boolean likesStore(Long storeIdx, AuthenticatedUser authenticatedUser) {
+    public Boolean likesStore(Long storeIdx, Long userIdx) {
         User user =
                 userRepository
-                        .findById(authenticatedUser.getIdx())
+                        .findById(userIdx)
                         .orElseThrow(() -> new ApplicationException(ExceptionList.USER_NOT_FOUND));
         Store store =
                 storeRepository

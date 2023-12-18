@@ -12,6 +12,7 @@ import everymeal.server.meal.entity.MealCategory;
 import everymeal.server.meal.entity.MealStatus;
 import everymeal.server.meal.entity.MealType;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -90,7 +91,7 @@ class MealControllerTest extends ControllerTestSupport {
 
         // when-then
         mockMvc.perform(
-                        get("/api/v1/meals/day")
+                        get("/api/v1/meals/day/v2")
                                 .param("universityName", universityName)
                                 .param("campusName", campusName)
                                 .param("offeredAt", offeredAt)
@@ -108,8 +109,9 @@ class MealControllerTest extends ControllerTestSupport {
 
         // when-then
         mockMvc.perform(
-                        get("/api/v1/meals/week")
+                        get("/api/v1/meals/week/v2")
                                 .param("universityName", universityName)
+                                .param("campusName", "인문캠퍼스")
                                 .param("offeredAt", offeredAt)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
@@ -117,6 +119,16 @@ class MealControllerTest extends ControllerTestSupport {
     }
 
     private RestaurantRegisterReq getRestaurantRegisterReq() {
-        return new RestaurantRegisterReq("명지대학교", "인문캠퍼스", "서울시 서대문구 남가좌동 거북골로 34", "MCC 식당");
+        return new RestaurantRegisterReq(
+                "명지대학교",
+                "인문캠퍼스",
+                "서울시 서대문구 남가좌동 거북골로 34",
+                "MCC 식당",
+                LocalTime.of(8, 0),
+                LocalTime.of(10, 30),
+                LocalTime.of(11, 0),
+                LocalTime.of(14, 30),
+                LocalTime.of(17, 0),
+                LocalTime.of(18, 30));
     }
 }

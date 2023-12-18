@@ -21,6 +21,7 @@ import everymeal.server.university.repository.UniversityRepository;
 import everymeal.server.user.entity.User;
 import everymeal.server.user.repository.UserRepository;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -46,6 +47,8 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
     private University university;
 
     private Meal meal;
+
+    private Restaurant restaurant;
     private User user;
     private Review review;
 
@@ -57,7 +60,7 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
                         getUniversity(
                                 restaurantRegisterReq.universityName(),
                                 restaurantRegisterReq.campusName()));
-        Restaurant restaurant =
+        restaurant =
                 restaurantRepository.save(
                         getRestaurant(
                                 university,
@@ -65,7 +68,7 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
                                 restaurantRegisterReq.restaurantName()));
         meal = mealRepository.save(getMeal(restaurant));
         user = userRepository.save(getUser(university, 1));
-        review = reviewRepository.save(getReview(user, meal));
+        review = reviewRepository.save(getReview(user));
     }
 
     @AfterEach
@@ -77,13 +80,14 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
         universityRepository.deleteAllInBatch();
     }
 
-    @DisplayName("리뷰를 작성에 성공한다.")
+    @DisplayName("리뷰를 작성에 성공한다. - 오늘 먹은 거")
     @Test
     void createReview() {
         // given
-        ReviewCreateReq req = new ReviewCreateReq(meal.getIdx(), 5, "오늘 학식 진짜 미침", List.of());
+        ReviewCreateReq req =
+                new ReviewCreateReq(restaurant.getIdx(), 5, "오늘 학식 진짜 미침", List.of(), true);
         // when
-        var result = reviewService.createReview(req, user);
+        var result = reviewService.createReview(req, user.getIdx());
 
         // then
         assertEquals(result, Boolean.TRUE);
@@ -93,9 +97,9 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
     @Test
     void createReview_failed() {
         // given
-        ReviewCreateReq req = new ReviewCreateReq(0L, 5, "오늘 학식 진짜 미침", List.of());
+        ReviewCreateReq req = new ReviewCreateReq(0L, 5, "오늘 학식 진짜 미침", List.of(), true);
         // when
-        var result = reviewService.createReview(req, user);
+        var result = reviewService.createReview(req, user.getIdx());
 
         // then
         assertEquals(result, Boolean.FALSE);
@@ -105,9 +109,10 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
     @Test
     void updateReview() {
         // given
-        ReviewCreateReq req = new ReviewCreateReq(meal.getIdx(), 5, "오늘 학식 진짜 미침", List.of());
+        ReviewCreateReq req =
+                new ReviewCreateReq(restaurant.getIdx(), 5, "오늘 학식 진짜 미침", List.of(), true);
         // when
-        var result = reviewService.updateReview(req, user, review.getIdx());
+        var result = reviewService.updateReview(req, user.getIdx(), review.getIdx());
         var updated = reviewRepository.findById(review.getIdx());
         // then
         assertEquals(result, Boolean.TRUE);
@@ -118,12 +123,13 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
     @Test
     void updateReview_failed() {
         // given
-        ReviewCreateReq req = new ReviewCreateReq(meal.getIdx(), 5, "오늘 학식 진짜 미침", List.of());
+        ReviewCreateReq req =
+                new ReviewCreateReq(restaurant.getIdx(), 5, "오늘 학식 진짜 미침", List.of(), true);
         // when then
         ApplicationException applicationException =
                 assertThrows(
                         ApplicationException.class,
-                        () -> reviewService.updateReview(req, user, 0L));
+                        () -> reviewService.updateReview(req, user.getIdx(), 0L));
 
         // then
         assertEquals(applicationException.getErrorCode(), ExceptionList.REVIEW_NOT_FOUND.getCODE());
@@ -135,7 +141,7 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
         // given
 
         // when
-        var result = reviewService.deleteReview(user, review.getIdx());
+        var result = reviewService.deleteReview(user.getIdx(), review.getIdx());
         var deleted = reviewRepository.findById(review.getIdx());
         // then
         assertEquals(result, Boolean.TRUE);
@@ -150,7 +156,8 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
         // when then
         ApplicationException applicationException =
                 assertThrows(
-                        ApplicationException.class, () -> reviewService.deleteReview(user, 0L));
+                        ApplicationException.class,
+                        () -> reviewService.deleteReview(user.getIdx(), 0L));
 
         // then
         assertEquals(applicationException.getErrorCode(), ExceptionList.REVIEW_NOT_FOUND.getCODE());
@@ -180,16 +187,16 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
             users.add(userRepository.save(getUser(university, i)));
         }
         for (User user : users) {
-            reviewRepository.save(getReview(user, meal));
+            reviewRepository.save(getReview(user));
         }
     }
 
-    private Review getReview(User user, Meal meal) {
+    private Review getReview(User user) {
         return Review.builder()
                 .user(user)
-                .meal(meal)
-                .grade(5)
+                .grade(4)
                 .images(List.of())
+                .restaurant(restaurant)
                 .content("Good")
                 .build();
     }
@@ -215,7 +222,17 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
     }
 
     private RestaurantRegisterReq getRestaurantRegisterReq() {
-        return new RestaurantRegisterReq("명지대학교", "인문캠퍼스", "서울시 서대문구 남가좌동 거북골로 34", "MCC 식당");
+        return new RestaurantRegisterReq(
+                "명지대학교",
+                "인문캠퍼스",
+                "서울시 서대문구 남가좌동 거북골로 34",
+                "MCC 식당",
+                LocalTime.of(8, 0),
+                LocalTime.of(10, 30),
+                LocalTime.of(11, 0),
+                LocalTime.of(14, 30),
+                LocalTime.of(17, 0),
+                LocalTime.of(18, 30));
     }
 
     private University getUniversity(String universityName, String campusName) {

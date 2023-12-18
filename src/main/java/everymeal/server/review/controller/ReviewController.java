@@ -4,15 +4,17 @@ package everymeal.server.review.controller;
 import everymeal.server.global.dto.response.ApplicationResponse;
 import everymeal.server.global.util.authresolver.Auth;
 import everymeal.server.global.util.authresolver.AuthUser;
+import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
 import everymeal.server.review.dto.ReviewCreateReq;
 import everymeal.server.review.dto.ReviewGetRes;
 import everymeal.server.review.service.ReviewService;
-import everymeal.server.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,19 +35,21 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @Operation(
-            summary = "학식 리뷰 작성",
+            summary = "식당 리뷰 작성",
             description = """
-  학식 리뷰 작성을 진행합니다. <br>
+  식당 리뷰 작성을 진행합니다. <br>
   로그인이 필요한 기능입니다.
   """)
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "리뷰 등록 성공"),
     })
-    @Auth
+    @Auth(require = true)
     @PostMapping
+    @SecurityRequirement(name = "jwt-user-auth")
     public ApplicationResponse<Boolean> createReview(
-            @RequestBody ReviewCreateReq request, @Schema(hidden = true) @AuthUser User user) {
-        return ApplicationResponse.create(reviewService.createReview(request, user));
+            @RequestBody ReviewCreateReq request,
+            @Parameter(hidden = true) @AuthUser AuthenticatedUser user) {
+        return ApplicationResponse.create(reviewService.createReview(request, user.getIdx()));
     }
 
     @Operation(
@@ -62,13 +66,15 @@ public class ReviewController {
                   (R0001)등록된 리뷰가 아닙니다.<br>
                   """),
     })
-    @Auth
+    @Auth(require = true)
     @PutMapping("/{reviewIdx}")
+    @SecurityRequirement(name = "jwt-user-auth")
     public ApplicationResponse<Boolean> updateReview(
             @Schema(description = "리뷰 PK", defaultValue = "1") @PathVariable Long reviewIdx,
             @RequestBody ReviewCreateReq request,
-            @Schema(hidden = true) @AuthUser User user) {
-        return ApplicationResponse.ok(reviewService.updateReview(request, user, reviewIdx));
+            @Parameter(hidden = true) @AuthUser AuthenticatedUser user) {
+        return ApplicationResponse.ok(
+                reviewService.updateReview(request, user.getIdx(), reviewIdx));
     }
 
     @Operation(
@@ -89,12 +95,13 @@ public class ReviewController {
                   """,
                 content = @Content(schema = @Schema())),
     })
-    @Auth
+    @Auth(require = true)
+    @SecurityRequirement(name = "jwt-user-auth")
     @DeleteMapping("/{reviewIdx}")
     public ApplicationResponse<Boolean> deleteReview(
             @Schema(description = "리뷰 PK", defaultValue = "1") @PathVariable Long reviewIdx,
-            @Schema(hidden = true) @AuthUser User user) {
-        return ApplicationResponse.ok(reviewService.deleteReview(user, reviewIdx));
+            @Parameter(hidden = true) @AuthUser AuthenticatedUser user) {
+        return ApplicationResponse.ok(reviewService.deleteReview(user.getIdx(), reviewIdx));
     }
 
     @Operation(summary = "학식 리뷰 페이징 조회", description = """
@@ -110,10 +117,10 @@ public class ReviewController {
     public ApplicationResponse<ReviewGetRes> getReviewWithNoOffSetPaging(
             @Schema(description = "조회하고자 하는 데이터의 시작점 idx", example = "1") @RequestParam
                     Long cursorIdx,
-            @Schema(description = "학식 idx", example = "1") @RequestParam Long mealIdx,
+            @Schema(description = "식당 idx", example = "1") @RequestParam Long restaurantIdx,
             @Schema(description = "한 페이지에서 보고자 하는 데이터의 개수", example = "8") @RequestParam
                     int pageSize) {
         return ApplicationResponse.ok(
-                reviewService.getReviewWithNoOffSetPaging(cursorIdx, mealIdx, pageSize));
+                reviewService.getReviewWithNoOffSetPaging(cursorIdx, restaurantIdx, pageSize));
     }
 }
