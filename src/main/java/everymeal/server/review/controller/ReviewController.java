@@ -162,12 +162,10 @@ public class ReviewController {
     })
     @GetMapping("/today")
     public ApplicationResponse<ReviewTodayGetRes> getTodayReview(
-        @RequestParam @Schema(description = "식당 아이디", defaultValue = "1")
-        Long restaurantIdx,
-        @RequestParam
-        @Schema(description = "조회하고자 하는 날짜 ( yyyy-MM-dd )", defaultValue = "2023-10-01")
-        String offeredAt
-    ) {
+            @RequestParam @Schema(description = "식당 아이디", defaultValue = "1") Long restaurantIdx,
+            @RequestParam
+                    @Schema(description = "조회하고자 하는 날짜 ( yyyy-MM-dd )", defaultValue = "2023-10-01")
+                    String offeredAt) {
         return ApplicationResponse.ok(reviewService.getTodayReview(restaurantIdx, offeredAt));
     }
 }

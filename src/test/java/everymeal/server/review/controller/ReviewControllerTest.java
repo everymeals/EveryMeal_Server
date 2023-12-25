@@ -169,8 +169,10 @@ class ReviewControllerTest extends ControllerTestSupport {
 
         // when-then
         mockMvc.perform(
-                        get("/api/v1/reviews/today?restaurantIdx=" + restaurantIdx
-                                        + "&offeredAt=" + offeredAt)
+                        get("/api/v1/reviews/today?restaurantIdx="
+                                        + restaurantIdx
+                                        + "&offeredAt="
+                                        + offeredAt)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk());

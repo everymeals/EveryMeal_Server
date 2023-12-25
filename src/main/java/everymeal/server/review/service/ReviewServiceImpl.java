@@ -192,7 +192,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewTodayGetRes getTodayReview(Long restaurantIdx, String offeredAt) {
-        return ReviewDto.of(reviewMapper.findTodayReview(restaurantIdx,  offeredAt));
+        return ReviewDto.of(reviewMapper.findTodayReview(restaurantIdx, offeredAt));
     }
 
     /**
