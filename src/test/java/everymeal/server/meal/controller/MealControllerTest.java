@@ -38,7 +38,7 @@ class MealControllerTest extends ControllerTestSupport {
                             MealCategory.DEFAULT.name());
             list.add(mealReq);
         }
-        WeekMealRegisterReq req = new WeekMealRegisterReq(list, 1L, "명지대학교", "MCC 식당");
+        WeekMealRegisterReq req = new WeekMealRegisterReq(list, 1L);
 
         // when-then
         mockMvc.perform(

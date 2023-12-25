@@ -68,4 +68,11 @@
     )
     ORDER BY r.name ASC, operatingTime ASC
   </select>
+
+  <select id="findAllByOfferedAtOnDateAndMealType">
+    SELECT *
+    FROM meal m
+    LEFT JOIN restaurant r ON m.restaurant_idx = r.idx and r.idx = #{restaurantIdx}
+    WHERE offered_at = #{offeredAt} AND meal_type = #{mealType}
+  </select>
 </mapper>

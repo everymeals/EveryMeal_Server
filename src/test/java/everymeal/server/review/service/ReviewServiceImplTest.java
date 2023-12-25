@@ -1,5 +1,11 @@
 package everymeal.server.review.service;
 
+import static everymeal.server.meal.MealData.getMealEntity;
+import static everymeal.server.meal.MealData.getRestaurant;
+import static everymeal.server.meal.MealData.getRestaurantRegisterReq;
+import static everymeal.server.meal.MealData.getUniversity;
+import static everymeal.server.review.ReviewData.getReviewEntity;
+import static everymeal.server.review.ReviewData.getUserEntity;
 import static org.junit.jupiter.api.Assertions.*;
 
 import everymeal.server.global.IntegrationTestSupport;
@@ -54,21 +60,15 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
 
     @BeforeEach
     void createDummyForTest() {
-        RestaurantRegisterReq restaurantRegisterReq = getRestaurantRegisterReq();
         university =
                 universityRepository.save(
-                        getUniversity(
-                                restaurantRegisterReq.universityName(),
-                                restaurantRegisterReq.campusName()));
+                        getUniversity());
         restaurant =
                 restaurantRepository.save(
-                        getRestaurant(
-                                university,
-                                restaurantRegisterReq.address(),
-                                restaurantRegisterReq.restaurantName()));
-        meal = mealRepository.save(getMeal(restaurant));
-        user = userRepository.save(getUser(university, 1));
-        review = reviewRepository.save(getReview(user));
+                        getRestaurant(university, getRestaurantRegisterReq()));
+        meal = mealRepository.save(getMealEntity(restaurant));
+        user = userRepository.save(getUserEntity(university));
+        review = reviewRepository.save(getReviewEntity(restaurant, user));
     }
 
     @AfterEach
@@ -184,62 +184,12 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
     private void createDummy() {
         List<User> users = new ArrayList<>();
         for (int i = 2; i < 12; i++) {
-            users.add(userRepository.save(getUser(university, i)));
+            users.add(userRepository.save(getUserEntity(university, i)));
         }
         for (User user : users) {
-            reviewRepository.save(getReview(user));
+            reviewRepository.save(getReviewEntity(restaurant, user));
         }
     }
 
-    private Review getReview(User user) {
-        return Review.builder()
-                .user(user)
-                .grade(4)
-                .images(List.of())
-                .restaurant(restaurant)
-                .content("Good")
-                .build();
-    }
 
-    private User getUser(University university, int uniqueIdx) {
-        return User.builder()
-                .email(uniqueIdx + "test@gmail.com")
-                .university(university)
-                .nickname(uniqueIdx + "띵랑이")
-                .profileImgUrl("img.url")
-                .build();
-    }
-
-    private Meal getMeal(Restaurant restaurant) {
-        return Meal.builder()
-                .mealType(MealType.BREAKFAST)
-                .mealStatus(MealStatus.OPEN)
-                .offeredAt(LocalDate.now())
-                .price(10000.0)
-                .category(MealCategory.DEFAULT)
-                .restaurant(restaurant)
-                .build();
-    }
-
-    private RestaurantRegisterReq getRestaurantRegisterReq() {
-        return new RestaurantRegisterReq(
-                "명지대학교",
-                "인문캠퍼스",
-                "서울시 서대문구 남가좌동 거북골로 34",
-                "MCC 식당",
-                LocalTime.of(8, 0),
-                LocalTime.of(10, 30),
-                LocalTime.of(11, 0),
-                LocalTime.of(14, 30),
-                LocalTime.of(17, 0),
-                LocalTime.of(18, 30));
-    }
-
-    private University getUniversity(String universityName, String campusName) {
-        return University.builder().name(universityName).campusName(campusName).build();
-    }
-
-    private Restaurant getRestaurant(University university, String address, String name) {
-        return Restaurant.builder().university(university).address(address).name(name).build();
-    }
 }

@@ -1,15 +1,23 @@
 package everymeal.server.meal.service;
 
+import static everymeal.server.meal.MealData.getMealEntity;
+import static everymeal.server.meal.MealData.getRestaurant;
+import static everymeal.server.meal.MealData.getRestaurantRegisterReq;
+import static everymeal.server.meal.MealData.getUniversity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import everymeal.server.global.IntegrationTestSupport;
 import everymeal.server.global.exception.ApplicationException;
 import everymeal.server.global.exception.ExceptionList;
+import everymeal.server.meal.MealData;
 import everymeal.server.meal.controller.dto.request.MealRegisterReq;
 import everymeal.server.meal.controller.dto.request.RestaurantRegisterReq;
 import everymeal.server.meal.controller.dto.request.WeekMealRegisterReq;
+import everymeal.server.meal.controller.dto.response.DayMealGetRes;
 import everymeal.server.meal.controller.dto.response.RestaurantListGetRes;
 import everymeal.server.meal.entity.Meal;
 import everymeal.server.meal.entity.MealCategory;
@@ -18,7 +26,6 @@ import everymeal.server.meal.entity.MealType;
 import everymeal.server.meal.entity.Restaurant;
 import everymeal.server.meal.repository.MealMapper;
 import everymeal.server.meal.repository.MealRepository;
-import everymeal.server.meal.repository.MealRepositoryCustom;
 import everymeal.server.meal.repository.RestaurantRepository;
 import everymeal.server.university.entity.University;
 import everymeal.server.university.repository.UniversityRepository;
@@ -26,9 +33,15 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 
 class MealServiceImplTest extends IntegrationTestSupport {
@@ -36,8 +49,6 @@ class MealServiceImplTest extends IntegrationTestSupport {
     @Autowired private MealService mealService;
 
     @Autowired private MealRepository mealRepository;
-
-    @Autowired private MealRepositoryCustom mealRepositoryCustom;
 
     @Autowired private MealMapper mealMapper;
 
@@ -53,7 +64,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
 
     @DisplayName("학생 식당을 등록합니다.")
     @Test
-    void createRestaurant() throws Exception {
+    void 학생식당_등록() throws Exception {
         // given
         RestaurantRegisterReq req = getRestaurantRegisterReq();
 
@@ -63,18 +74,12 @@ class MealServiceImplTest extends IntegrationTestSupport {
         Boolean response = mealService.createRestaurant(req);
 
         // then
-        Restaurant restaurants = restaurantRepository.findByName(req.restaurantName()).get();
         assertEquals(response, true);
-        assertEquals(restaurants.getAddress(), req.address());
-    }
-
-    private Restaurant getRestaurant(University university, String address, String name) {
-        return Restaurant.builder().university(university).address(address).name(name).build();
     }
 
     @DisplayName("주간 식단을 등록")
     @Test
-    void createWeekMeal() throws Exception {
+    void 주간식단_등록() throws Exception {
         // given
         RestaurantRegisterReq restaurantRegisterReq = getRestaurantRegisterReq();
         University university =
@@ -86,8 +91,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
                 restaurantRepository.save(
                         getRestaurant(
                                 university,
-                                restaurantRegisterReq.address(),
-                                restaurantRegisterReq.restaurantName()));
+                                restaurantRegisterReq));
 
         List<MealRegisterReq> list = new ArrayList<>();
         LocalDate today = LocalDate.now();
@@ -104,7 +108,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
         }
         WeekMealRegisterReq req =
                 new WeekMealRegisterReq(
-                        list, restaurant.getIdx(), university.getName(), restaurant.getName());
+                        list, restaurant.getIdx());
 
         // when
         Boolean response = mealService.createWeekMeal(req);
@@ -115,7 +119,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
 
     @DisplayName("주간 식단 조회")
     @Test
-    void getWeekMealList() throws Exception {
+    void 주간식단_조회() throws Exception {
         // given
         RestaurantRegisterReq restaurantRegisterReq = getRestaurantRegisterReq();
         University university =
@@ -127,12 +131,11 @@ class MealServiceImplTest extends IntegrationTestSupport {
                 restaurantRepository.save(
                         getRestaurant(
                                 university,
-                                restaurantRegisterReq.address(),
-                                restaurantRegisterReq.restaurantName()));
+                                restaurantRegisterReq));
 
         List<MealRegisterReq> list = new ArrayList<>();
-        LocalDate today = LocalDate.now();
-        for (int i = 0; i < 7; i++) {
+        LocalDate today = LocalDate.parse("2023-12-16");
+        for (int i = 1; i < 8; i++) {
             LocalDate offeredAt = today.plusDays(i);
             MealRegisterReq breakfast =
                     new MealRegisterReq(
@@ -164,53 +167,37 @@ class MealServiceImplTest extends IntegrationTestSupport {
         }
         WeekMealRegisterReq req =
                 new WeekMealRegisterReq(
-                        list, restaurant.getIdx(), university.getName(), restaurant.getName());
+                        list, restaurant.getIdx());
         mealService.createWeekMeal(req);
 
         // when
-        String offeredAt = today.toString().split("T")[0];
+        String offeredAt = today.plusDays(1).toString().split("T")[0];
         var response =
-                mealService.getDayMealListV2(
-                        req.universityName(), university.getCampusName(), offeredAt);
+                mealService.getWeekMealList(
+                        university.getName(), university.getCampusName(), offeredAt);
 
         // then
-        assertEquals(response.get(offeredAt).get(restaurant.getName()).size(), 3);
+        assertEquals(response.size(), 6);
     }
 
     @DisplayName("하루 식단 조회")
     @Test
-    void getDayMealList() throws Exception {
-        // given
-        RestaurantRegisterReq restaurantRegisterReq = getRestaurantRegisterReq();
-        University university =
-                universityRepository.save(
-                        getUniversity(
-                                restaurantRegisterReq.universityName(),
-                                restaurantRegisterReq.campusName()));
+    void 하루식단_조회() throws Exception {
+        University university = universityRepository.save(getUniversity());
         Restaurant restaurant =
                 restaurantRepository.save(
                         getRestaurant(
                                 university,
-                                restaurantRegisterReq.address(),
-                                restaurantRegisterReq.restaurantName()));
-
-        LocalDate today = LocalDate.now();
-
+                                getRestaurantRegisterReq()));
         mealRepository.save(
-                Meal.builder()
-                        .mealType(MealType.BREAKFAST)
-                        .mealStatus(MealStatus.OPEN)
-                        .menu("갈비탕, 깍두기, 흰쌀밥")
-                        .offeredAt(today)
-                        .price(0.0)
-                        .category(MealCategory.DEFAULT)
-                        .build());
+                getMealEntity(
+                        restaurant));
 
         // when
         String offeredAt = LocalDate.now().toString().split("T")[0];
         var response =
                 mealService.getDayMealListV2(
-                        university.getName(), university.getCampusName(), offeredAt);
+                    getUniversity().getName(), getUniversity().getCampusName(), offeredAt);
 
         // then
         assertEquals(response.size(), 1);
@@ -218,20 +205,13 @@ class MealServiceImplTest extends IntegrationTestSupport {
 
     @DisplayName("학교별 학생 식당 조회")
     @Test
-    void getRestaurantList() throws Exception {
+    void 학교별_학생_식당_조회() throws Exception {
         // given
         RestaurantRegisterReq restaurantRegisterReq = getRestaurantRegisterReq();
         University university =
-                universityRepository.save(
-                        getUniversity(
-                                restaurantRegisterReq.universityName(),
-                                restaurantRegisterReq.campusName()));
+                universityRepository.save(getUniversity());
         Restaurant restaurant =
-                restaurantRepository.save(
-                        getRestaurant(
-                                university,
-                                restaurantRegisterReq.address(),
-                                restaurantRegisterReq.restaurantName()));
+                restaurantRepository.save(getRestaurant(university, restaurantRegisterReq));
 
         String universityName = restaurantRegisterReq.universityName();
         String campusName = restaurantRegisterReq.campusName();
@@ -271,7 +251,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
 
     @Test
     @DisplayName("주간 식단 등록 시, 존재하지 않는 식당일 경우")
-    void createWeekMealWhenRestaurantIsNotFound() throws Exception {
+    void 주간식단_등록_시_존재하지_않는_식당일_경우() throws Exception {
         // given
         List<MealRegisterReq> list = new ArrayList<>();
         LocalDate today = LocalDate.now();
@@ -286,7 +266,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
                             MealCategory.DEFAULT.name());
             list.add(mealReq);
         }
-        WeekMealRegisterReq invalidReq = new WeekMealRegisterReq(list, 9999L, "명지대학교", "없는식당");
+        WeekMealRegisterReq invalidReq = new WeekMealRegisterReq(list, 9999L);
 
         // when-then
         ApplicationException applicationException =
@@ -298,7 +278,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
 
     @Test
     @DisplayName("등록되어 있는 식단 데이터 덮어 쓰기")
-    void createWeekMealBeforeLastMealOfferedAt() throws Exception {
+    void 등록되어_있는_식단_데이터_덮어쓰기() throws Exception {
         // given
         RestaurantRegisterReq restaurantRegisterReq = getRestaurantRegisterReq();
         University university =
@@ -308,20 +288,12 @@ class MealServiceImplTest extends IntegrationTestSupport {
                                 restaurantRegisterReq.campusName()));
         Restaurant restaurant =
                 restaurantRepository.save(
-                        getRestaurant(
-                                university,
-                                restaurantRegisterReq.address(),
-                                restaurantRegisterReq.restaurantName()));
+                        getRestaurant(university, restaurantRegisterReq));
 
         Meal meal =
                 mealRepository.save(
                         Meal.builder()
-                                .menu("떡볶이, 어묵탕, 튀김")
-                                .mealType(MealType.LUNCH)
-                                .mealStatus(MealStatus.OPEN)
-                                .offeredAt(LocalDate.now())
-                                .price(5000.0)
-                                .category(MealCategory.DEFAULT)
+                                .mealRegisterReq(MealData.getMealRegisterReq(0))
                                 .restaurant(restaurant)
                                 .build());
 
@@ -340,7 +312,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
         }
         WeekMealRegisterReq invalidReq =
                 new WeekMealRegisterReq(
-                        list, restaurant.getIdx(), university.getName(), restaurant.getName());
+                        list, restaurant.getIdx());
 
         ApplicationException applicationException =
                 assertThrows(
@@ -351,21 +323,4 @@ class MealServiceImplTest extends IntegrationTestSupport {
                 ExceptionList.INVALID_MEAL_OFFEREDAT_REQUEST.getCODE());
     }
 
-    private RestaurantRegisterReq getRestaurantRegisterReq() {
-        return new RestaurantRegisterReq(
-                "명지대학교",
-                "인문캠퍼스",
-                "서울시 서대문구 남가좌동 거북골로 34",
-                "MCC 식당",
-                LocalTime.of(8, 0),
-                LocalTime.of(10, 30),
-                LocalTime.of(11, 0),
-                LocalTime.of(14, 30),
-                LocalTime.of(17, 0),
-                LocalTime.of(18, 30));
-    }
-
-    private University getUniversity(String universityName, String campusName) {
-        return University.builder().name(universityName).campusName(campusName).build();
-    }
 }
