@@ -159,4 +159,20 @@ class ReviewControllerTest extends ControllerTestSupport {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk());
     }
+
+    @DisplayName("오늘 먹었어요. 리뷰 조회")
+    @Test
+    void getTodayReview() throws Exception {
+        // given
+        Long restaurantIdx = 1L;
+        String offeredAt = "2023-12-25";
+
+        // when-then
+        mockMvc.perform(
+                        get("/api/v1/reviews/today?restaurantIdx=" + restaurantIdx
+                                        + "&offeredAt=" + offeredAt)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk());
+    }
 }

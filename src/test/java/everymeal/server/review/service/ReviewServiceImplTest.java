@@ -25,6 +25,7 @@ import everymeal.server.university.entity.University;
 import everymeal.server.university.repository.UniversityRepository;
 import everymeal.server.user.entity.User;
 import everymeal.server.user.repository.UserRepository;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -206,6 +207,23 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
         reviewMarkRepository.save(ReviewMark.builder().user(user).review(review).build());
         // when
         var result = reviewService.markReview(reviewIdx, isLike, user.getIdx());
+        // then
+        assertThat(result).isNotNull();
+    }
+
+    @DisplayName("오늘 먹었어요. 리뷰 조회")
+    @Test
+    void getTodayReview() {
+        // given
+        Review review = getReviewEntity(restaurant, user);
+        review.updateTodayReview(true);
+        Review saved = reviewRepository.save(review);
+        saved.addMark(user);
+        reviewRepository.saveAndFlush(saved);
+
+        String offeredAt = LocalDate.now().toString();
+        // when
+        var result = reviewService.getTodayReview(restaurant.getIdx(), offeredAt);
         // then
         assertThat(result).isNotNull();
     }

@@ -11,10 +11,13 @@ import everymeal.server.global.exception.ApplicationException;
 import everymeal.server.meal.entity.Restaurant;
 import everymeal.server.meal.repository.RestaurantRepository;
 import everymeal.server.review.dto.ReviewCreateReq;
+import everymeal.server.review.dto.ReviewDto;
+import everymeal.server.review.dto.ReviewDto.ReviewTodayGetRes;
 import everymeal.server.review.dto.ReviewGetRes;
 import everymeal.server.review.dto.ReviewPaging;
 import everymeal.server.review.entity.Image;
 import everymeal.server.review.entity.Review;
+import everymeal.server.review.repository.ReviewMapper;
 import everymeal.server.review.repository.ReviewMarkRepository;
 import everymeal.server.review.repository.ReviewRepository;
 import everymeal.server.user.entity.User;
@@ -38,6 +41,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final Logger logger = LoggerFactory.getLogger(ReviewServiceImpl.class);
 
     private final ReviewMarkRepository reviewMarkRepository;
+    private final ReviewMapper reviewMapper;
 
     @Override
     @Transactional
@@ -184,6 +188,11 @@ public class ReviewServiceImpl implements ReviewService {
                             });
         }
         return true;
+    }
+
+    @Override
+    public ReviewTodayGetRes getTodayReview(Long restaurantIdx, String offeredAt) {
+        return ReviewDto.of(reviewMapper.findTodayReview(restaurantIdx,  offeredAt));
     }
 
     /**

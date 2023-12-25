@@ -2,6 +2,7 @@ package everymeal.server.review.service;
 
 
 import everymeal.server.review.dto.ReviewCreateReq;
+import everymeal.server.review.dto.ReviewDto.ReviewTodayGetRes;
 import everymeal.server.review.dto.ReviewGetRes;
 
 public interface ReviewService {
@@ -14,4 +15,6 @@ public interface ReviewService {
     ReviewGetRes getReviewWithNoOffSetPaging(Long cursorIdx, Long restaurantIdx, int pageSize);
 
     Boolean markReview(Long reviewIdx, boolean isLike, Long userIdx);
+
+    ReviewTodayGetRes getTodayReview(Long restaurantIdx, String offeredAt);
 }
