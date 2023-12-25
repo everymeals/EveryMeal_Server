@@ -1,6 +1,8 @@
 package everymeal.server.review.service;
 
 import static everymeal.server.global.exception.ExceptionList.RESTAURANT_NOT_FOUND;
+import static everymeal.server.global.exception.ExceptionList.REVIEW_ALREADY_MARKED;
+import static everymeal.server.global.exception.ExceptionList.REVIEW_MARK_NOT_FOUND;
 import static everymeal.server.global.exception.ExceptionList.REVIEW_NOT_FOUND;
 import static everymeal.server.global.exception.ExceptionList.REVIEW_UNAUTHORIZED;
 import static everymeal.server.global.exception.ExceptionList.USER_NOT_FOUND;
@@ -13,12 +15,12 @@ import everymeal.server.review.dto.ReviewGetRes;
 import everymeal.server.review.dto.ReviewPaging;
 import everymeal.server.review.entity.Image;
 import everymeal.server.review.entity.Review;
+import everymeal.server.review.repository.ReviewMarkRepository;
 import everymeal.server.review.repository.ReviewRepository;
 import everymeal.server.user.entity.User;
 import everymeal.server.user.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,16 +37,17 @@ public class ReviewServiceImpl implements ReviewService {
     private final UserRepository userRepository;
     private final Logger logger = LoggerFactory.getLogger(ReviewServiceImpl.class);
 
+    private final ReviewMarkRepository reviewMarkRepository;
+
     @Override
     @Transactional
-    public Boolean createReview(ReviewCreateReq request, Long userIdx) {
+    public Long createReview(ReviewCreateReq request, Long userIdx) {
         // (1) restaurant 객체 조회
-        Optional<Restaurant> restaurant = restaurantRepository.findById(request.restaurantIdx());
-        if (restaurant.isEmpty()) {
-            logger.info(
-                    RESTAURANT_NOT_FOUND.MESSAGE, new ApplicationException(RESTAURANT_NOT_FOUND));
-            return false;
-        }
+        Restaurant restaurant =
+                restaurantRepository
+                        .findById(request.restaurantIdx())
+                        .orElseThrow(() -> new ApplicationException(RESTAURANT_NOT_FOUND));
+
         // (2) 이미지 주소 <> 이미지 객체 치환
         List<Image> imageList = getImageFromString(request.imageList());
         User user =
@@ -57,13 +60,13 @@ public class ReviewServiceImpl implements ReviewService {
                 (request.content() == null && request.grade() == 0)
                         ? Review.builder()
                                 .images(imageList)
-                                .restaurant(restaurant.get())
+                                .restaurant(restaurant)
                                 .user(user)
                                 .build()
                         : Review.builder()
                                 .content(request.content())
                                 .images(imageList)
-                                .restaurant(restaurant.get())
+                                .restaurant(restaurant)
                                 .grade(request.grade())
                                 .user(user)
                                 .build();
@@ -72,15 +75,15 @@ public class ReviewServiceImpl implements ReviewService {
             review.updateTodayReview(true);
         }
         // (4) 저장
-        reviewRepository.save(review);
+        Review savedReview = reviewRepository.save(review);
 
-        restaurant.get().addGrade(request.grade());
-        return true;
+        restaurant.addGrade(request.grade());
+        return savedReview.getIdx();
     }
 
     @Override
     @Transactional
-    public Boolean updateReview(ReviewCreateReq request, Long userIdx, Long reviewIdx) {
+    public Long updateReview(ReviewCreateReq request, Long userIdx, Long reviewIdx) {
         // (1) 기존 리뷰 조회
         Review review =
                 reviewRepository
@@ -100,7 +103,7 @@ public class ReviewServiceImpl implements ReviewService {
 
         review.updateEntity(request.content(), request.grade(), imageList, request.isTodayReview());
 
-        return true;
+        return review.getIdx();
     }
 
     @Override
@@ -142,6 +145,45 @@ public class ReviewServiceImpl implements ReviewService {
         }
 
         return new ReviewGetRes(result.reviewTotalCnt(), reviewPagingList);
+    }
+
+    @Override
+    @Transactional
+    public Boolean markReview(Long reviewIdx, boolean isLike, Long userIdx) {
+        // (1) 기존 리뷰 조회
+        Review review =
+                reviewRepository
+                        .findById(reviewIdx)
+                        .orElseThrow(() -> new ApplicationException(REVIEW_NOT_FOUND));
+        User user =
+                userRepository
+                        .findById(userIdx)
+                        .orElseThrow(() -> new ApplicationException(USER_NOT_FOUND));
+        // (2) 기존 데이터 수정
+        if (isLike) {
+            reviewMarkRepository
+                    .findByReviewIdxAndUserIdx(reviewIdx, userIdx)
+                    .ifPresentOrElse(
+                            reviewMark -> {
+                                throw new ApplicationException(REVIEW_ALREADY_MARKED);
+                            },
+                            () -> {
+                                review.addMark(user);
+                                reviewRepository.saveAndFlush(review);
+                            });
+        } else {
+            reviewMarkRepository
+                    .findByReviewIdxAndUserIdx(reviewIdx, userIdx)
+                    .ifPresentOrElse(
+                            reviewMark -> {
+                                review.removeMark(user);
+                                reviewMarkRepository.delete(reviewMark);
+                            },
+                            () -> {
+                                throw new ApplicationException(REVIEW_MARK_NOT_FOUND);
+                            });
+        }
+        return true;
     }
 
     /**

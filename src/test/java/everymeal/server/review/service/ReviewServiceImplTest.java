@@ -6,6 +6,7 @@ import static everymeal.server.meal.MealData.getRestaurantRegisterReq;
 import static everymeal.server.meal.MealData.getUniversity;
 import static everymeal.server.review.ReviewData.getReviewEntity;
 import static everymeal.server.review.ReviewData.getUserEntity;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import everymeal.server.global.IntegrationTestSupport;
@@ -17,6 +18,8 @@ import everymeal.server.meal.repository.MealRepository;
 import everymeal.server.meal.repository.RestaurantRepository;
 import everymeal.server.review.dto.ReviewCreateReq;
 import everymeal.server.review.entity.Review;
+import everymeal.server.review.entity.ReviewMark;
+import everymeal.server.review.repository.ReviewMarkRepository;
 import everymeal.server.review.repository.ReviewRepository;
 import everymeal.server.university.entity.University;
 import everymeal.server.university.repository.UniversityRepository;
@@ -38,6 +41,7 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
     @Autowired private UniversityRepository universityRepository;
     @Autowired private RestaurantRepository restaurantRepository;
     @Autowired private UserRepository userRepository;
+    @Autowired private ReviewMarkRepository reviewMarkRepository;
 
     /**
      * ============================================================================================
@@ -64,6 +68,7 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
 
     @AfterEach
     void tearDown() {
+        reviewMarkRepository.deleteAllInBatch();
         reviewRepository.deleteAllInBatch();
         mealRepository.deleteAllInBatch();
         restaurantRepository.deleteAllInBatch();
@@ -81,7 +86,7 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
         var result = reviewService.createReview(req, user.getIdx());
 
         // then
-        assertEquals(result, Boolean.TRUE);
+        assertThat(result).isNotNull();
     }
 
     @DisplayName("등록되지 않은 학식에 대한 리뷰를 작성할 경우, 실패한다.")
@@ -90,10 +95,8 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
         // given
         ReviewCreateReq req = new ReviewCreateReq(0L, 5, "오늘 학식 진짜 미침", List.of(), true);
         // when
-        var result = reviewService.createReview(req, user.getIdx());
-
-        // then
-        assertEquals(result, Boolean.FALSE);
+        assertThrows(
+                ApplicationException.class, () -> reviewService.createReview(req, user.getIdx()));
     }
 
     @DisplayName("학식 리뷰를 수정한다.")
@@ -106,7 +109,7 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
         var result = reviewService.updateReview(req, user.getIdx(), review.getIdx());
         var updated = reviewRepository.findById(review.getIdx());
         // then
-        assertEquals(result, Boolean.TRUE);
+        assertThat(result).isNotNull();
         assertEquals(updated.get().getContent(), req.content());
     }
 
@@ -180,5 +183,30 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
         for (User user : users) {
             reviewRepository.save(getReviewEntity(restaurant, user));
         }
+    }
+
+    @DisplayName("리뷰 좋아요")
+    @Test
+    void markReview() {
+        // given
+        Long reviewIdx = review.getIdx();
+        Boolean isLike = true;
+        // when
+        var result = reviewService.markReview(reviewIdx, isLike, user.getIdx());
+        // then
+        assertThat(result).isNotNull();
+    }
+
+    @DisplayName("리뷰 싫어요")
+    @Test
+    void markReview_failed() {
+        // given
+        Long reviewIdx = review.getIdx();
+        Boolean isLike = false;
+        reviewMarkRepository.save(ReviewMark.builder().user(user).review(review).build());
+        // when
+        var result = reviewService.markReview(reviewIdx, isLike, user.getIdx());
+        // then
+        assertThat(result).isNotNull();
     }
 }

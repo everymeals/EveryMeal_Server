@@ -49,7 +49,6 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                                         .fetchOne())
                         .intValue();
         return new ReviewPagingVOWithCnt(countResult, queryResult);
-        //        return new ReviewPagingVOWithCnt(0, null);
     }
     /**
      * ============================================================================================

@@ -100,4 +100,26 @@ public class Review extends BaseEntity {
     public void updateTodayReview(boolean isTodayReview) {
         this.isTodayReview = isTodayReview;
     }
+
+    public void addMark(User user) {
+        ReviewMark reviewMark = ReviewMark.builder().review(this).user(user).build();
+        this.reviewMarks.add(reviewMark);
+    }
+
+    public void removeMark(User user) {
+        this.reviewMarks.removeIf(mark -> mark.getUser().getIdx().equals(user.getIdx()));
+        System.out.println("size = " + this.reviewMarks.size());
+        System.out.println(
+                "remark = "
+                        + this.reviewMarks.stream()
+                                .anyMatch(mark -> mark.getUser().getIdx().equals(user.getIdx())));
+    }
+
+    public boolean isLike(Long userIdx) {
+        if (this.reviewMarks.isEmpty()) {
+            return false;
+        } else
+            return this.reviewMarks.stream()
+                    .anyMatch(mark -> mark.getUser().getIdx().equals(userIdx));
+    }
 }
