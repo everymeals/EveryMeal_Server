@@ -38,6 +38,7 @@ public class MealServiceImpl implements MealService {
      * ============================================================================================
      */
     private final MealRepository mealRepository; // 기본 JPA 제공 DAO
+
     private final MealDao mealDao; // JPQL DAO
     private final MealMapper mealMapper; // MyBatis DAO
     private final UniversityRepository universityRepository;
@@ -105,18 +106,12 @@ public class MealServiceImpl implements MealService {
             // 제공날짜, 학생식당, 식사분류가 동일한 데이터가 이미 존재하면, 덮어쓰기 불가능 오류
             if (!mealMapper
                     .findAllByOfferedAtOnDateAndMealType(
-                            req.offeredAt().toString(),
-                            req.mealType(),
-                            request.restaurantIdx())
+                            req.offeredAt().toString(), req.mealType(), request.restaurantIdx())
                     .isEmpty()) {
                 throw new ApplicationException(ExceptionList.INVALID_MEAL_OFFEREDAT_REQUEST);
             } else {
                 // 데이터 생성
-                Meal meal =
-                        Meal.builder()
-                                .mealRegisterReq(req)
-                                .restaurant(restaurant)
-                                .build();
+                Meal meal = Meal.builder().mealRegisterReq(req).restaurant(restaurant).build();
                 mealList.add(meal);
             }
         }

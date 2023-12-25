@@ -55,9 +55,7 @@ public class Restaurant {
     private Set<Review> reviews;
 
     @Builder
-    public Restaurant(
-            RestaurantRegisterReq restaurantRegisterReq,
-            University university) {
+    public Restaurant(RestaurantRegisterReq restaurantRegisterReq, University university) {
         this.name = restaurantRegisterReq.campusName();
         this.address = restaurantRegisterReq.address();
         this.university = university;

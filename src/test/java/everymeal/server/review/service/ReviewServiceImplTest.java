@@ -11,11 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import everymeal.server.global.IntegrationTestSupport;
 import everymeal.server.global.exception.ApplicationException;
 import everymeal.server.global.exception.ExceptionList;
-import everymeal.server.meal.controller.dto.request.RestaurantRegisterReq;
 import everymeal.server.meal.entity.Meal;
-import everymeal.server.meal.entity.MealCategory;
-import everymeal.server.meal.entity.MealStatus;
-import everymeal.server.meal.entity.MealType;
 import everymeal.server.meal.entity.Restaurant;
 import everymeal.server.meal.repository.MealRepository;
 import everymeal.server.meal.repository.RestaurantRepository;
@@ -26,8 +22,6 @@ import everymeal.server.university.entity.University;
 import everymeal.server.university.repository.UniversityRepository;
 import everymeal.server.user.entity.User;
 import everymeal.server.user.repository.UserRepository;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -60,12 +54,9 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
 
     @BeforeEach
     void createDummyForTest() {
-        university =
-                universityRepository.save(
-                        getUniversity());
+        university = universityRepository.save(getUniversity());
         restaurant =
-                restaurantRepository.save(
-                        getRestaurant(university, getRestaurantRegisterReq()));
+                restaurantRepository.save(getRestaurant(university, getRestaurantRegisterReq()));
         meal = mealRepository.save(getMealEntity(restaurant));
         user = userRepository.save(getUserEntity(university));
         review = reviewRepository.save(getReviewEntity(restaurant, user));
@@ -190,6 +181,4 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
             reviewRepository.save(getReviewEntity(restaurant, user));
         }
     }
-
-
 }

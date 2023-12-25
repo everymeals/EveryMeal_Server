@@ -7,8 +7,6 @@ import static everymeal.server.meal.MealData.getUniversity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 import everymeal.server.global.IntegrationTestSupport;
 import everymeal.server.global.exception.ApplicationException;
@@ -17,7 +15,6 @@ import everymeal.server.meal.MealData;
 import everymeal.server.meal.controller.dto.request.MealRegisterReq;
 import everymeal.server.meal.controller.dto.request.RestaurantRegisterReq;
 import everymeal.server.meal.controller.dto.request.WeekMealRegisterReq;
-import everymeal.server.meal.controller.dto.response.DayMealGetRes;
 import everymeal.server.meal.controller.dto.response.RestaurantListGetRes;
 import everymeal.server.meal.entity.Meal;
 import everymeal.server.meal.entity.MealCategory;
@@ -33,15 +30,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 
 class MealServiceImplTest extends IntegrationTestSupport {
@@ -88,10 +79,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
                                 restaurantRegisterReq.universityName(),
                                 restaurantRegisterReq.campusName()));
         Restaurant restaurant =
-                restaurantRepository.save(
-                        getRestaurant(
-                                university,
-                                restaurantRegisterReq));
+                restaurantRepository.save(getRestaurant(university, restaurantRegisterReq));
 
         List<MealRegisterReq> list = new ArrayList<>();
         LocalDate today = LocalDate.now();
@@ -106,9 +94,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
                             MealCategory.DEFAULT.name());
             list.add(mealReq);
         }
-        WeekMealRegisterReq req =
-                new WeekMealRegisterReq(
-                        list, restaurant.getIdx());
+        WeekMealRegisterReq req = new WeekMealRegisterReq(list, restaurant.getIdx());
 
         // when
         Boolean response = mealService.createWeekMeal(req);
@@ -128,10 +114,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
                                 restaurantRegisterReq.universityName(),
                                 restaurantRegisterReq.campusName()));
         Restaurant restaurant =
-                restaurantRepository.save(
-                        getRestaurant(
-                                university,
-                                restaurantRegisterReq));
+                restaurantRepository.save(getRestaurant(university, restaurantRegisterReq));
 
         List<MealRegisterReq> list = new ArrayList<>();
         LocalDate today = LocalDate.parse("2023-12-16");
@@ -165,9 +148,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
             list.add(lunch);
             list.add(dinner);
         }
-        WeekMealRegisterReq req =
-                new WeekMealRegisterReq(
-                        list, restaurant.getIdx());
+        WeekMealRegisterReq req = new WeekMealRegisterReq(list, restaurant.getIdx());
         mealService.createWeekMeal(req);
 
         // when
@@ -185,19 +166,14 @@ class MealServiceImplTest extends IntegrationTestSupport {
     void 하루식단_조회() throws Exception {
         University university = universityRepository.save(getUniversity());
         Restaurant restaurant =
-                restaurantRepository.save(
-                        getRestaurant(
-                                university,
-                                getRestaurantRegisterReq()));
-        mealRepository.save(
-                getMealEntity(
-                        restaurant));
+                restaurantRepository.save(getRestaurant(university, getRestaurantRegisterReq()));
+        mealRepository.save(getMealEntity(restaurant));
 
         // when
         String offeredAt = LocalDate.now().toString().split("T")[0];
         var response =
                 mealService.getDayMealListV2(
-                    getUniversity().getName(), getUniversity().getCampusName(), offeredAt);
+                        getUniversity().getName(), getUniversity().getCampusName(), offeredAt);
 
         // then
         assertEquals(response.size(), 1);
@@ -208,8 +184,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
     void 학교별_학생_식당_조회() throws Exception {
         // given
         RestaurantRegisterReq restaurantRegisterReq = getRestaurantRegisterReq();
-        University university =
-                universityRepository.save(getUniversity());
+        University university = universityRepository.save(getUniversity());
         Restaurant restaurant =
                 restaurantRepository.save(getRestaurant(university, restaurantRegisterReq));
 
@@ -287,8 +262,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
                                 restaurantRegisterReq.universityName(),
                                 restaurantRegisterReq.campusName()));
         Restaurant restaurant =
-                restaurantRepository.save(
-                        getRestaurant(university, restaurantRegisterReq));
+                restaurantRepository.save(getRestaurant(university, restaurantRegisterReq));
 
         Meal meal =
                 mealRepository.save(
@@ -310,9 +284,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
                             MealCategory.DEFAULT.name());
             list.add(mealReq);
         }
-        WeekMealRegisterReq invalidReq =
-                new WeekMealRegisterReq(
-                        list, restaurant.getIdx());
+        WeekMealRegisterReq invalidReq = new WeekMealRegisterReq(list, restaurant.getIdx());
 
         ApplicationException applicationException =
                 assertThrows(
@@ -322,5 +294,4 @@ class MealServiceImplTest extends IntegrationTestSupport {
                 applicationException.getErrorCode(),
                 ExceptionList.INVALID_MEAL_OFFEREDAT_REQUEST.getCODE());
     }
-
 }

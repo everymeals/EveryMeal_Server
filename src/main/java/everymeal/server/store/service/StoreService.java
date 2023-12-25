@@ -1,7 +1,6 @@
 package everymeal.server.store.service;
 
 
-import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
 import everymeal.server.store.controller.dto.response.LikedStoreGetRes;
 import everymeal.server.store.controller.dto.response.StoreGetRes;
 import org.springframework.data.domain.Page;

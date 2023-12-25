@@ -2,7 +2,6 @@ package everymeal.server.meal.entity;
 
 
 import everymeal.server.meal.controller.dto.request.MealRegisterReq;
-import everymeal.server.meal.controller.dto.request.WeekMealRegisterReq;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -45,14 +44,12 @@ public class Meal {
     @ManyToOne private Restaurant restaurant;
 
     @Builder
-    public Meal(
-            MealRegisterReq mealRegisterReq,
-            Restaurant restaurant) {
+    public Meal(MealRegisterReq mealRegisterReq, Restaurant restaurant) {
         this.menu = mealRegisterReq.menu();
         this.mealType = MealType.valueOf(mealRegisterReq.mealType());
         this.mealStatus = MealStatus.valueOf(mealRegisterReq.mealStatus());
         this.offeredAt = mealRegisterReq.offeredAt();
-        if(mealRegisterReq.price() != null) this.price = mealRegisterReq.price();
+        if (mealRegisterReq.price() != null) this.price = mealRegisterReq.price();
         this.category = MealCategory.valueOf(mealRegisterReq.category());
         this.restaurant = restaurant;
     }
