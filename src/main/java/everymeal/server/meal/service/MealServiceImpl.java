@@ -9,14 +9,10 @@ import everymeal.server.meal.controller.dto.request.WeekMealRegisterReq;
 import everymeal.server.meal.controller.dto.response.DayMealGetRes;
 import everymeal.server.meal.controller.dto.response.RestaurantListGetRes;
 import everymeal.server.meal.entity.Meal;
-import everymeal.server.meal.entity.MealCategory;
-import everymeal.server.meal.entity.MealStatus;
-import everymeal.server.meal.entity.MealType;
 import everymeal.server.meal.entity.Restaurant;
 import everymeal.server.meal.repository.MealDao;
 import everymeal.server.meal.repository.MealMapper;
 import everymeal.server.meal.repository.MealRepository;
-import everymeal.server.meal.repository.MealRepositoryCustom;
 import everymeal.server.meal.repository.RestaurantRepository;
 import everymeal.server.university.entity.University;
 import everymeal.server.university.repository.UniversityRepository;
@@ -43,7 +39,6 @@ public class MealServiceImpl implements MealService {
      */
     private final MealRepository mealRepository; // 기본 JPA 제공 DAO
 
-    private final MealRepositoryCustom mealRepositoryCustom; // QueryDsl DAO
     private final MealDao mealDao; // JPQL DAO
     private final MealMapper mealMapper; // MyBatis DAO
     private final UniversityRepository universityRepository;
@@ -76,14 +71,7 @@ public class MealServiceImpl implements MealService {
         // 식당 등록
         Restaurant restaurant =
                 Restaurant.builder()
-                        .name(restaurantRegisterReq.restaurantName())
-                        .address(restaurantRegisterReq.address())
-                        .breakfastStartTime(restaurantRegisterReq.breakfastStartTime())
-                        .breakfastEndTime(restaurantRegisterReq.breakfastEndTime())
-                        .lunchStartTime(restaurantRegisterReq.lunchStartTime())
-                        .lunchEndTime(restaurantRegisterReq.lunchEndTime())
-                        .dinnerStartTime(restaurantRegisterReq.dinnerStartTime())
-                        .dinnerEndTime(restaurantRegisterReq.dinnerEndTime())
+                        .restaurantRegisterReq(restaurantRegisterReq)
                         .university(university)
                         .build();
         return restaurantRepository.save(restaurant).getIdx() != null;
@@ -116,32 +104,14 @@ public class MealServiceImpl implements MealService {
         List<Meal> mealList = new ArrayList<>();
         for (MealRegisterReq req : request.registerReqList()) {
             // 제공날짜, 학생식당, 식사분류가 동일한 데이터가 이미 존재하면, 덮어쓰기 불가능 오류
-            if (!mealRepositoryCustom
+            if (!mealMapper
                     .findAllByOfferedAtOnDateAndMealType(
-                            req.offeredAt(),
-                            MealType.valueOf(req.mealType()),
-                            request.universityName())
+                            req.offeredAt().toString(), req.mealType(), request.restaurantIdx())
                     .isEmpty()) {
                 throw new ApplicationException(ExceptionList.INVALID_MEAL_OFFEREDAT_REQUEST);
             } else {
-                LocalDate iOfferedAt = LocalDate.from(req.offeredAt());
-                // nullable 데이터 기본값 바인딩
-                MealStatus mealStatus =
-                        req.mealStatus() == null
-                                ? MealStatus.OPEN
-                                : MealStatus.valueOf(req.mealStatus());
-                Double price = req.price() == null ? 0.0 : req.price();
                 // 데이터 생성
-                Meal meal =
-                        Meal.builder()
-                                .mealStatus(mealStatus)
-                                .mealType(MealType.valueOf(req.mealType()))
-                                .menu(req.menu())
-                                .restaurant(restaurant)
-                                .price(price)
-                                .offeredAt(iOfferedAt)
-                                .category(MealCategory.valueOf(req.category()))
-                                .build();
+                Meal meal = Meal.builder().mealRegisterReq(req).restaurant(restaurant).build();
                 mealList.add(meal);
             }
         }

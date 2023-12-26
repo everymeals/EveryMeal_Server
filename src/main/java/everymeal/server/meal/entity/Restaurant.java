@@ -1,6 +1,7 @@
 package everymeal.server.meal.entity;
 
 
+import everymeal.server.meal.controller.dto.request.RestaurantRegisterReq;
 import everymeal.server.review.entity.Review;
 import everymeal.server.store.entity.GradeStatistics;
 import everymeal.server.university.entity.University;
@@ -54,29 +55,20 @@ public class Restaurant {
     private Set<Review> reviews;
 
     @Builder
-    public Restaurant(
-            String name,
-            String address,
-            University university,
-            LocalTime breakfastStartTime,
-            LocalTime breakfastEndTime,
-            LocalTime lunchStartTime,
-            LocalTime lunchEndTime,
-            LocalTime dinnerStartTime,
-            LocalTime dinnerEndTime) {
-        this.name = name;
-        this.address = address;
-        this.isDeleted = Boolean.TRUE;
+    public Restaurant(RestaurantRegisterReq restaurantRegisterReq, University university) {
+        this.name = restaurantRegisterReq.campusName();
+        this.address = restaurantRegisterReq.address();
         this.university = university;
+        this.isDeleted = Boolean.TRUE;
         this.isOpenBreakfast = Boolean.TRUE;
         this.isOpenLunch = Boolean.TRUE;
         this.isOpenDinner = Boolean.TRUE;
-        this.breakfastStartTime = breakfastStartTime;
-        this.breakfastEndTime = breakfastEndTime;
-        this.lunchStartTime = lunchStartTime;
-        this.lunchEndTime = lunchEndTime;
-        this.dinnerStartTime = dinnerStartTime;
-        this.dinnerEndTime = dinnerEndTime;
+        this.breakfastStartTime = restaurantRegisterReq.breakfastStartTime();
+        this.breakfastEndTime = restaurantRegisterReq.breakfastEndTime();
+        this.lunchStartTime = restaurantRegisterReq.lunchStartTime();
+        this.lunchEndTime = restaurantRegisterReq.lunchEndTime();
+        this.dinnerStartTime = restaurantRegisterReq.dinnerStartTime();
+        this.dinnerEndTime = restaurantRegisterReq.dinnerEndTime();
         this.gradeStatistics = new GradeStatistics();
     }
 

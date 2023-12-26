@@ -1,6 +1,7 @@
 package everymeal.server.meal.repository;
 
 
+import everymeal.server.meal.entity.Meal;
 import java.util.List;
 import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
@@ -19,4 +20,9 @@ public interface MealMapper {
             @Param("weeklyDates") List<String> weeklyDates,
             @Param("universityName") String universityName,
             @Param("campusName") String campusName);
+
+    List<Meal> findAllByOfferedAtOnDateAndMealType(
+            @Param("offeredAt") String offeredAt,
+            @Param("mealType") String mealType,
+            @Param("restaurantIdx") Long restaurantIdx);
 }

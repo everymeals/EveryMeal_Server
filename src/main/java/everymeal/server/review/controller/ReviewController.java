@@ -6,6 +6,7 @@ import everymeal.server.global.util.authresolver.Auth;
 import everymeal.server.global.util.authresolver.AuthUser;
 import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
 import everymeal.server.review.dto.ReviewCreateReq;
+import everymeal.server.review.dto.ReviewDto.ReviewTodayGetRes;
 import everymeal.server.review.dto.ReviewGetRes;
 import everymeal.server.review.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,7 +47,7 @@ public class ReviewController {
     @Auth(require = true)
     @PostMapping
     @SecurityRequirement(name = "jwt-user-auth")
-    public ApplicationResponse<Boolean> createReview(
+    public ApplicationResponse<Long> createReview(
             @RequestBody ReviewCreateReq request,
             @Parameter(hidden = true) @AuthUser AuthenticatedUser user) {
         return ApplicationResponse.create(reviewService.createReview(request, user.getIdx()));
@@ -69,7 +70,7 @@ public class ReviewController {
     @Auth(require = true)
     @PutMapping("/{reviewIdx}")
     @SecurityRequirement(name = "jwt-user-auth")
-    public ApplicationResponse<Boolean> updateReview(
+    public ApplicationResponse<Long> updateReview(
             @Schema(description = "리뷰 PK", defaultValue = "1") @PathVariable Long reviewIdx,
             @RequestBody ReviewCreateReq request,
             @Parameter(hidden = true) @AuthUser AuthenticatedUser user) {
@@ -122,5 +123,49 @@ public class ReviewController {
                     int pageSize) {
         return ApplicationResponse.ok(
                 reviewService.getReviewWithNoOffSetPaging(cursorIdx, restaurantIdx, pageSize));
+    }
+
+    @PostMapping("/mark")
+    @Operation(
+            summary = "리뷰 좋아요/싫어요",
+            description =
+                    """
+  리뷰 좋아요/싫어요를 진행합니다. <br>
+  true -> 리뷰에 대한 좋아요 /싫어요 성공
+  false -> 이미 리뷰에 대한 좋아요/싫어요가 있는 경우
+  """)
+    @ApiResponses({
+        @ApiResponse(
+                responseCode = "200",
+                description = "리뷰 좋아요/싫어요 성공",
+                content = @Content(schema = @Schema())),
+    })
+    @Auth(require = true)
+    @SecurityRequirement(name = "jwt-user-auth")
+    public ApplicationResponse<Boolean> markReview(
+            @Schema(description = "리뷰 idx", example = "1") @RequestParam Long reviewIdx,
+            @Schema(description = "좋아요/싫어요 여부", example = "true") @RequestParam boolean isLike,
+            @Parameter(hidden = true) @AuthUser AuthenticatedUser user) {
+        return ApplicationResponse.ok(reviewService.markReview(reviewIdx, isLike, user.getIdx()));
+    }
+
+    @Operation(
+            summary = "오늘 먹었어요. 리뷰 조회",
+            description = """
+  '오늘 먹었어요.' 학식 리뷰 조회를 진행합니다. <br>
+  """)
+    @ApiResponses({
+        @ApiResponse(
+                responseCode = "200",
+                description = "리뷰 조회 성공",
+                content = @Content(schema = @Schema(implementation = ReviewGetRes.class))),
+    })
+    @GetMapping("/today")
+    public ApplicationResponse<ReviewTodayGetRes> getTodayReview(
+            @RequestParam @Schema(description = "식당 아이디", defaultValue = "1") Long restaurantIdx,
+            @RequestParam
+                    @Schema(description = "조회하고자 하는 날짜 ( yyyy-MM-dd )", defaultValue = "2023-10-01")
+                    String offeredAt) {
+        return ApplicationResponse.ok(reviewService.getTodayReview(restaurantIdx, offeredAt));
     }
 }

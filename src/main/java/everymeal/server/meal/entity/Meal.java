@@ -1,6 +1,7 @@
 package everymeal.server.meal.entity;
 
 
+import everymeal.server.meal.controller.dto.request.MealRegisterReq;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -35,7 +36,7 @@ public class Meal {
 
     private LocalDate offeredAt;
 
-    private Double price;
+    private Double price = 0.0;
 
     @Enumerated(EnumType.STRING)
     private MealCategory category;
@@ -43,20 +44,13 @@ public class Meal {
     @ManyToOne private Restaurant restaurant;
 
     @Builder
-    public Meal(
-            String menu,
-            MealType mealType,
-            MealStatus mealStatus,
-            LocalDate offeredAt,
-            Double price,
-            MealCategory category,
-            Restaurant restaurant) {
-        this.menu = menu;
-        this.mealType = mealType;
-        this.mealStatus = mealStatus;
-        this.offeredAt = offeredAt;
-        this.price = price;
-        this.category = category;
+    public Meal(MealRegisterReq mealRegisterReq, Restaurant restaurant) {
+        this.menu = mealRegisterReq.menu();
+        this.mealType = MealType.valueOf(mealRegisterReq.mealType());
+        this.mealStatus = MealStatus.valueOf(mealRegisterReq.mealStatus());
+        this.offeredAt = mealRegisterReq.offeredAt();
+        if (mealRegisterReq.price() != null) this.price = mealRegisterReq.price();
+        this.category = MealCategory.valueOf(mealRegisterReq.category());
         this.restaurant = restaurant;
     }
 }

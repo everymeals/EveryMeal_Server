@@ -26,6 +26,8 @@ public enum ExceptionList {
 
     REVIEW_NOT_FOUND("RV0001", HttpStatus.NOT_FOUND, "등록된 리뷰가 아닙니다."),
     REVIEW_UNAUTHORIZED("RV0002", HttpStatus.FORBIDDEN, "해당 리뷰에 대한 권한이 없습니다."),
+    REVIEW_ALREADY_MARKED("RV0003", HttpStatus.CONFLICT, "이미 해당 리뷰에 대한 평가를 하였습니다."),
+    REVIEW_MARK_NOT_FOUND("RV0004", HttpStatus.NOT_FOUND, "등록된 리뷰 평가가 아닙니다."),
     STORE_NOT_FOUND("S0001", HttpStatus.NOT_FOUND, "등록된 가게가 아닙니다."),
     ;
 

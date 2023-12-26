@@ -140,4 +140,41 @@ class ReviewControllerTest extends ControllerTestSupport {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk());
     }
+
+    @DisplayName("리뷰 좋아요")
+    @Test
+    void markReview() throws Exception {
+        // given
+        Long reviewIdx = 1L;
+        Boolean isLike = true;
+        given(userJwtResolver.resolveArgument(any(), any(), any(), any()))
+                .willReturn(AuthenticatedUser.builder().idx(1L).build());
+        // when-then
+        mockMvc.perform(
+                        post(
+                                        "/api/v1/reviews/mark?reviewIdx={reviewIdx}&isLike={isLike}",
+                                        reviewIdx,
+                                        isLike)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk());
+    }
+
+    @DisplayName("오늘 먹었어요. 리뷰 조회")
+    @Test
+    void getTodayReview() throws Exception {
+        // given
+        Long restaurantIdx = 1L;
+        String offeredAt = "2023-12-25";
+
+        // when-then
+        mockMvc.perform(
+                        get("/api/v1/reviews/today?restaurantIdx="
+                                        + restaurantIdx
+                                        + "&offeredAt="
+                                        + offeredAt)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk());
+    }
 }
