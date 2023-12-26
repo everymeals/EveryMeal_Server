@@ -3,9 +3,8 @@ package everymeal.server.meal.service;
 
 import everymeal.server.meal.controller.dto.request.RestaurantRegisterReq;
 import everymeal.server.meal.controller.dto.request.WeekMealRegisterReq;
-import everymeal.server.meal.controller.dto.response.DayMealListGetRes;
+import everymeal.server.meal.controller.dto.response.DayMealGetRes;
 import everymeal.server.meal.controller.dto.response.RestaurantListGetRes;
-import everymeal.server.meal.controller.dto.response.WeekMealListGetRes;
 import java.util.List;
 import java.util.Map;
 
@@ -17,8 +16,9 @@ public interface MealService {
 
     List<RestaurantListGetRes> getRestaurantList(String universityName, String campusName);
 
-    Map<String, List<DayMealListGetRes>> getDayMealList(
+    Map<String, Map<String, List<DayMealGetRes>>> getDayMealListV2(
             String universityName, String campusName, String offeredAt);
 
-    List<WeekMealListGetRes> getWeekMealListTest(String universityName, String offeredAt);
+    List<Map<String, Map<String, List<DayMealGetRes>>>> getWeekMealList(
+            String universityName, String campusName, String offeredAt);
 }

@@ -8,7 +8,6 @@ import static everymeal.server.review.entity.QReviewMark.reviewMark;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import everymeal.server.review.dto.QReviewPagingVO;
 import everymeal.server.review.dto.ReviewPagingVOWithCnt;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -19,60 +18,20 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
 
     /**
      * ============================================================================================
-     * 커서 기반 페이징으로 리뷰 목록 조회 VO 형식으로 필요 데이터만 받기
-     * =============================================================================================
-     */
-    @Override
-    public ReviewPagingVOWithCnt getReviewWithNoOffSetPaging(
-            Long cursorIdx, Long mealIdx, int pageSize) {
-        var queryResult =
-                jpaQueryFactory
-                        .select(
-                                new QReviewPagingVO(
-                                        review.idx.as("reviewIdx"),
-                                        restaurant.name.as("restaurantName"),
-                                        meal.mealType.stringValue().as("mealType"),
-                                        review.grade,
-                                        review.content,
-                                        review.images.as("imageList"),
-                                        review.reviewMarks.size().as("reviewMarksCnt")))
-                        .from(review)
-                        .leftJoin(review.images, image)
-                        .leftJoin(review.reviewMarks, reviewMark)
-                        .leftJoin(review.meal, meal)
-                        .leftJoin(meal.restaurant, restaurant)
-                        .where(gtReviewIdx(cursorIdx), eqMealIdx(mealIdx), isDeleted())
-                        .groupBy(review.idx)
-                        .orderBy(review.idx.desc())
-                        .limit(pageSize)
-                        .fetch();
-        var countResult =
-                Objects.requireNonNull(
-                                jpaQueryFactory
-                                        .select(review.idx.count())
-                                        .from(review)
-                                        .where(isDeleted())
-                                        .fetchOne())
-                        .intValue();
-        // return new ReviewPagingVOWithCnt(countResult, queryResult);
-        return null;
-    }
-    /**
-     * ============================================================================================
      * 커서 기반 페이징으로 리뷰 목록 조회
      * =============================================================================================
      */
     @Override
-    public ReviewPagingVOWithCnt getReview(Long cursorIdx, Long mealIdx, int pageSize) {
+    public ReviewPagingVOWithCnt getReview(Long cursorIdx, Long restaurantIdx, int pageSize) {
         var queryResult =
                 jpaQueryFactory
                         .select(review)
                         .from(review)
                         .leftJoin(review.images, image)
                         .leftJoin(review.reviewMarks, reviewMark)
-                        .leftJoin(review.meal, meal)
-                        .leftJoin(meal.restaurant, restaurant)
-                        .where(gtReviewIdx(cursorIdx), eqMealIdx(mealIdx), isDeleted())
+                        .leftJoin(review.restaurant)
+                        .on(restaurant.idx.eq(restaurantIdx))
+                        .where(gtReviewIdx(cursorIdx), isDeleted())
                         .groupBy(review.idx)
                         .orderBy(review.idx.desc())
                         .limit(pageSize)
@@ -82,6 +41,10 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                                 jpaQueryFactory
                                         .select(review.idx.count())
                                         .from(review)
+                                        .leftJoin(review.images, image)
+                                        .leftJoin(review.reviewMarks, reviewMark)
+                                        .leftJoin(review.restaurant)
+                                        .on(restaurant.idx.eq(restaurantIdx))
                                         .where(isDeleted())
                                         .fetchOne())
                         .intValue();

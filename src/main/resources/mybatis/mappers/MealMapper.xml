@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="everymeal.server.meal.repository.MealMapper">
+  <select id="findDayList">
+    SELECT
+      COALESCE(m.idx, 0) AS mealIdx,
+      COALESCE(m.offered_at, #{offeredAt}) AS offeredAt,
+      COALESCE(m.meal_status, 'OPEN') AS mealStatus,
+      meal_types.mealType,
+      CASE WHEN r.is_open_breakfast = true AND meal_types.mealType = 'BREAKFAST' THEN CONCAT(SUBSTRING(r.breakfast_start_time, 1, 5), '-', SUBSTRING(r.breakfast_end_time, 1, 5))
+           WHEN r.is_open_lunch = true AND meal_types.mealType = 'LUNCH' THEN CONCAT(SUBSTRING(r.lunch_start_time, 1, 5), '-', SUBSTRING(r.lunch_end_time, 1, 5))
+           WHEN r.is_open_dinner = true AND meal_types.mealType = 'DINNER' THEN CONCAT(SUBSTRING(r.dinner_start_time, 1, 5), '-', SUBSTRING(r.dinner_end_time, 1, 5))
+           ELSE '운영시간이 아닙니다'
+      END AS operatingTime,
+      COALESCE(m.menu, '등록된 식단이 없습니다.') AS menu,
+      COALESCE(m.price, 0) AS price,
+      COALESCE(m.category, 'DEFAULT') AS category,
+      r.idx AS restaurantIdx,
+      r.name AS restaurantName,
+      CONCAT(u.name, ' ', u.campus_name) AS universityName,
+      r.review_count AS reviewCount,
+      r.grade AS grade
+    FROM restaurant r
+           JOIN (SELECT DISTINCT meal_type AS mealType FROM meal) AS meal_types ON 1=1
+           LEFT JOIN meal m ON m.restaurant_idx = r.idx AND m.meal_type = meal_types.mealType AND m.offered_at = DATE(#{offeredAt})
+      INNER JOIN university u ON r.university_idx = u.idx AND u.is_deleted = false
+    WHERE
+      u.name = #{universityName} AND u.campus_name = #{campusName}
+      AND (
+        (meal_types.mealType = 'BREAKFAST' AND r.is_open_breakfast = true) OR
+        (meal_types.mealType = 'LUNCH' AND r.is_open_lunch = true) OR
+        (meal_types.mealType = 'DINNER' AND r.is_open_dinner = true)
+      )
+    ORDER BY r.name ASC, operatingTime ASC
+  </select>
+
+  <select id="findWeekList">
+    SELECT
+    COALESCE(m.idx, 0) AS mealIdx,
+    CONCAT(#{date}, ' ', SUBSTRING(m.offered_at, 12, 5)) AS offeredAt,
+    COALESCE(m.meal_status, 'OPEN') AS mealStatus,
+    meal_types.mealType,
+    CASE WHEN r.is_open_breakfast = true AND meal_types.mealType = 'BREAKFAST' THEN CONCAT(SUBSTRING(r.breakfast_start_time, 1, 5), '-', SUBSTRING(r.breakfast_end_time, 1, 5))
+    WHEN r.is_open_lunch = true AND meal_types.mealType = 'LUNCH' THEN CONCAT(SUBSTRING(r.lunch_start_time, 1, 5), '-', SUBSTRING(r.lunch_end_time, 1, 5))
+    WHEN r.is_open_dinner = true AND meal_types.mealType = 'DINNER' THEN CONCAT(SUBSTRING(r.dinner_start_time, 1, 5), '-', SUBSTRING(r.dinner_end_time, 1, 5))
+    ELSE '운영시간이 아닙니다'
+    END AS operatingTime,
+    COALESCE(m.menu, '등록된 식단이 없습니다.') AS menu,
+    COALESCE(m.price, 0) AS price,
+    COALESCE(m.category, 'DEFAULT') AS category,
+    r.idx AS restaurantIdx,
+    r.name AS restaurantName,
+    CONCAT(u.name, ' ', u.campus_name) AS universityName,
+    r.review_count AS reviewCount,
+    r.grade AS grade
+    FROM restaurant r
+    JOIN (SELECT DISTINCT meal_type AS mealType FROM meal) AS meal_types ON 1=1
+    LEFT JOIN meal m ON m.restaurant_idx = r.idx AND m.meal_type = meal_types.mealType AND m.offered_at = CONCAT(#{date}, ' ', SUBSTRING(m.offered_at, 12, 5))
+    INNER JOIN university u ON r.university_idx = u.idx AND u.is_deleted = false
+    WHERE
+    u.name = #{universityName} AND u.campus_name = #{campusName}
+    AND (
+    <foreach item="date" collection="weeklyDates" open="" separator="" close="">
+    (meal_types.mealType = 'BREAKFAST' AND r.is_open_breakfast = true AND m.offered_at = DATE(#{date}) ) OR
+    (meal_types.mealType = 'LUNCH' AND r.is_open_lunch = true AND m.offered_at = DATE(#{date})) OR
+    (meal_types.mealType = 'DINNER' AND r.is_open_dinner = true AND m.offered_at = DATE(#{date}))
+    </foreach>
+    )
+    ORDER BY r.name ASC, operatingTime ASC
+  </select>
+
+  <select id="findAllByOfferedAtOnDateAndMealType">
+    SELECT *
+    FROM meal m
+    LEFT JOIN restaurant r ON m.restaurant_idx = r.idx and r.idx = #{restaurantIdx}
+    WHERE offered_at = #{offeredAt} AND meal_type = #{mealType}
+  </select>
+</mapper>

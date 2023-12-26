@@ -4,8 +4,6 @@ import static everymeal.server.store.entity.StoreSortVo.SORT_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import everymeal.server.global.IntegrationTestSupport;
-import everymeal.server.global.util.JwtUtil;
-import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
 import everymeal.server.store.controller.dto.response.LikedStoreGetRes;
 import everymeal.server.store.controller.dto.response.StoreGetRes;
 import everymeal.server.store.entity.GradeStatistics;
@@ -15,15 +13,13 @@ import everymeal.server.store.repository.StoreRepository;
 import everymeal.server.store.repository.StoreRepositoryCustom;
 import everymeal.server.university.entity.University;
 import everymeal.server.university.repository.UniversityRepository;
-import everymeal.server.user.controller.dto.request.UserEmailSingReq;
-import everymeal.server.user.controller.dto.response.UserLoginRes;
 import everymeal.server.user.entity.Like;
 import everymeal.server.user.entity.User;
 import everymeal.server.user.repository.LikeRepository;
 import everymeal.server.user.repository.UserRepository;
-import everymeal.server.user.service.UserService;
 import jakarta.persistence.EntityManager;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,10 +35,16 @@ class StoreServiceImplTest extends IntegrationTestSupport {
     @Autowired private StoreMapper storeMapper;
     @Autowired private StoreRepositoryCustom storeRepositoryCustom;
     @Autowired private EntityManager entityManager;
-    @Autowired private JwtUtil jwtUtil;
-    @Autowired private UserService userService;
     @Autowired private UserRepository userRepository;
     @Autowired private LikeRepository likeRepository;
+
+    @AfterEach
+    void tearDown() {
+        likeRepository.deleteAll();
+        storeRepository.deleteAll();
+        universityRepository.deleteAll();
+        userRepository.deleteAll();
+    }
 
     @DisplayName("캠퍼스 기준 식당 가져오기")
     @Transactional
@@ -63,9 +65,9 @@ class StoreServiceImplTest extends IntegrationTestSupport {
 
         List<Store> entity =
                 List.of(
-                        createEntity("store1", 3, university),
-                        createEntity("store2", 2, university),
-                        createEntity("store3", 1, university));
+                        createEntity("store1", 3, university, "기타"),
+                        createEntity("store2", 2, university, "기타"),
+                        createEntity("store3", 1, university, "기타"));
         storeRepository.saveAll(entity);
         storeRepository.flush();
         entityManager.clear();
@@ -97,20 +99,11 @@ class StoreServiceImplTest extends IntegrationTestSupport {
 
         List<Store> entity =
                 List.of(
-                        createEntity("store1", 3, save),
-                        createEntity("store2", 2, save),
-                        createEntity("store3", 1, save));
+                        createEntity("store1", 3, save, "기타"),
+                        createEntity("store2", 2, save, "기타"),
+                        createEntity("store3", 1, save, "기타"));
 
-        String token = jwtUtil.generateEmailToken("test@gmail.com", "12345");
-
-        UserEmailSingReq request =
-                new UserEmailSingReq("연유크림", token, "12345", save.getIdx(), "imageKey");
-
-        UserLoginRes userLoginRes = userService.signUp(request);
-
-        AuthenticatedUser user =
-                jwtUtil.getAuthenticateUserFromAccessToken(userLoginRes.accessToken());
-        User userEntity = userRepository.findByNickname("연유크림").get();
+        User userEntity = userRepository.save(getUser(save, 1));
         List<Like> likes =
                 List.of(
                         createLikeEntity(entity.get(0), userEntity),
@@ -124,8 +117,7 @@ class StoreServiceImplTest extends IntegrationTestSupport {
 
         // when
         Page<LikedStoreGetRes> stores =
-                storeService.getUserLikesStore(campusIdx, pageRequest, "all", user);
-
+                storeService.getUserLikesStore(campusIdx, pageRequest, "all", userEntity.getIdx());
         // then
         assertThat(stores.getContent())
                 .hasSize(3)
@@ -142,21 +134,12 @@ class StoreServiceImplTest extends IntegrationTestSupport {
                 universityRepository.save(
                         University.builder().name("서울대학교").campusName("관악캠퍼스").build());
 
-        Store store = createEntity("store1", 3, save);
+        Store store = createEntity("store1", 3, save, "기타");
         storeRepository.saveAndFlush(store);
-        String token = jwtUtil.generateEmailToken("test@gmail.com", "12345");
-
-        UserEmailSingReq request =
-                new UserEmailSingReq("연유크림", token, "12345", save.getIdx(), "imageKey");
-
-        UserLoginRes userLoginRes = userService.signUp(request);
-
-        AuthenticatedUser user =
-                jwtUtil.getAuthenticateUserFromAccessToken(userLoginRes.accessToken());
-        User userEntity = userRepository.findByNickname("연유크림").get();
+        User userEntity = userRepository.save(getUser(save, 1));
 
         // when
-        var response = storeService.likesStore(store.getIdx(), user);
+        var response = storeService.likesStore(store.getIdx(), userEntity.getIdx());
         var result = likeRepository.findByUserAndStore(userEntity, store);
         // then
         assertThat(result.isPresent());
@@ -171,32 +154,94 @@ class StoreServiceImplTest extends IntegrationTestSupport {
                 universityRepository.save(
                         University.builder().name("서울대학교").campusName("관악캠퍼스").build());
 
-        Store store = createEntity("store1", 3, save);
+        Store store = createEntity("store1", 3, save, "기타");
         storeRepository.saveAndFlush(store);
-        String token = jwtUtil.generateEmailToken("test@gmail.com", "12345");
-
-        UserEmailSingReq request =
-                new UserEmailSingReq("연유크림", token, "12345", save.getIdx(), "imageKey");
-
-        UserLoginRes userLoginRes = userService.signUp(request);
-
-        AuthenticatedUser user =
-                jwtUtil.getAuthenticateUserFromAccessToken(userLoginRes.accessToken());
-        User userEntity = userRepository.findByNickname("연유크림").get();
+        User userEntity = userRepository.save(getUser(save, 1));
         Like like = createLikeEntity(store, userEntity);
         likeRepository.saveAndFlush(like);
         // when
-        var response = storeService.likesStore(store.getIdx(), user);
+        var response = storeService.likesStore(store.getIdx(), userEntity.getIdx());
         var result = likeRepository.findByUserAndStore(userEntity, store);
         // then
         assertThat(!result.isPresent());
+    }
+
+    @DisplayName("가게 키워드 검색 - 이름")
+    @Test
+    @Transactional
+    void searchStore() {
+        // given
+        University save =
+                universityRepository.save(
+                        University.builder().name("서울대학교").campusName("관악캠퍼스").build());
+        List<University> universities =
+                universityRepository.findByNameAndCampusNameAndIsDeletedFalse("서울대학교", "관악캠퍼스");
+        University university = universities.get(0);
+
+        Long campusIdx = university.getIdx();
+
+        List<Store> entity =
+                List.of(
+                        createEntity("치킨", 3, university, "기타"),
+                        createEntity("떡볶이", 2, university, "기타"),
+                        createEntity("BBQ 치킨", 1, university, "기타"));
+        storeRepository.saveAll(entity);
+        storeRepository.flush();
+        entityManager.clear();
+
+        // when
+
+        Page<StoreGetRes> stores =
+                storeService.getStoresKeyword(campusIdx, "치킨", null, PageRequest.of(0, 10));
+
+        // then
+        assertThat(stores.getContent())
+                .hasSize(2)
+                .extracting("name")
+                .containsExactly("치킨", "BBQ 치킨");
+    }
+
+    @DisplayName("가게 키워드 검색 - 카테고리 디테일")
+    @Test
+    @Transactional
+    void searchStoreForCategory() {
+        // given
+        University save =
+                universityRepository.save(
+                        University.builder().name("서울대학교").campusName("관악캠퍼스").build());
+        List<University> universities =
+                universityRepository.findByNameAndCampusNameAndIsDeletedFalse("서울대학교", "관악캠퍼스");
+        University university = universities.get(0);
+
+        Long campusIdx = university.getIdx();
+
+        List<Store> entity =
+                List.of(
+                        createEntity("샌드위치", 3, university, "치킨"),
+                        createEntity("BBQ", 2, university, "치킨"),
+                        createEntity("카페", 1, university, "기타"));
+        storeRepository.saveAll(entity);
+        storeRepository.flush();
+        entityManager.clear();
+
+        // when
+
+        Page<StoreGetRes> stores =
+                storeService.getStoresKeyword(campusIdx, "치킨", null, PageRequest.of(0, 10));
+
+        // then
+        assertThat(stores.getContent())
+                .hasSize(2)
+                .extracting("name")
+                .containsExactly("샌드위치", "BBQ");
     }
 
     private Like createLikeEntity(Store store, User user) {
         return Like.builder().store(store).user(user).build();
     }
 
-    private Store createEntity(String name, int distance, University university) {
+    private Store createEntity(
+            String name, int distance, University university, String categoryDetail) {
         return Store.builder()
                 .name(name)
                 .address("address")
@@ -211,7 +256,16 @@ class StoreServiceImplTest extends IntegrationTestSupport {
                 .y("y")
                 .gradeStatistics(new GradeStatistics())
                 .university(university)
-                .categoryDetail("기타")
+                .categoryDetail(categoryDetail)
+                .build();
+    }
+
+    private User getUser(University university, int uniqueIdx) {
+        return User.builder()
+                .email(uniqueIdx + "test@gmail.com")
+                .university(university)
+                .nickname(uniqueIdx + "띵랑이")
+                .profileImgUrl("img.url")
                 .build();
     }
 }

@@ -4,9 +4,8 @@ package everymeal.server.meal.controller;
 import everymeal.server.global.dto.response.ApplicationResponse;
 import everymeal.server.meal.controller.dto.request.RestaurantRegisterReq;
 import everymeal.server.meal.controller.dto.request.WeekMealRegisterReq;
-import everymeal.server.meal.controller.dto.response.DayMealListGetRes;
+import everymeal.server.meal.controller.dto.response.DayMealGetRes;
 import everymeal.server.meal.controller.dto.response.RestaurantListGetRes;
-import everymeal.server.meal.controller.dto.response.WeekMealListGetRes;
 import everymeal.server.meal.service.MealService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -71,14 +70,9 @@ public class MealController {
         return ApplicationResponse.create(mealService.createWeekMeal(weekMealRegisterReq));
     }
 
-    /**
-     * ============================================================================================
-     * 하루 식단 조회 API
-     * ============================================================================================
-     */
-    @GetMapping("/day")
+    @GetMapping("/day/v2")
     @Operation(summary = "당일 식단 조회")
-    public ApplicationResponse<Map<String, List<DayMealListGetRes>>> getDayMeal(
+    public ApplicationResponse<Map<String, Map<String, List<DayMealGetRes>>>> getDayMealV2(
             @RequestParam @Schema(description = "학교 이름", defaultValue = "명지대학교")
                     String universityName,
             @RequestParam @Schema(description = "캠퍼스 이름", defaultValue = "인문캠퍼스") String campusName,
@@ -86,24 +80,21 @@ public class MealController {
                     @Schema(description = "조회하고자 하는 날짜 ( yyyy-MM-dd )", defaultValue = "2023-10-01")
                     String offeredAt) {
         return ApplicationResponse.ok(
-                mealService.getDayMealList(universityName, campusName, offeredAt));
+                mealService.getDayMealListV2(universityName, campusName, offeredAt));
     }
 
-    /**
-     * ============================================================================================
-     * 주간 단위 식단 조회 API ( 리펙토링 이전 코드입니다. )
-     * ============================================================================================
-     */
-    @GetMapping("/week")
+    @GetMapping("/week/v2")
     @Operation(summary = "주간 식단 조회")
-    public ApplicationResponse<List<WeekMealListGetRes>> getWeekMeal(
+    public ApplicationResponse<List<Map<String, Map<String, List<DayMealGetRes>>>>> getWeekMealV2(
             @RequestParam @Schema(description = "학교 이름", defaultValue = "명지대학교")
                     String universityName,
+            @RequestParam @Schema(description = "캠퍼스 이름", defaultValue = "인문캠퍼스") String campusName,
             @RequestParam
                     @Schema(
                             description = "조회하고자 하는 시작 날짜 ( yyyy-MM-dd )",
                             defaultValue = "2023-10-01")
                     String offeredAt) {
-        return ApplicationResponse.ok(mealService.getWeekMealListTest(universityName, offeredAt));
+        return ApplicationResponse.ok(
+                mealService.getWeekMealList(universityName, campusName, offeredAt));
     }
 }

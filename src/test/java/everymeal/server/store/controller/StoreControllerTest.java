@@ -13,12 +13,12 @@ import everymeal.server.global.util.authresolver.UserJwtResolver;
 import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 class StoreControllerTest extends ControllerTestSupport {
 
-    @Mock UserJwtResolver userJwtResolver;
+    @MockBean UserJwtResolver userJwtResolver;
 
     @DisplayName("가게 목록을 거리순으로 조회한다.")
     @Test
@@ -169,6 +169,25 @@ class StoreControllerTest extends ControllerTestSupport {
 
         // when then
         mockMvc.perform(post("/api/v1/stores/likes/{storeIdx}", storeIdx))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("OK"));
+    }
+
+    @DisplayName("주변 식당 키워드 검색")
+    @Test
+    void searchStores() throws Exception {
+        // given
+        Long campusIdx = 1L;
+        String keyword = "테스트";
+        int offset = 0;
+        int limit = 10;
+
+        // when then
+        mockMvc.perform(
+                        get("/api/v1/stores/{campusIdx}/{keyword}", campusIdx, keyword)
+                                .param("offset", String.valueOf(offset))
+                                .param("limit", String.valueOf(limit)))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("OK"));
