@@ -13,9 +13,8 @@ import everymeal.server.meal.entity.Restaurant;
 import everymeal.server.meal.repository.MealDao;
 import everymeal.server.meal.repository.MealMapper;
 import everymeal.server.meal.repository.MealRepository;
-import everymeal.server.meal.repository.RestaurantRepository;
 import everymeal.server.university.entity.University;
-import everymeal.server.university.repository.UniversityRepository;
+import everymeal.server.university.service.UniversityService;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -41,41 +40,8 @@ public class MealServiceImpl implements MealService {
 
     private final MealDao mealDao; // JPQL DAO
     private final MealMapper mealMapper; // MyBatis DAO
-    private final UniversityRepository universityRepository;
-    private final RestaurantRepository restaurantRepository;
-
-    /**
-     * ============================================================================================
-     * 학생 식당 등록 <br>
-     * 관리자에 의한 학교 등록이 선행되어야 합니다. University_name, University_campusName 을 구분자로 학교를 식별합니다.
-     *
-     * @param restaurantRegisterReq 식당 등록 요청 DTO
-     * @return true
-     *     <p>등록된 학교가 없는 경우,
-     * @throws ApplicationException 404 등록된 학교가 아닙니다. <br>
-     *     =========================================================================================
-     */
-    @Override
-    @Transactional
-    public Boolean createRestaurant(RestaurantRegisterReq restaurantRegisterReq) {
-        // 학교 조회
-        University university =
-                universityRepository
-                        .findByNameAndCampusNameAndIsDeletedFalse(
-                                restaurantRegisterReq.universityName(),
-                                restaurantRegisterReq.campusName())
-                        .stream()
-                        .findFirst()
-                        .orElseThrow(
-                                () -> new ApplicationException(ExceptionList.UNIVERSITY_NOT_FOUND));
-        // 식당 등록
-        Restaurant restaurant =
-                Restaurant.builder()
-                        .restaurantRegisterReq(restaurantRegisterReq)
-                        .university(university)
-                        .build();
-        return restaurantRepository.save(restaurant).getIdx() != null;
-    }
+    private final RestaurantService restaurantServiceImpl;
+    private final UniversityService universityServiceImpl;
 
     /**
      * ============================================================================================
@@ -93,11 +59,7 @@ public class MealServiceImpl implements MealService {
     @Transactional
     public Boolean createWeekMeal(WeekMealRegisterReq request) {
         // 식당 조회
-        Restaurant restaurant =
-                restaurantRepository
-                        .findById(request.restaurantIdx())
-                        .orElseThrow(
-                                () -> new ApplicationException(ExceptionList.RESTAURANT_NOT_FOUND));
+        Restaurant restaurant = restaurantServiceImpl.getRestaurant(request.restaurantIdx());
         // REQ 데이터 제공 날짜 기준 오름차순 정렬
         request.registerReqList().sort(Comparator.comparing(MealRegisterReq::offeredAt));
         // 식단 등록
@@ -132,16 +94,10 @@ public class MealServiceImpl implements MealService {
     @Override
     public List<RestaurantListGetRes> getRestaurantList(String universityName, String campusName) {
         // 학교 등록 여부 판단
-        University university =
-                universityRepository
-                        .findByNameAndCampusNameAndIsDeletedFalse(universityName, campusName)
-                        .stream()
-                        .findFirst()
-                        .orElseThrow(
-                                () -> new ApplicationException(ExceptionList.UNIVERSITY_NOT_FOUND));
+        University university = universityServiceImpl.getUniversity(universityName, campusName);
         // 학교와 식당 폐업 여부를 키로 조회
         List<Restaurant> restaurants =
-                restaurantRepository.findAllByUniversityAndIsDeletedFalse(university);
+                restaurantServiceImpl.getAllByUniversityAndIsDeletedFalse(university);
         return RestaurantListGetRes.of(restaurants);
     }
 
@@ -185,5 +141,10 @@ public class MealServiceImpl implements MealService {
             result.add(Map.of(i.toString(), row));
         }
         return result;
+    }
+
+    @Override
+    public Boolean createRestaurant(RestaurantRegisterReq restaurantRegisterReq) {
+        return restaurantServiceImpl.createRestaurant(restaurantRegisterReq);
     }
 }
