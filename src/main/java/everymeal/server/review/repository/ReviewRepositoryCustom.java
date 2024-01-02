@@ -1,8 +1,9 @@
 package everymeal.server.review.repository;
 
 
-import everymeal.server.review.dto.ReviewPagingVOWithCnt;
+import everymeal.server.review.dto.response.ReviewDto;
+import everymeal.server.review.dto.response.ReviewDto.ReviewPagingVOWithCnt;
 
 public interface ReviewRepositoryCustom {
-    ReviewPagingVOWithCnt getReview(Long cursorIdx, Long restaurantIdx, int pageSize);
+    ReviewPagingVOWithCnt getReview(ReviewDto.ReviewQueryParam queryParam);
 }

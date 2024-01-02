@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import everymeal.server.global.ControllerTestSupport;
 import everymeal.server.global.util.authresolver.UserJwtResolver;
 import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
-import everymeal.server.review.dto.ReviewCreateReq;
+import everymeal.server.review.dto.request.ReviewCreateReq;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

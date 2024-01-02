@@ -1,13 +1,18 @@
 package everymeal.server.review.controller;
 
+import static everymeal.server.review.entity.ReviewQueryParamVo.FILTER_ALL;
+import static everymeal.server.review.entity.ReviewQueryParamVo.FILTER_TODAY;
+import static everymeal.server.review.entity.ReviewQueryParamVo.SORT_LIKE;
+import static everymeal.server.review.entity.ReviewQueryParamVo.SORT_RECENT;
 
 import everymeal.server.global.dto.response.ApplicationResponse;
 import everymeal.server.global.util.authresolver.Auth;
 import everymeal.server.global.util.authresolver.AuthUser;
 import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
-import everymeal.server.review.dto.ReviewCreateReq;
-import everymeal.server.review.dto.ReviewDto.ReviewTodayGetRes;
-import everymeal.server.review.dto.ReviewGetRes;
+import everymeal.server.review.dto.request.ReviewCreateReq;
+import everymeal.server.review.dto.response.ReviewDto.ReviewGetRes;
+import everymeal.server.review.dto.response.ReviewDto.ReviewQueryParam;
+import everymeal.server.review.dto.response.ReviewDto.ReviewTodayGetRes;
 import everymeal.server.review.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -116,13 +121,29 @@ public class ReviewController {
     })
     @GetMapping
     public ApplicationResponse<ReviewGetRes> getReviewWithNoOffSetPaging(
-            @Schema(description = "조회하고자 하는 데이터의 시작점 idx", example = "1") @RequestParam
+            @Schema(description = "조회하고자 하는 데이터의 시작점 idx", example = "1")
+                    @RequestParam(required = true)
                     Long cursorIdx,
-            @Schema(description = "식당 idx", example = "1") @RequestParam Long restaurantIdx,
-            @Schema(description = "한 페이지에서 보고자 하는 데이터의 개수", example = "8") @RequestParam
-                    int pageSize) {
-        return ApplicationResponse.ok(
-                reviewService.getReviewWithNoOffSetPaging(cursorIdx, restaurantIdx, pageSize));
+            @Schema(description = "식당 idx", example = "1") @RequestParam(required = true)
+                    Long restaurantIdx,
+            @Schema(description = "한 페이지에서 보고자 하는 데이터의 개수", example = "8")
+                    @RequestParam(required = true)
+                    int pageSize,
+            @RequestParam(value = "order", required = false, defaultValue = "recent")
+                    @Schema(
+                            title = "정렬 기준",
+                            description = "정렬 기준은 기획에 따라 변경 가능합니다.",
+                            allowableValues = {SORT_RECENT, SORT_LIKE})
+                    String order,
+            @RequestParam(value = "filter", required = false, defaultValue = "all")
+                    @Schema(
+                            title = "오늘 먹은 것만 필터",
+                            description = "오늘 먹은 것만 필터링합니다.",
+                            allowableValues = {FILTER_ALL, FILTER_TODAY})
+                    String filter) {
+        ReviewQueryParam queryParam =
+                new ReviewQueryParam(cursorIdx, restaurantIdx, pageSize, order, filter);
+        return ApplicationResponse.ok(reviewService.getReviewWithNoOffSetPaging(queryParam));
     }
 
     @PostMapping("/mark")

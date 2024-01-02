@@ -8,13 +8,14 @@ import static everymeal.server.global.exception.ExceptionList.REVIEW_UNAUTHORIZE
 import static everymeal.server.global.exception.ExceptionList.USER_NOT_FOUND;
 
 import everymeal.server.global.exception.ApplicationException;
+import everymeal.server.global.util.TimeFormatUtil;
 import everymeal.server.meal.entity.Restaurant;
 import everymeal.server.meal.repository.RestaurantRepository;
-import everymeal.server.review.dto.ReviewCreateReq;
-import everymeal.server.review.dto.ReviewDto;
-import everymeal.server.review.dto.ReviewDto.ReviewTodayGetRes;
-import everymeal.server.review.dto.ReviewGetRes;
-import everymeal.server.review.dto.ReviewPaging;
+import everymeal.server.review.dto.request.ReviewCreateReq;
+import everymeal.server.review.dto.response.ReviewDto;
+import everymeal.server.review.dto.response.ReviewDto.ReviewGetRes;
+import everymeal.server.review.dto.response.ReviewDto.ReviewPaging;
+import everymeal.server.review.dto.response.ReviewDto.ReviewTodayGetRes;
 import everymeal.server.review.entity.Image;
 import everymeal.server.review.entity.Review;
 import everymeal.server.review.repository.ReviewMapper;
@@ -128,9 +129,8 @@ public class ReviewServiceImpl implements ReviewService {
         return true;
     }
 
-    public ReviewGetRes getReviewWithNoOffSetPaging(
-            Long cursorIdx, Long restaurantIdx, int pageSize) {
-        var result = reviewRepository.getReview(cursorIdx, restaurantIdx, pageSize);
+    public ReviewGetRes getReviewWithNoOffSetPaging(ReviewDto.ReviewQueryParam queryParam) {
+        var result = reviewRepository.getReview(queryParam);
         List<ReviewPaging> reviewPagingList = new ArrayList<>();
         for (Review vo : result.reviewList()) {
             List<String> strImgList = new ArrayList<>();
@@ -145,7 +145,8 @@ public class ReviewServiceImpl implements ReviewService {
                             vo.getGrade(),
                             vo.getContent(),
                             strImgList,
-                            vo.getReviewMarks().size()));
+                            vo.getReviewMarks().size(),
+                            TimeFormatUtil.getTimeFormat(vo.getCreatedAt())));
         }
 
         return new ReviewGetRes(result.reviewTotalCnt(), reviewPagingList);

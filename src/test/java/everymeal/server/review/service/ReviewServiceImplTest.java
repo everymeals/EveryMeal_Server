@@ -16,7 +16,8 @@ import everymeal.server.meal.entity.Meal;
 import everymeal.server.meal.entity.Restaurant;
 import everymeal.server.meal.repository.MealRepository;
 import everymeal.server.meal.repository.RestaurantRepository;
-import everymeal.server.review.dto.ReviewCreateReq;
+import everymeal.server.review.dto.request.ReviewCreateReq;
+import everymeal.server.review.dto.response.ReviewDto.ReviewQueryParam;
 import everymeal.server.review.entity.Review;
 import everymeal.server.review.entity.ReviewMark;
 import everymeal.server.review.repository.ReviewMarkRepository;
@@ -167,7 +168,10 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
         Long mealIdx = meal.getIdx();
         int pageSize = 8;
         // when
-        var result = reviewService.getReviewWithNoOffSetPaging(cursorIdx, mealIdx, pageSize);
+        var result =
+                reviewService.getReviewWithNoOffSetPaging(
+                        new ReviewQueryParam(
+                                cursorIdx, restaurant.getIdx(), pageSize, "createdAt", "all"));
         // then
         assertEquals(result.reviewPagingList().size(), pageSize);
     }

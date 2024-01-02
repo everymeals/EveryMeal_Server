@@ -3,10 +3,10 @@ package everymeal.server.review;
 
 import everymeal.server.meal.MealData;
 import everymeal.server.meal.entity.Restaurant;
-import everymeal.server.review.dto.ReviewCreateReq;
-import everymeal.server.review.dto.ReviewGetRes;
-import everymeal.server.review.dto.ReviewPaging;
-import everymeal.server.review.dto.ReviewPagingVOWithCnt;
+import everymeal.server.review.dto.request.ReviewCreateReq;
+import everymeal.server.review.dto.response.ReviewDto.ReviewGetRes;
+import everymeal.server.review.dto.response.ReviewDto.ReviewPaging;
+import everymeal.server.review.dto.response.ReviewDto.ReviewPagingVOWithCnt;
 import everymeal.server.review.entity.Review;
 import everymeal.server.university.entity.University;
 import everymeal.server.user.entity.User;
@@ -63,12 +63,22 @@ public class ReviewData {
                                 1,
                                 "리뷰 내용",
                                 List.of("이미지 주소"),
-                                1)));
+                                1,
+                                "2021-08-01T00:00:00.000+00:00")));
     }
 
     public static ReviewPaging getReviewPaging() {
         return new ReviewPaging(
-                1L, "식당 이름", "닉네임", "프로필 이미지", true, 1, "리뷰 내용", List.of("이미지 주소"), 1);
+                1L,
+                "식당 이름",
+                "닉네임",
+                "프로필 이미지",
+                true,
+                1,
+                "리뷰 내용",
+                List.of("이미지 주소"),
+                1,
+                "2021-08-01T00:00:00.000+00:00");
     }
 
     public static ReviewPagingVOWithCnt getReviewPagingVOWithCnt() {
