@@ -10,8 +10,6 @@ import java.util.Map;
 
 public interface MealService {
 
-    Boolean createRestaurant(RestaurantRegisterReq restaurantRegisterReq);
-
     Boolean createWeekMeal(WeekMealRegisterReq weekMealRegisterReq);
 
     List<RestaurantListGetRes> getRestaurantList(String universityName, String campusName);
@@ -21,4 +19,6 @@ public interface MealService {
 
     List<Map<String, Map<String, List<DayMealGetRes>>>> getWeekMealList(
             String universityName, String campusName, String offeredAt);
+
+    Boolean createRestaurant(RestaurantRegisterReq restaurantRegisterReq);
 }

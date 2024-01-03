@@ -1,4 +1,4 @@
-package everymeal.server.review.dto;
+package everymeal.server.review.dto.request;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;

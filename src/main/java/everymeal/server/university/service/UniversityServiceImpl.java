@@ -1,6 +1,8 @@
 package everymeal.server.university.service;
 
 
+import everymeal.server.global.exception.ApplicationException;
+import everymeal.server.global.exception.ExceptionList;
 import everymeal.server.university.controller.dto.response.UniversityListGetRes;
 import everymeal.server.university.entity.University;
 import everymeal.server.university.repository.UniversityRepository;
@@ -29,5 +31,13 @@ public class UniversityServiceImpl implements UniversityService {
     public List<UniversityListGetRes> getUniversities() {
         List<University> universities = universityRepository.findAllByIsDeletedFalse();
         return UniversityListGetRes.of(universities);
+    }
+
+    public University getUniversity(String universityName, String campusName) {
+        return universityRepository
+                .findByNameAndCampusNameAndIsDeletedFalse(universityName, campusName)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new ApplicationException(ExceptionList.UNIVERSITY_NOT_FOUND));
     }
 }

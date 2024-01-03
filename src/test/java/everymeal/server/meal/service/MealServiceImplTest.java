@@ -26,6 +26,7 @@ import everymeal.server.meal.repository.MealRepository;
 import everymeal.server.meal.repository.RestaurantRepository;
 import everymeal.server.university.entity.University;
 import everymeal.server.university.repository.UniversityRepository;
+import everymeal.server.university.service.UniversityService;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -38,6 +39,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 class MealServiceImplTest extends IntegrationTestSupport {
 
     @Autowired private MealService mealService;
+    @Autowired private RestaurantService restaurantService;
+    @Autowired private UniversityService universityService;
 
     @Autowired private MealRepository mealRepository;
 
@@ -62,7 +65,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
         // when
         University university =
                 universityRepository.save(getUniversity(req.universityName(), req.campusName()));
-        Boolean response = mealService.createRestaurant(req);
+        Boolean response = restaurantService.createRestaurant(req);
 
         // then
         assertEquals(response, true);
@@ -218,7 +221,8 @@ class MealServiceImplTest extends IntegrationTestSupport {
         // when-then
         ApplicationException applicationException =
                 assertThrows(
-                        ApplicationException.class, () -> mealService.createRestaurant(invalidReq));
+                        ApplicationException.class,
+                        () -> restaurantService.createRestaurant(invalidReq));
 
         assertEquals(
                 applicationException.getErrorCode(), ExceptionList.UNIVERSITY_NOT_FOUND.getCODE());

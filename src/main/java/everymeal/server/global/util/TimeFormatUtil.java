@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 
 public class TimeFormatUtil {
 
-    static String getTimeFormat(LocalDateTime targetTime) {
+    public static String getTimeFormat(LocalDateTime targetTime) {
         LocalDateTime now = LocalDateTime.now();
         if (targetTime.isAfter(now.minusMinutes(1))) {
             return "방금 전";
