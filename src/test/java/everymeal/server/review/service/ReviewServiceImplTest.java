@@ -221,7 +221,7 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
         // given
         Review review = getReviewEntity(restaurant, user);
         review.updateTodayReview(true);
-        Review saved = reviewRepository.save(review);
+        Review saved = reviewRepository.saveAndFlush(review);
         saved.addMark(user);
         reviewRepository.saveAndFlush(saved);
 
