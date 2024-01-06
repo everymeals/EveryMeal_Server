@@ -9,8 +9,7 @@ public class ReportDto {
 
     public record ReportReviewReq(
             @Schema(
-                            description = "리뷰 신고 사유를 입력해주세요.",
-                            allowableValues = {"UNRELATED", "PORNOGRAPHY", "PROFANITY"})
-                    @NotNull
+                            description = "리뷰 신고 사유를 입력해주세요.")
+                    @NotNull(message = "리뷰 신고 사유를 입력해주세요.")
                     ReportReason reason) {}
 }

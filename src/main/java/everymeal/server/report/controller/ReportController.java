@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/reports")
 @RequiredArgsConstructor
 @RestController
+@Tag(name = "Report API", description = "리뷰 신고 관련 API입니다.")
 public class ReportController {
 
     private final ReportService reportService;
@@ -47,7 +49,7 @@ public class ReportController {
     @SecurityRequirement(name = "jwt-user-auth")
     public ApplicationResponse<Boolean> reportReview(
             @Schema(description = "리뷰 아이디") @PathVariable Long reviewIdx,
-            @Schema(description = "리뷰 신고 사유") @RequestBody @Valid ReportDto.ReportReviewReq request,
+            @RequestBody @Valid ReportDto.ReportReviewReq request,
             @Parameter(hidden = true) @AuthUser AuthenticatedUser user) {
         return ApplicationResponse.ok(
                 reportService.reportReview(reviewIdx, request, user.getIdx()));
