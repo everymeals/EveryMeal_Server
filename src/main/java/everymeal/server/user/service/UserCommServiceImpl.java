@@ -37,12 +37,6 @@ public class UserCommServiceImpl {
         return userRepository.findByNickname(nickname);
     }
 
-    public User getUserEntityByNickname(String nickname) {
-        return userRepository
-                .findByNickname(nickname)
-                .orElseThrow(() -> new ApplicationException(ExceptionList.USER_NOT_FOUND));
-    }
-
     @Transactional
     public User save(User user) {
         return userRepository.save(user);
