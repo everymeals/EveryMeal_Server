@@ -41,7 +41,7 @@ springdoc:
   api-docs:
     groups:
       enabled: true
-    enabled: true
+#    enabled: true
 
 mybatis:
   type-aliases-package: everymeal.server

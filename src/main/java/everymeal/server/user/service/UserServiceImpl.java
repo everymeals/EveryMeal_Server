@@ -21,8 +21,6 @@ import everymeal.server.user.entity.User;
 import everymeal.server.user.entity.Withdrawal;
 import everymeal.server.user.entity.WithdrawalReason;
 import everymeal.server.user.repository.UserMapper;
-import everymeal.server.user.repository.UserRepository;
-import everymeal.server.user.repository.WithdrawalRepository;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Map;
@@ -38,12 +36,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
 
     private final UniversityRepository universityRepository;
-    private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
     private final MailUtil mailUtil;
     private final S3Util s3Util;
     private final UserMapper userMapper;
-    private final WithdrawalRepository withdrawalRepository;
+    private final WithdrawalServiceImpl withdrawalServiceImpl;
+
+    private final UserCommServiceImpl userCommServiceImpl;
 
     @Override
     @Transactional
@@ -53,10 +52,10 @@ public class UserServiceImpl implements UserService {
             throw new ApplicationException(ExceptionList.USER_AUTH_FAIL);
         }
         String email = jwtUtil.getEmailTokenFromEmail(request.emailAuthToken());
-        if (userRepository.findByEmail(email).isPresent()) {
+        if (userCommServiceImpl.getUserOptionalEntityByEmail(email).isPresent()) {
             throw new ApplicationException(ExceptionList.USER_ALREADY_EXIST);
         }
-        if (userRepository.findByNickname(request.nickname()).isPresent()) {
+        if (userCommServiceImpl.getUserOptionalEntityByNickname(request.nickname()).isPresent()) {
             throw new ApplicationException(ExceptionList.NICKNAME_ALREADY_EXIST);
         }
 
@@ -72,7 +71,7 @@ public class UserServiceImpl implements UserService {
                         .profileImgUrl(request.profileImgKey())
                         .university(university)
                         .build();
-        userRepository.save(user);
+        userCommServiceImpl.save(user);
 
         String accessToken = jwtUtil.generateAccessToken(user.getIdx());
         String refreshToken = jwtUtil.generateRefreshToken(user.getIdx(), accessToken);
@@ -90,10 +89,7 @@ public class UserServiceImpl implements UserService {
             throw new ApplicationException(ExceptionList.USER_AUTH_FAIL);
         }
         String email = jwtUtil.getEmailTokenFromEmail(request.emailAuthToken());
-        User user =
-                userRepository
-                        .findByEmail(email)
-                        .orElseThrow(() -> new ApplicationException(ExceptionList.USER_NOT_FOUND));
+        User user = userCommServiceImpl.getUserEntityByEmail(email);
         String accessToken = jwtUtil.generateAccessToken(user.getIdx());
         String refreshToken = jwtUtil.generateRefreshToken(user.getIdx(), accessToken);
         return new UserLoginRes(
@@ -154,7 +150,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Boolean checkUser(String email) {
-        return userRepository.findByEmail(email).isPresent();
+        return userCommServiceImpl.getUserOptionalEntityByEmail(email).isPresent();
     }
 
     @Override
@@ -168,12 +164,10 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public Boolean updateUserProfile(
             AuthenticatedUser authenticatedUser, UserProfileUpdateReq request) {
-        User user =
-                userRepository
-                        .findById(authenticatedUser.getIdx())
-                        .orElseThrow(() -> new ApplicationException(ExceptionList.USER_NOT_FOUND));
+        User user = userCommServiceImpl.getUserEntity(authenticatedUser.getIdx());
         // 닉네임 중복 검사
-        Optional<User> duplicatedNickName = userRepository.findByNickname(request.nickName());
+        Optional<User> duplicatedNickName =
+                userCommServiceImpl.getUserOptionalEntityByNickname(request.nickName());
         if (duplicatedNickName.isPresent() && user != duplicatedNickName.get()) {
             throw new ApplicationException(ExceptionList.NICKNAME_ALREADY_EXIST);
         }
@@ -184,10 +178,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public Boolean withdrawal(AuthenticatedUser authenticatedUser, WithdrawalReq request) {
-        User user =
-                userRepository
-                        .findById(authenticatedUser.getIdx())
-                        .orElseThrow(() -> new ApplicationException(ExceptionList.USER_NOT_FOUND));
+        User user = userCommServiceImpl.getUserEntity(authenticatedUser.getIdx());
         Withdrawal withdrawal;
         if (request.withdrawalReason() != WithdrawalReason.ETC) { // 기타를 제외한 경우
             withdrawal =
@@ -195,14 +186,15 @@ public class UserServiceImpl implements UserService {
                             .withdrawalReason(request.withdrawalReason())
                             .user(user)
                             .build();
-        } else // 기타를 선택한 경우
-        withdrawal =
+        } else { // 기타를 선택한 경우
+            withdrawal =
                     Withdrawal.builder()
                             .withdrawalReason(request.withdrawalReason())
                             .etcReason(request.etcReason())
                             .user(user)
                             .build();
-        withdrawalRepository.save(withdrawal); // 탈퇴 관련 정보 저장
+        }
+        withdrawalServiceImpl.save(withdrawal); // 탈퇴 관련 정보 저장
         user.setIsDeleted(); // 논리 삭제
         return true;
     }

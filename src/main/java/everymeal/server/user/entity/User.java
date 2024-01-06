@@ -2,6 +2,7 @@ package everymeal.server.user.entity;
 
 
 import everymeal.server.global.entity.BaseEntity;
+import everymeal.server.report.entity.Report;
 import everymeal.server.review.entity.Review;
 import everymeal.server.review.entity.ReviewMark;
 import everymeal.server.university.entity.University;
@@ -56,6 +57,9 @@ public class User extends BaseEntity {
 
     @OneToOne(mappedBy = "user")
     private Withdrawal withdrawal;
+
+    @OneToMany(mappedBy = "reporter")
+    private Set<Report> reports = new HashSet<>();
 
     @Builder
     public User(String nickname, String email, String profileImgUrl, University university) {

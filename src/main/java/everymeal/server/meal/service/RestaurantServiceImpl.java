@@ -5,7 +5,6 @@ import everymeal.server.global.exception.ApplicationException;
 import everymeal.server.global.exception.ExceptionList;
 import everymeal.server.meal.controller.dto.request.RestaurantRegisterReq;
 import everymeal.server.meal.entity.Restaurant;
-import everymeal.server.meal.repository.RestaurantRepository;
 import everymeal.server.university.entity.University;
 import everymeal.server.university.service.UniversityService;
 import java.util.List;
@@ -18,13 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class RestaurantServiceImpl implements RestaurantService {
 
-    private final RestaurantRepository restaurantRepository;
+    private final RestaurantCommServiceImpl restaurantCommServiceImpl;
     private final UniversityService universityServiceImpl;
 
     @Override
     public Restaurant getRestaurant(Long restaurantIdx) {
-        return restaurantRepository
-                .findById(restaurantIdx)
+        return restaurantCommServiceImpl
+                .getRestaurantOptionalEntity(restaurantIdx)
                 .orElseThrow(() -> new ApplicationException(ExceptionList.RESTAURANT_NOT_FOUND));
     }
 
@@ -41,11 +40,15 @@ public class RestaurantServiceImpl implements RestaurantService {
                         .restaurantRegisterReq(restaurantRegisterReq)
                         .university(university)
                         .build();
-        return restaurantRepository.save(restaurant).getIdx() != null;
+        return restaurantCommServiceImpl.save(restaurant).getIdx() != null;
     }
 
     @Override
-    public List<Restaurant> getAllByUniversityAndIsDeletedFalse(University university) {
-        return restaurantRepository.findAllByUniversityAndIsDeletedFalse(university);
+    public List<Restaurant> getAllByUniversityAndIsDeletedFalse(
+            String universityName, String campusName) {
+        // 학교 등록 여부 판단
+        University university = universityServiceImpl.getUniversity(universityName, campusName);
+
+        return restaurantCommServiceImpl.getAllByUniversityAndIsDeletedFalse(university);
     }
 }

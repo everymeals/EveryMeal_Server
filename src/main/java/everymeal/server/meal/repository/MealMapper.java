@@ -16,11 +16,6 @@ public interface MealMapper {
             @Param("universityName") String universityName,
             @Param("campusName") String campusName);
 
-    List<Map<String, Object>> findWeekList(
-            @Param("weeklyDates") List<String> weeklyDates,
-            @Param("universityName") String universityName,
-            @Param("campusName") String campusName);
-
     List<Meal> findAllByOfferedAtOnDateAndMealType(
             @Param("offeredAt") String offeredAt,
             @Param("mealType") String mealType,

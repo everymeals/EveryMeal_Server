@@ -12,6 +12,7 @@ public class ReviewDto {
     public record ReviewTodayGetRes(Long reviewIdx, String content) {}
 
     public static ReviewTodayGetRes of(Map<String, Object> resultMap) {
+        if (resultMap == null) return null;
         return new ReviewTodayGetRes(
                 (Long) resultMap.get("reviewIdx"), (String) resultMap.get("content"));
     }

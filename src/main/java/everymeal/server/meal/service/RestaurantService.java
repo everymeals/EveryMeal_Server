@@ -3,7 +3,6 @@ package everymeal.server.meal.service;
 
 import everymeal.server.meal.controller.dto.request.RestaurantRegisterReq;
 import everymeal.server.meal.entity.Restaurant;
-import everymeal.server.university.entity.University;
 import java.util.List;
 
 public interface RestaurantService {
@@ -12,5 +11,5 @@ public interface RestaurantService {
 
     Boolean createRestaurant(RestaurantRegisterReq restaurantRegisterReq);
 
-    List<Restaurant> getAllByUniversityAndIsDeletedFalse(University university);
+    List<Restaurant> getAllByUniversityAndIsDeletedFalse(String universityName, String campusName);
 }

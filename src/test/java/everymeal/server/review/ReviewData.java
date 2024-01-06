@@ -41,13 +41,16 @@ public class ReviewData {
     }
 
     public static Review getReviewEntity(Restaurant restaurant, User user) {
-        return Review.builder()
-                .restaurant(restaurant)
-                .grade(1)
-                .images(List.of())
-                .content("리뷰 내용")
-                .user(user)
-                .build();
+        Review review =
+                Review.builder()
+                        .restaurant(restaurant)
+                        .grade(1)
+                        .images(List.of())
+                        .content("리뷰 내용")
+                        .user(user)
+                        .build();
+        review.updateTodayReview(true);
+        return review;
     }
 
     public static ReviewGetRes getReviewGetRes() {
