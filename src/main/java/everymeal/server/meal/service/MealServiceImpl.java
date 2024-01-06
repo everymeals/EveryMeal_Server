@@ -10,11 +10,6 @@ import everymeal.server.meal.controller.dto.response.DayMealGetRes;
 import everymeal.server.meal.controller.dto.response.RestaurantListGetRes;
 import everymeal.server.meal.entity.Meal;
 import everymeal.server.meal.entity.Restaurant;
-import everymeal.server.meal.repository.MealDao;
-import everymeal.server.meal.repository.MealMapper;
-import everymeal.server.meal.repository.MealRepository;
-import everymeal.server.university.entity.University;
-import everymeal.server.university.service.UniversityService;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -22,7 +17,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,30 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class MealServiceImpl implements MealService {
 
-    /**
-     * ============================================================================================
-     * DI
-     * ============================================================================================
-     */
-    private final MealRepository mealRepository; // 기본 JPA 제공 DAO
-
-    private final MealDao mealDao; // JPQL DAO
-    private final MealMapper mealMapper; // MyBatis DAO
+    private final MealCommServiceImpl mealCommServiceImpl;
     private final RestaurantService restaurantServiceImpl;
-    private final UniversityService universityServiceImpl;
 
-    /**
-     * ============================================================================================
-     * 학식 식단 등록 ( 주간, 하루 모두 등록 가능 )
-     *
-     * @param request 식단 등록 요청 DTO
-     * @return true
-     *     <p>식당이 없는 경우,
-     * @throws ApplicationException 404 존재하지 않는 식당입니다. <br>
-     *     REQ 데이터 중 offeredAt, Restaurant, MealType 이 동일한 데이터가 존재한다면,
-     * @throws ApplicationException 400 등록되어 있는 식단 데이터 보다 과거의 날짜로 등록할 수 없습니다. <br>
-     *     =========================================================================================
-     */
     @Override
     @Transactional
     public Boolean createWeekMeal(WeekMealRegisterReq request) {
@@ -66,8 +39,8 @@ public class MealServiceImpl implements MealService {
         List<Meal> mealList = new ArrayList<>();
         for (MealRegisterReq req : request.registerReqList()) {
             // 제공날짜, 학생식당, 식사분류가 동일한 데이터가 이미 존재하면, 덮어쓰기 불가능 오류
-            if (!mealMapper
-                    .findAllByOfferedAtOnDateAndMealType(
+            if (!mealCommServiceImpl
+                    .getMealAllByOfferedAtOnDateAndMealType(
                             req.offeredAt().toString(), req.mealType(), request.restaurantIdx())
                     .isEmpty()) {
                 throw new ApplicationException(ExceptionList.INVALID_MEAL_OFFEREDAT_REQUEST);
@@ -77,34 +50,23 @@ public class MealServiceImpl implements MealService {
                 mealList.add(meal);
             }
         }
-        mealDao.saveAll(mealList);
+        mealCommServiceImpl.saveAll(mealList);
         return true;
     }
-    /**
-     * ============================================================================================
-     * 학생식당 리스트 조회
-     *
-     * @param universityName 학교 한글명
-     * @param campusName 캠퍼스 이름
-     * @return List<RestaurantListGetRes>
-     *     <p>학교가 없는 경우,
-     * @throws ApplicationException 404 존재하지 않는 학교입니다. <br>
-     *     =========================================================================================
-     */
+
     @Override
     public List<RestaurantListGetRes> getRestaurantList(String universityName, String campusName) {
-        // 학교 등록 여부 판단
-        University university = universityServiceImpl.getUniversity(universityName, campusName);
         // 학교와 식당 폐업 여부를 키로 조회
         List<Restaurant> restaurants =
-                restaurantServiceImpl.getAllByUniversityAndIsDeletedFalse(university);
+                restaurantServiceImpl.getAllByUniversityAndIsDeletedFalse(
+                        universityName, campusName);
         return RestaurantListGetRes.of(restaurants);
     }
 
     @Override
     public Map<String, Map<String, List<DayMealGetRes>>> getDayMealListV2(
             String universityName, String campusName, String offeredAt) {
-        var result = mealMapper.findDayList(offeredAt, universityName, campusName);
+        var result = mealCommServiceImpl.getDayList(offeredAt, universityName, campusName);
         return Map.of(offeredAt, DayMealGetRes.of(result));
     }
 
@@ -135,9 +97,10 @@ public class MealServiceImpl implements MealService {
         }
         List<Map<String, Map<String, List<DayMealGetRes>>>> result = new ArrayList<>();
         for (LocalDate i = monday; i.isBefore(sunday); i = i.plusDays(1)) {
-            val row =
+            Map<String, List<DayMealGetRes>> row =
                     DayMealGetRes.of(
-                            mealMapper.findDayList(i.toString(), universityName, campusName));
+                            mealCommServiceImpl.getDayList(
+                                    i.toString(), universityName, campusName));
             result.add(Map.of(i.toString(), row));
         }
         return result;

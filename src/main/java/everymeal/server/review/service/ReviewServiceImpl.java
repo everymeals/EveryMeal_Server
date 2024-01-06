@@ -1,15 +1,13 @@
 package everymeal.server.review.service;
 
-import static everymeal.server.global.exception.ExceptionList.RESTAURANT_NOT_FOUND;
 import static everymeal.server.global.exception.ExceptionList.REVIEW_ALREADY_MARKED;
 import static everymeal.server.global.exception.ExceptionList.REVIEW_MARK_NOT_FOUND;
 import static everymeal.server.global.exception.ExceptionList.REVIEW_UNAUTHORIZED;
-import static everymeal.server.global.exception.ExceptionList.USER_NOT_FOUND;
 
 import everymeal.server.global.exception.ApplicationException;
 import everymeal.server.global.util.TimeFormatUtil;
 import everymeal.server.meal.entity.Restaurant;
-import everymeal.server.meal.repository.RestaurantRepository;
+import everymeal.server.meal.service.RestaurantCommServiceImpl;
 import everymeal.server.review.dto.request.ReviewCreateReq;
 import everymeal.server.review.dto.response.ReviewDto;
 import everymeal.server.review.dto.response.ReviewDto.ReviewGetRes;
@@ -18,12 +16,10 @@ import everymeal.server.review.dto.response.ReviewDto.ReviewTodayGetRes;
 import everymeal.server.review.entity.Image;
 import everymeal.server.review.entity.Review;
 import everymeal.server.user.entity.User;
-import everymeal.server.user.repository.UserRepository;
+import everymeal.server.user.service.UserCommServiceImpl;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,10 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class ReviewServiceImpl implements ReviewService {
 
-    private final RestaurantRepository restaurantRepository;
-    private final UserRepository userRepository;
-    private final Logger logger = LoggerFactory.getLogger(ReviewServiceImpl.class);
-
+    private final RestaurantCommServiceImpl restaurantCommServiceImpl;
+    private final UserCommServiceImpl userCommServiceImpl;
     private final ReviewCommServiceImpl reviewCommServiceImpl;
 
     @Override
@@ -43,16 +37,11 @@ public class ReviewServiceImpl implements ReviewService {
     public Long createReview(ReviewCreateReq request, Long userIdx) {
         // (1) restaurant 객체 조회
         Restaurant restaurant =
-                restaurantRepository
-                        .findById(request.restaurantIdx())
-                        .orElseThrow(() -> new ApplicationException(RESTAURANT_NOT_FOUND));
+                restaurantCommServiceImpl.getRestaurantEntity(request.restaurantIdx());
 
         // (2) 이미지 주소 <> 이미지 객체 치환
         List<Image> imageList = getImageFromString(request.imageList());
-        User user =
-                userRepository
-                        .findById(userIdx)
-                        .orElseThrow(() -> new ApplicationException(USER_NOT_FOUND));
+        User user = userCommServiceImpl.getUserEntity(userIdx);
 
         // (3) Entity 생성 ( 사진리뷰인지 분기 처리 )
         Review review =
@@ -88,10 +77,7 @@ public class ReviewServiceImpl implements ReviewService {
 
         // (2) 이미지 주소 <> 이미지 객체 치환
         List<Image> imageList = getImageFromString(request.imageList());
-        User user =
-                userRepository
-                        .findById(userIdx)
-                        .orElseThrow(() -> new ApplicationException(USER_NOT_FOUND));
+        User user = userCommServiceImpl.getUserEntity(userIdx);
         if (review.getUser() != user) {
             throw new ApplicationException(REVIEW_UNAUTHORIZED);
         }
@@ -107,10 +93,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public Boolean deleteReview(Long userIdx, Long reviewIdx) {
         // (1) 기존 리뷰 조회
-        User user =
-                userRepository
-                        .findById(userIdx)
-                        .orElseThrow(() -> new ApplicationException(USER_NOT_FOUND));
+        User user = userCommServiceImpl.getUserEntity(userIdx);
         Review review = reviewCommServiceImpl.getReviewEntity(reviewIdx, user);
         // (2) 기존 데이터 삭제
         review.getRestaurant().removeGrade(review.getGrade());
@@ -155,10 +138,7 @@ public class ReviewServiceImpl implements ReviewService {
     public Boolean markReview(Long reviewIdx, boolean isLike, Long userIdx) {
         // (1) 기존 리뷰 조회
         Review review = reviewCommServiceImpl.getReviewEntity(reviewIdx);
-        User user =
-                userRepository
-                        .findById(userIdx)
-                        .orElseThrow(() -> new ApplicationException(USER_NOT_FOUND));
+        User user = userCommServiceImpl.getUserEntity(userIdx);
         // (2) 기존 데이터 수정
         if (isLike) {
             reviewCommServiceImpl
