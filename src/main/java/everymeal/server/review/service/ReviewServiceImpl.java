@@ -3,7 +3,6 @@ package everymeal.server.review.service;
 import static everymeal.server.global.exception.ExceptionList.RESTAURANT_NOT_FOUND;
 import static everymeal.server.global.exception.ExceptionList.REVIEW_ALREADY_MARKED;
 import static everymeal.server.global.exception.ExceptionList.REVIEW_MARK_NOT_FOUND;
-import static everymeal.server.global.exception.ExceptionList.REVIEW_NOT_FOUND;
 import static everymeal.server.global.exception.ExceptionList.REVIEW_UNAUTHORIZED;
 import static everymeal.server.global.exception.ExceptionList.USER_NOT_FOUND;
 
@@ -18,9 +17,6 @@ import everymeal.server.review.dto.response.ReviewDto.ReviewPaging;
 import everymeal.server.review.dto.response.ReviewDto.ReviewTodayGetRes;
 import everymeal.server.review.entity.Image;
 import everymeal.server.review.entity.Review;
-import everymeal.server.review.repository.ReviewMapper;
-import everymeal.server.review.repository.ReviewMarkRepository;
-import everymeal.server.review.repository.ReviewRepository;
 import everymeal.server.user.entity.User;
 import everymeal.server.user.repository.UserRepository;
 import java.util.ArrayList;
@@ -37,12 +33,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReviewServiceImpl implements ReviewService {
 
     private final RestaurantRepository restaurantRepository;
-    private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
     private final Logger logger = LoggerFactory.getLogger(ReviewServiceImpl.class);
 
-    private final ReviewMarkRepository reviewMarkRepository;
-    private final ReviewMapper reviewMapper;
+    private final ReviewCommServiceImpl reviewCommServiceImpl;
 
     @Override
     @Transactional
@@ -80,7 +74,7 @@ public class ReviewServiceImpl implements ReviewService {
             review.updateTodayReview(true);
         }
         // (4) 저장
-        Review savedReview = reviewRepository.save(review);
+        Review savedReview = reviewCommServiceImpl.save(review);
 
         restaurant.addGrade(request.grade());
         return savedReview.getIdx();
@@ -90,10 +84,8 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public Long updateReview(ReviewCreateReq request, Long userIdx, Long reviewIdx) {
         // (1) 기존 리뷰 조회
-        Review review =
-                reviewRepository
-                        .findById(reviewIdx)
-                        .orElseThrow(() -> new ApplicationException(REVIEW_NOT_FOUND));
+        Review review = reviewCommServiceImpl.getReviewEntity(reviewIdx);
+
         // (2) 이미지 주소 <> 이미지 객체 치환
         List<Image> imageList = getImageFromString(request.imageList());
         User user =
@@ -119,18 +111,24 @@ public class ReviewServiceImpl implements ReviewService {
                 userRepository
                         .findById(userIdx)
                         .orElseThrow(() -> new ApplicationException(USER_NOT_FOUND));
-        Review review =
-                reviewRepository
-                        .findByIdxAndUser(reviewIdx, user)
-                        .orElseThrow(() -> new ApplicationException(REVIEW_NOT_FOUND));
+        Review review = reviewCommServiceImpl.getReviewEntity(reviewIdx, user);
         // (2) 기존 데이터 삭제
         review.getRestaurant().removeGrade(review.getGrade());
         review.deleteEntity();
+
+        reviewCommServiceImpl
+                .getReviewMarkOptionalEntity(reviewIdx, userIdx)
+                .ifPresent(
+                        reviewMark -> {
+                            review.removeMark(user);
+                            reviewCommServiceImpl.deleteReviewMark(reviewMark);
+                        });
+
         return true;
     }
 
     public ReviewGetRes getReviewWithNoOffSetPaging(ReviewDto.ReviewQueryParam queryParam) {
-        var result = reviewRepository.getReview(queryParam);
+        var result = reviewCommServiceImpl.getReviewPagingVOWithCnt(queryParam);
         List<ReviewPaging> reviewPagingList = new ArrayList<>();
         for (Review vo : result.reviewList()) {
             List<String> strImgList = new ArrayList<>();
@@ -156,33 +154,30 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public Boolean markReview(Long reviewIdx, boolean isLike, Long userIdx) {
         // (1) 기존 리뷰 조회
-        Review review =
-                reviewRepository
-                        .findById(reviewIdx)
-                        .orElseThrow(() -> new ApplicationException(REVIEW_NOT_FOUND));
+        Review review = reviewCommServiceImpl.getReviewEntity(reviewIdx);
         User user =
                 userRepository
                         .findById(userIdx)
                         .orElseThrow(() -> new ApplicationException(USER_NOT_FOUND));
         // (2) 기존 데이터 수정
         if (isLike) {
-            reviewMarkRepository
-                    .findByReviewIdxAndUserIdx(reviewIdx, userIdx)
+            reviewCommServiceImpl
+                    .getReviewMarkOptionalEntity(reviewIdx, userIdx)
                     .ifPresentOrElse(
                             reviewMark -> {
                                 throw new ApplicationException(REVIEW_ALREADY_MARKED);
                             },
                             () -> {
                                 review.addMark(user);
-                                reviewRepository.saveAndFlush(review);
+                                reviewCommServiceImpl.saveAndFlush(review);
                             });
         } else {
-            reviewMarkRepository
-                    .findByReviewIdxAndUserIdx(reviewIdx, userIdx)
+            reviewCommServiceImpl
+                    .getReviewMarkOptionalEntity(reviewIdx, userIdx)
                     .ifPresentOrElse(
                             reviewMark -> {
                                 review.removeMark(user);
-                                reviewMarkRepository.delete(reviewMark);
+                                reviewCommServiceImpl.deleteReviewMark(reviewMark);
                             },
                             () -> {
                                 throw new ApplicationException(REVIEW_MARK_NOT_FOUND);
@@ -193,7 +188,8 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewTodayGetRes getTodayReview(Long restaurantIdx, String offeredAt) {
-        return ReviewDto.of(reviewMapper.findTodayReview(restaurantIdx, offeredAt));
+        return ReviewDto.of(
+                reviewCommServiceImpl.getTodayReviewEntityFromMapper(restaurantIdx, offeredAt));
     }
 
     /**

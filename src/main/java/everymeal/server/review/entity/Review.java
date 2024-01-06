@@ -3,6 +3,7 @@ package everymeal.server.review.entity;
 
 import everymeal.server.global.entity.BaseEntity;
 import everymeal.server.meal.entity.Restaurant;
+import everymeal.server.report.entity.Report;
 import everymeal.server.store.entity.Store;
 import everymeal.server.user.entity.User;
 import jakarta.persistence.CascadeType;
@@ -64,6 +65,9 @@ public class Review extends BaseEntity {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "review_idx")
     private List<Image> images = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<Report> reports = new HashSet<>();
 
     @Builder
     public Review(
