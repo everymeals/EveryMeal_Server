@@ -72,8 +72,8 @@ public class MealData {
         return new RestaurantRegisterReq(
                 "명지대학교",
                 "인문캠퍼스",
-                "address",
-                "phoneNumber",
+                "서울시 서대문구 거북골로 34",
+                "MCC 식당",
                 LocalTime.of(8, 0),
                 LocalTime.of(10, 30),
                 LocalTime.of(11, 0),

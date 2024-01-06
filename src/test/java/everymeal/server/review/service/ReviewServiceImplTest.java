@@ -219,16 +219,13 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
     @Test
     void getTodayReview() {
         // given
-        Review review = getReviewEntity(restaurant, user);
-        review.updateTodayReview(true);
-        Review saved = reviewRepository.saveAndFlush(review);
-        saved.addMark(user);
-        reviewRepository.saveAndFlush(saved);
+        review.addMark(user);
+        reviewRepository.saveAndFlush(review);
 
         String offeredAt = LocalDate.now().toString();
         // when
         var result = reviewService.getTodayReview(restaurant.getIdx(), offeredAt);
         // then
-        assertThat(result).isNotNull();
+        assertEquals(result.content(), review.getContent());
     }
 }
