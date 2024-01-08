@@ -1,6 +1,7 @@
 package everymeal.server.store.controller.dto.response;
 
 
+import everymeal.server.global.util.aws.S3Util;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ public record StoreGetRes(
                             List<String> images = null;
                             if (store.get("images") != null) {
                                 images = Arrays.asList(((String) store.get("images")).split(","));
+                                images.replaceAll(S3Util::getImgUrl);
                             }
                             boolean isLiked = false;
                             Integer isLikedInt = (Integer) store.get("isLiked");

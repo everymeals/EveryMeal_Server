@@ -19,13 +19,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class S3Util {
 
-    private final AmazonS3 amazonS3;
+    public static AmazonS3 amazonS3;
+    public static String bucket;
+    public static String runningName;
 
     @Value("${cloud.aws.s3.bucket}")
-    private String bucket;
+    public void setBucket(String bucket) {
+        this.bucket = bucket;
+    }
 
     @Value("${running.name}")
-    private String runningName;
+    public void setRunningName(String runningName) {
+        this.runningName = runningName;
+    }
 
     public S3Util(
             @Value("${cloud.aws.credentials.access-key}") String accessKey,
@@ -46,7 +52,7 @@ public class S3Util {
         return amazonS3.generatePresignedUrl(request);
     }
 
-    public String getImgUrl(String fileName) {
+    public static String getImgUrl(String fileName) {
         URL url = amazonS3.getUrl(bucket, runningName + File.separator + fileName);
         return url.toString();
     }
