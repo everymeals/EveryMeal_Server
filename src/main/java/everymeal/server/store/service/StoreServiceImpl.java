@@ -4,6 +4,8 @@ import static everymeal.server.global.exception.ExceptionList.STORE_NOT_FOUND;
 
 import everymeal.server.global.exception.ApplicationException;
 import everymeal.server.global.exception.ExceptionList;
+import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
+import everymeal.server.review.repository.ImageRepository;
 import everymeal.server.store.controller.dto.response.LikedStoreGetRes;
 import everymeal.server.store.controller.dto.response.StoreGetRes;
 import everymeal.server.store.entity.Store;
@@ -31,7 +33,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class StoreServiceImpl implements StoreService {
 
     private final StoreMapper storeMapper;
+    private final StoreRepository storeRepository;
     private final LikeRepository likeRepository;
+    private final ImageRepository imageRepository;
     private final UserRepository userRepository;
     private final StoreRepository storeRepository;
     private final StoreRepositoryCustom storeRepositoryCustom;
@@ -64,6 +68,17 @@ public class StoreServiceImpl implements StoreService {
                         order,
                         grade);
         return new PageImpl<>(result, pageable, count);
+    }
+
+    @Override
+    public StoreGetRes getStore(Long storeIdx, Long userIdx) {
+        Store store = storeRepository.findById(storeIdx).orElseThrow(() -> new ApplicationException(STORE_NOT_FOUND));
+        boolean isLike = false;
+        if (userIdx != null) {
+            isLike = likeRepository
+                .findByUserIdxAndStoreIdx(userIdx, storeIdx).isPresent();
+        }
+        return StoreGetRes.of(store, isLike);
     }
 
     @Override
@@ -111,22 +126,5 @@ public class StoreServiceImpl implements StoreService {
             likeRepository.save(like);
             return true;
         }
-    }
-
-    @Override
-    public Page<StoreGetRes> getStoresKeyword(
-            Long campusIdx, String keyword, Long userIdx, PageRequest pageRequest) {
-        Map<String, Object> parameter = new HashMap<>();
-        parameter.put("universityIdx", campusIdx);
-        parameter.put("keyword", keyword);
-        parameter.put("userIdx", userIdx);
-        parameter.put("limit", pageRequest.getPageSize());
-        parameter.put("offset", pageRequest.getOffset());
-
-        List<Map<String, Object>> storesKeyword = storeMapper.getStoresKeyword(parameter);
-        Long storesKeywordCnt = storeMapper.getStoresKeywordCnt(parameter);
-
-        List<StoreGetRes> result = StoreGetRes.of(storesKeyword);
-        return new PageImpl<>(result, pageRequest, storesKeywordCnt);
     }
 }
