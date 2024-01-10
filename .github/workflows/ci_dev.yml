@@ -51,10 +51,15 @@ jobs:
         shell: bash
 
       - name: Make test application.yml
-        run: |
-          mkdir -p src/test/resources
-          echo "${{ secrets.PROPERTIES_SECRET_TEST }}" > src/test/resources/application.yml
+#        run: |
+#          mkdir -p src/test/resources
+#          echo "${{ secrets.PROPERTIES_SECRET_TEST }}" | base64 --decode > src/test/resources/application.yml
 #        shell: bash
+      - run: |
+          cd ./src/test/resources
+          touch ./src/test/application.yml
+          echo "${{ secrets.PROPERTIES_SECRET_TEST }}" > src/test/resources/application.yml
+        shell: bash
 
       - name: Build and analyze
         run: ./gradlew test sonar --info
