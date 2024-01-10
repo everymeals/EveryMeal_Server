@@ -35,7 +35,7 @@ class StoreControllerTest extends ControllerTestSupport {
 
         // when then
         mockMvc.perform(
-                        get("/api/v1/stores/{campusIdx}", campusIdx)
+                        get("/api/v1/stores/campus/{campusIdx}", campusIdx)
                                 .param("offset", String.valueOf(offset))
                                 .param("limit", String.valueOf(limit))
                                 .param("order", order)
@@ -58,7 +58,7 @@ class StoreControllerTest extends ControllerTestSupport {
 
         // when then
         mockMvc.perform(
-                        get("/api/v1/stores/{campusIdx}", campusIdx)
+                        get("/api/v1/stores/campus/{campusIdx}", campusIdx)
                                 .param("offset", String.valueOf(offset))
                                 .param("limit", String.valueOf(limit))
                                 .param("order", order)
@@ -81,7 +81,7 @@ class StoreControllerTest extends ControllerTestSupport {
 
         // when then
         mockMvc.perform(
-                        get("/api/v1/stores/{campusIdx}", campusIdx)
+                        get("/api/v1/stores/campus/{campusIdx}", campusIdx)
                                 .param("offset", String.valueOf(offset))
                                 .param("limit", String.valueOf(limit))
                                 .param("order", order)
@@ -103,7 +103,7 @@ class StoreControllerTest extends ControllerTestSupport {
 
         // when then
         mockMvc.perform(
-                        get("/api/v1/stores/{campusIdx}", campusIdx)
+                        get("/api/v1/stores/campus/{campusIdx}", campusIdx)
                                 .param("offset", String.valueOf(offset))
                                 .param("limit", String.valueOf(limit))
                                 .param("order", order)
@@ -125,7 +125,7 @@ class StoreControllerTest extends ControllerTestSupport {
 
         // when then
         mockMvc.perform(
-                        get("/api/v1/stores/{campusIdx}", campusIdx)
+                        get("/api/v1/stores/campus/{campusIdx}", campusIdx)
                                 .param("offset", String.valueOf(offset))
                                 .param("limit", String.valueOf(limit))
                                 .param("order", order)
@@ -201,7 +201,7 @@ class StoreControllerTest extends ControllerTestSupport {
         Long storeIdx = 1L;
 
         // when then
-        mockMvc.perform(get("/api/v1/stores/detail/{storeIdx}", storeIdx))
+        mockMvc.perform(get("/api/v1/stores/{storeIdx}", storeIdx))
             .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.message").value("OK"));

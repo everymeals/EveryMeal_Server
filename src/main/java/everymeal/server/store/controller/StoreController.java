@@ -40,7 +40,7 @@ public class StoreController {
     private final StoreService storeService;
 
     @Auth(require = false)
-    @GetMapping("/{campusIdx}")
+    @GetMapping("/campus/{campusIdx}")
     @SecurityRequirement(name = "jwt-user-auth")
     @Operation(summary = "학교 주변 식당 조회", description = "학교 주변 식당을 조회합니다")
     public ApplicationResponse<Page<StoreGetRes>> getStores(
@@ -79,7 +79,11 @@ public class StoreController {
                                 "recommend",
                                 "restaurant",
                                 "cafe",
-                                "bar"
+                                "bar",
+                                "korean",
+                                "chinese",
+                                "japanese",
+                                "western",
                             })
                     String group,
             @Parameter(hidden = true) @AuthUser AuthenticatedUser authenticatedUser,
@@ -88,7 +92,8 @@ public class StoreController {
                             title = "평점",
                             description = "평점",
                             allowableValues = {"1", "2", "3", "4", "5"})
-                    Integer grade) {
+                    Integer grade)
+    {
 
         return ApplicationResponse.ok(
                 storeService.getStores(
@@ -189,7 +194,7 @@ public class StoreController {
     }
 
     @Auth(require = false)
-    @GetMapping("/detail/{index}")
+    @GetMapping("/{index}")
     @SecurityRequirement(name = "jwt-user-auth")
     @Operation(summary = "식당 상세 조회", description = "식당 상세 정보를 조회합니다")
     public ApplicationResponse<StoreGetRes> getStore(

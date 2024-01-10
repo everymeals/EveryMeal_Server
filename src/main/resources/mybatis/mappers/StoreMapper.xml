@@ -42,6 +42,10 @@
         WHEN #{group} = 'bar' THEN s.category_detail = '술집'
         WHEN #{group} = 'etc' THEN s.category_detail IN ('기타', '패스트푸드', '분식')
         WHEN #{group} = 'all' THEN 1=1
+        WHEN #{group} = 'korean' THEN s.category_detail = '한식'
+        WHEN #{group} = 'chinese' THEN s.category_detail = '중식'
+        WHEN #{group} = 'japanese' THEN s.category_detail = '일식'
+        WHEN #{group} = 'western' THEN s.category_detail = '양식'
         ELSE s.category_detail IN ('한식', '중식', '일식', '양식', '카페', '디저트', '술집', '기타', '패스트푸드', '분식')
         END
       )
