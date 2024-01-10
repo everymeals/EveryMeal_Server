@@ -62,7 +62,8 @@ class StoreControllerTest extends ControllerTestSupport {
                                 .param("offset", String.valueOf(offset))
                                 .param("limit", String.valueOf(limit))
                                 .param("order", order)
-                                .param("group", group))
+                                .param("group", group)
+                                .param("grade", "1"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("OK"));
@@ -191,5 +192,18 @@ class StoreControllerTest extends ControllerTestSupport {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("OK"));
+    }
+
+    @DisplayName("가게 상세 조회")
+    @Test
+    void getStoreDetail() throws Exception {
+        // given
+        Long storeIdx = 1L;
+
+        // when then
+        mockMvc.perform(get("/api/v1/stores/detail/{storeIdx}", storeIdx))
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.message").value("OK"));
     }
 }

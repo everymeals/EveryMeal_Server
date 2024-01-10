@@ -21,7 +21,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -190,7 +189,7 @@ public class StoreController {
     }
 
     @Auth(require = false)
-    @GetMapping("/{index}")
+    @GetMapping("/detail/{index}")
     @SecurityRequirement(name = "jwt-user-auth")
     @Operation(summary = "식당 상세 조회", description = "식당 상세 정보를 조회합니다")
     public ApplicationResponse<StoreGetRes> getStore(
@@ -199,6 +198,7 @@ public class StoreController {
                     Long storeIdx,
             @Parameter(hidden = true) @AuthUser AuthenticatedUser authenticatedUser) {
         return ApplicationResponse.ok(
-                storeService.getStore(storeIdx, authenticatedUser == null ? null : authenticatedUser.getIdx()));
+                storeService.getStore(
+                        storeIdx, authenticatedUser == null ? null : authenticatedUser.getIdx()));
     }
 }

@@ -1,5 +1,6 @@
 package everymeal.server.store.controller.dto.response;
 
+
 import java.util.List;
 
 public record StoreGetDetailRes(
@@ -15,7 +16,4 @@ public record StoreGetDetailRes(
         Integer reviewCount,
         Integer recommendedCount,
         List<String> images,
-        Boolean isLiked
-) {
-
-}
+        Boolean isLiked) {}

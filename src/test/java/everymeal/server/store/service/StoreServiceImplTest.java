@@ -4,6 +4,10 @@ import static everymeal.server.store.entity.StoreSortVo.SORT_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import everymeal.server.global.IntegrationTestSupport;
+import everymeal.server.review.entity.Image;
+import everymeal.server.review.entity.Review;
+import everymeal.server.review.repository.ImageRepository;
+import everymeal.server.review.repository.ReviewRepository;
 import everymeal.server.store.controller.dto.response.LikedStoreGetRes;
 import everymeal.server.store.controller.dto.response.StoreGetRes;
 import everymeal.server.store.entity.GradeStatistics;
@@ -37,6 +41,8 @@ class StoreServiceImplTest extends IntegrationTestSupport {
     @Autowired private EntityManager entityManager;
     @Autowired private UserRepository userRepository;
     @Autowired private LikeRepository likeRepository;
+    @Autowired private ImageRepository imageRepository;
+    @Autowired private ReviewRepository reviewRepository;
 
     @AfterEach
     void tearDown() {
@@ -44,6 +50,8 @@ class StoreServiceImplTest extends IntegrationTestSupport {
         storeRepository.deleteAll();
         universityRepository.deleteAll();
         userRepository.deleteAll();
+//        imageRepository.deleteAll();
+//        reviewRepository.deleteAll();
     }
 
     @DisplayName("캠퍼스 기준 식당 가져오기")
@@ -234,6 +242,60 @@ class StoreServiceImplTest extends IntegrationTestSupport {
                 .hasSize(2)
                 .extracting("name")
                 .containsExactly("샌드위치", "BBQ");
+    }
+
+    @DisplayName("가게 상세 조회")
+    @Test
+    @Transactional
+    void getStoreDetail() {
+        // given
+        University save =
+                universityRepository.save(
+                        University.builder().name("서울대학교").campusName("관악캠퍼스").build());
+        List<University> universities =
+                universityRepository.findByNameAndCampusNameAndIsDeletedFalse("서울대학교", "관악캠퍼스");
+        University university = universities.get(0);
+
+        Store store = createEntity("샌드위치", 3, university, "치킨");
+        storeRepository.save(store);
+
+        Review review = createReviewEntity(store, getUser(university, 1));
+        reviewRepository.save(review);
+
+        List<Image> images = List.of(
+            createImageEntity("1",review),
+            createImageEntity("2",review),
+            createImageEntity("3",review),
+            createImageEntity("4",review),
+            createImageEntity("5",review),
+            createImageEntity("6",review)
+        );
+        imageRepository.saveAll(images);
+
+        entityManager.clear();
+
+        // when
+        StoreGetRes detail = storeService.getStore(store.getIdx(), null);
+
+        // then
+        assertThat(detail.images()).hasSize(5);
+        assertThat(detail.name()).isEqualTo("샌드위치");
+    }
+
+    private Image createImageEntity(String urlNumber, Review review) {
+        return Image.builder()
+            .imageUrl("url"+urlNumber)
+            .review(review)
+            .build();
+    }
+
+    private Review createReviewEntity(Store store, User user) {
+        return Review.builder()
+                .store(store)
+                .user(user)
+                .content("content")
+                .grade(0)
+                .build();
     }
 
     private Like createLikeEntity(Store store, User user) {
