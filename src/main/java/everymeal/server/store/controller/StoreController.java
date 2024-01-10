@@ -92,8 +92,7 @@ public class StoreController {
                             title = "평점",
                             description = "평점",
                             allowableValues = {"1", "2", "3", "4", "5"})
-                    Integer grade)
-    {
+                    Integer grade) {
 
         return ApplicationResponse.ok(
                 storeService.getStores(

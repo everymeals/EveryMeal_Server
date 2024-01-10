@@ -202,8 +202,8 @@ class StoreControllerTest extends ControllerTestSupport {
 
         // when then
         mockMvc.perform(get("/api/v1/stores/{storeIdx}", storeIdx))
-            .andDo(MockMvcResultHandlers.print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.message").value("OK"));
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("OK"));
     }
 }

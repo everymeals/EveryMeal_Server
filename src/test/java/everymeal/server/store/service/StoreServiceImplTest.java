@@ -50,8 +50,8 @@ class StoreServiceImplTest extends IntegrationTestSupport {
         storeRepository.deleteAll();
         universityRepository.deleteAll();
         userRepository.deleteAll();
-//        imageRepository.deleteAll();
-//        reviewRepository.deleteAll();
+        //        imageRepository.deleteAll();
+        //        reviewRepository.deleteAll();
     }
 
     @DisplayName("캠퍼스 기준 식당 가져오기")
@@ -262,14 +262,14 @@ class StoreServiceImplTest extends IntegrationTestSupport {
         Review review = createReviewEntity(store, getUser(university, 1));
         reviewRepository.save(review);
 
-        List<Image> images = List.of(
-            createImageEntity("1",review),
-            createImageEntity("2",review),
-            createImageEntity("3",review),
-            createImageEntity("4",review),
-            createImageEntity("5",review),
-            createImageEntity("6",review)
-        );
+        List<Image> images =
+                List.of(
+                        createImageEntity("1", review),
+                        createImageEntity("2", review),
+                        createImageEntity("3", review),
+                        createImageEntity("4", review),
+                        createImageEntity("5", review),
+                        createImageEntity("6", review));
         imageRepository.saveAll(images);
 
         entityManager.clear();
@@ -283,19 +283,11 @@ class StoreServiceImplTest extends IntegrationTestSupport {
     }
 
     private Image createImageEntity(String urlNumber, Review review) {
-        return Image.builder()
-            .imageUrl("url"+urlNumber)
-            .review(review)
-            .build();
+        return Image.builder().imageUrl("url" + urlNumber).review(review).build();
     }
 
     private Review createReviewEntity(Store store, User user) {
-        return Review.builder()
-                .store(store)
-                .user(user)
-                .content("content")
-                .grade(0)
-                .build();
+        return Review.builder().store(store).user(user).content("content").grade(0).build();
     }
 
     private Like createLikeEntity(Store store, User user) {

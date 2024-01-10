@@ -11,7 +11,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ImageRepository extends JpaRepository<Image, Long> {
 
-    @Query(value = """
+    @Query(
+            value =
+                    """
         SELECT i
         FROM images i
         LEFT JOIN reviews r ON i.review.idx = r.idx and r.store.idx = :storeIdx AND r.isDeleted = false
@@ -20,5 +22,4 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
         LIMIT 5
     """)
     List<Image> getStoreImages(@Param(value = "storeIdx") Long storeIdx);
-
 }
