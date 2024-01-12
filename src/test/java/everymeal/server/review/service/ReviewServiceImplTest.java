@@ -29,6 +29,7 @@ import everymeal.server.user.repository.UserRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -224,6 +225,8 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
 
         String offeredAt = LocalDate.now().toString();
         // when
+        System.out.println("offeredAt = " + offeredAt);
+        System.out.println("restaurant.getIdx() = " + restaurant.getIdx());
         var result = reviewService.getTodayReview(restaurant.getIdx(), offeredAt);
         // then
         assertEquals(result.content(), review.getContent());
