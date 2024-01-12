@@ -2,7 +2,6 @@ package everymeal.server.review.entity;
 
 
 import everymeal.server.global.entity.BaseEntity;
-import everymeal.server.store.entity.Store;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,13 +25,14 @@ public class Image extends BaseEntity {
 
     private String imageUrl;
 
-    @ManyToOne private Store store;
-
     private Boolean isDeleted;
 
+    @ManyToOne private Review review;
+
     @Builder
-    public Image(String imageUrl) {
+    public Image(String imageUrl, Review review) {
         this.imageUrl = imageUrl;
-        isDeleted = false;
+        this.isDeleted = false;
+        this.review = review;
     }
 }

@@ -7,6 +7,8 @@ import everymeal.server.global.util.authresolver.UserJwtResolver;
 import everymeal.server.infra.HealthCheckController;
 import everymeal.server.meal.controller.MealController;
 import everymeal.server.meal.service.MealService;
+import everymeal.server.report.controller.ReportController;
+import everymeal.server.report.service.ReportService;
 import everymeal.server.review.controller.ReviewController;
 import everymeal.server.review.service.ReviewService;
 import everymeal.server.store.controller.StoreController;
@@ -27,7 +29,8 @@ import org.springframework.test.web.servlet.MockMvc;
             UniversityController.class,
             HealthCheckController.class,
             StoreController.class,
-            ReviewController.class
+            ReviewController.class,
+            ReportController.class
         })
 public abstract class ControllerTestSupport {
 
@@ -48,4 +51,6 @@ public abstract class ControllerTestSupport {
     @MockBean protected UniversityService universityService;
 
     @MockBean protected ReviewService reviewService;
+
+    @MockBean protected ReportService reportService;
 }

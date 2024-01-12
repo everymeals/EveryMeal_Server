@@ -5,14 +5,14 @@
     SELECT r.idx as 'reviewIdx',
            r.content as 'content'
     FROM reviews r
-           LEFT JOIN meal m ON r.meal_idx = m.idx
            JOIN restaurant r2 ON r.restaurant_idx = r2.idx AND r2.idx = #{restaurantIdx}
     WHERE DATE(r.created_at) = DATE(#{offeredAt})
       AND r.is_today_review = 1
-      AND r.idx = (
+      OR r.idx = (
       SELECT rm.review_idx
       FROM review_marks rm
       JOIN reviews r ON rm.review_idx = r.idx
+      WHERE DATE(r.created_at) = DATE(#{offeredAt})
       GROUP BY rm.review_idx
       ORDER BY COUNT(rm.review_idx) DESC
       LIMIT 1

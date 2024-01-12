@@ -4,6 +4,8 @@ import static everymeal.server.global.exception.ExceptionList.STORE_NOT_FOUND;
 
 import everymeal.server.global.exception.ApplicationException;
 import everymeal.server.global.exception.ExceptionList;
+import everymeal.server.review.entity.Image;
+import everymeal.server.review.repository.ImageRepository;
 import everymeal.server.store.controller.dto.response.LikedStoreGetRes;
 import everymeal.server.store.controller.dto.response.StoreGetRes;
 import everymeal.server.store.entity.Store;
@@ -31,9 +33,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class StoreServiceImpl implements StoreService {
 
     private final StoreMapper storeMapper;
-    private final LikeRepository likeRepository;
-    private final UserRepository userRepository;
     private final StoreRepository storeRepository;
+    private final LikeRepository likeRepository;
+    private final ImageRepository imageRepository;
+    private final UserRepository userRepository;
     private final StoreRepositoryCustom storeRepositoryCustom;
 
     @Override
@@ -64,6 +67,20 @@ public class StoreServiceImpl implements StoreService {
                         order,
                         grade);
         return new PageImpl<>(result, pageable, count);
+    }
+
+    @Override
+    public StoreGetRes getStore(Long storeIdx, Long userIdx) {
+        Store store =
+                storeRepository
+                        .findById(storeIdx)
+                        .orElseThrow(() -> new ApplicationException(STORE_NOT_FOUND));
+        boolean isLike = false;
+        if (userIdx != null) {
+            isLike = likeRepository.findByUserIdxAndStoreIdx(userIdx, storeIdx).isPresent();
+        }
+        List<Image> images = imageRepository.getStoreImages(storeIdx);
+        return StoreGetRes.of(store, isLike, images);
     }
 
     @Override
