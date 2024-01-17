@@ -35,6 +35,10 @@ public enum ExceptionList {
     REPORT_ALREADY_EXIST("RPT0002", HttpStatus.CONFLICT, "이미 신고한 리뷰입니다."),
     REPORT_REVIEW_SELF("RPT0003", HttpStatus.FORBIDDEN, "자신의 리뷰를 신고할 수 없습니다."),
     REPORT_REVIEW_ALREADY("RPT0004", HttpStatus.CONFLICT, "이미 신고한 리뷰입니다."),
+
+    // SERVER
+    SERVER_ERROR("SRV0001", HttpStatus.INTERNAL_SERVER_ERROR, "서버에 문제가 발생하였습니다."),
+    PATH_NOT_FOUND("SRV0002", HttpStatus.NOT_FOUND, "요청한 경로가 존재하지 않습니다."),
     ;
 
     public final String CODE;
