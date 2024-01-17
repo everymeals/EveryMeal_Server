@@ -224,6 +224,8 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
 
         String offeredAt = LocalDate.now().toString();
         // when
+        System.out.println("offeredAt = " + offeredAt);
+        System.out.println("restaurant.getIdx() = " + restaurant.getIdx());
         var result = reviewService.getTodayReview(restaurant.getIdx(), offeredAt);
         // then
         assertEquals(result.content(), review.getContent());
