@@ -211,13 +211,34 @@ class StoreControllerTest extends ControllerTestSupport {
     @Test
     void getStoreReviews() throws Exception {
         // given
-        Long storeIdx = 1L;
+        Long index = 1L;
         int offset = 0;
         int limit = 10;
 
         // when then
         mockMvc.perform(
-                        get("/api/v1/stores/{storeIdx}/reviews", storeIdx)
+                        get("/api/v1/stores/{index}/reviews", index)
+                                .param("offset", String.valueOf(offset))
+                                .param("limit", String.valueOf(limit)))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("OK"));
+    }
+
+    @DisplayName("가게 리뷰 목록 조회 - 유저 존재")
+    @Test
+    void getStoreReviewsUser() throws Exception {
+        // given
+        Long index = 1L;
+        int offset = 0;
+        int limit = 10;
+
+        given(userJwtResolver.resolveArgument(any(), any(), any(), any()))
+                .willReturn(AuthenticatedUser.builder().idx(1L).build());
+
+        // when then
+        mockMvc.perform(
+                        get("/api/v1/stores/{index}/reviews", index)
                                 .param("offset", String.valueOf(offset))
                                 .param("limit", String.valueOf(limit)))
                 .andDo(MockMvcResultHandlers.print())
