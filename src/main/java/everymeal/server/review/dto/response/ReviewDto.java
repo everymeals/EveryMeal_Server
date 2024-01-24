@@ -17,7 +17,12 @@ public class ReviewDto {
                 (Long) resultMap.get("reviewIdx"), (String) resultMap.get("content"));
     }
 
-    public record ReviewGetRes(int reviewTotalCnt, List<ReviewPaging> reviewPagingList) {}
+    public record ReviewGetRes(int reviewTotalCnt, List<ReviewPaging> reviewPagingList) {
+
+        public static List<ReviewGetRes> of(List<Map<String, Object>> storeReview) {
+            return null;
+        }
+    }
 
     public record ReviewPaging(
             Long reviewIdx,

@@ -13,6 +13,7 @@ import everymeal.server.global.util.authresolver.AuthUser;
 import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
 import everymeal.server.store.controller.dto.response.LikedStoreGetRes;
 import everymeal.server.store.controller.dto.response.StoreGetRes;
+import everymeal.server.store.controller.dto.response.StoreGetReviewRes;
 import everymeal.server.store.service.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -204,5 +205,30 @@ public class StoreController {
         return ApplicationResponse.ok(
                 storeService.getStore(
                         storeIdx, authenticatedUser == null ? null : authenticatedUser.getIdx()));
+    }
+
+    @Auth(require = false)
+    @GetMapping("/{index}/review")
+    @SecurityRequirement(name = "jwt-user-auth")
+    @Operation(summary = "식당 리뷰 조회", description = "식당 리뷰를 조회합니다")
+    public ApplicationResponse<Page<StoreGetReviewRes>> getStoreReview(
+            @PathVariable(value = "index")
+                    @Schema(title = "식당 키 값", description = "식당 키 값", example = "1")
+                    Long storeIdx,
+            @Parameter(hidden = true) @AuthUser AuthenticatedUser authenticatedUser,
+            @RequestParam(value = "offset", defaultValue = "0")
+                    @Schema(title = "페이지 번호", example = "0", description = "페이지 번호는 0부터 시작합니다.")
+                    Integer offset,
+            @RequestParam(value = "limit", defaultValue = "10")
+                    @Schema(
+                            title = "Data 갯수",
+                            example = "10",
+                            description = "한 페이지에 보여지는 데이터 수 입니다.")
+                    Integer limit) {
+        return ApplicationResponse.ok(
+                storeService.getStoreReview(
+                        storeIdx,
+                        authenticatedUser == null ? null : authenticatedUser.getIdx(),
+                        PageRequest.of(offset, limit)));
     }
 }
