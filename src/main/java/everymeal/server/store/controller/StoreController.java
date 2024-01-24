@@ -208,7 +208,7 @@ public class StoreController {
     }
 
     @Auth(require = false)
-    @GetMapping("/{index}/review")
+    @GetMapping("/{index}/reviews")
     @SecurityRequirement(name = "jwt-user-auth")
     @Operation(summary = "식당 리뷰 조회", description = "식당 리뷰를 조회합니다")
     public ApplicationResponse<Page<StoreGetReviewRes>> getStoreReview(
