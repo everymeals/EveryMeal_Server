@@ -10,6 +10,7 @@ import everymeal.server.review.repository.ImageRepository;
 import everymeal.server.review.repository.ReviewRepository;
 import everymeal.server.store.controller.dto.response.LikedStoreGetRes;
 import everymeal.server.store.controller.dto.response.StoreGetRes;
+import everymeal.server.store.controller.dto.response.StoreGetReviewRes;
 import everymeal.server.store.entity.GradeStatistics;
 import everymeal.server.store.entity.Store;
 import everymeal.server.store.repository.StoreMapper;
@@ -280,6 +281,48 @@ class StoreServiceImplTest extends IntegrationTestSupport {
         // then
         assertThat(detail.images()).hasSize(5);
         assertThat(detail.name()).isEqualTo("샌드위치");
+    }
+
+    @DisplayName("가게 리뷰 조회")
+    @Test
+    @Transactional
+    void getStoreReviews() {
+        // given
+        University save =
+                universityRepository.save(
+                        University.builder().name("서울대학교").campusName("관악캠퍼스").build());
+        List<University> universities =
+                universityRepository.findByNameAndCampusNameAndIsDeletedFalse("서울대학교", "관악캠퍼스");
+        University university = universities.get(0);
+
+        Store store = createEntity("샌드위치", 3, university, "치킨");
+        storeRepository.save(store);
+
+        User user = getUser(university, 1);
+        userRepository.save(user);
+
+        Review review = createReviewEntity(store, user);
+        reviewRepository.save(review);
+
+        List<Image> images =
+                List.of(
+                        createImageEntity("1", review),
+                        createImageEntity("2", review),
+                        createImageEntity("3", review),
+                        createImageEntity("4", review),
+                        createImageEntity("5", review),
+                        createImageEntity("6", review));
+        imageRepository.saveAll(images);
+
+        entityManager.clear();
+
+        // when
+        Page<StoreGetReviewRes> storeReview =
+                storeService.getStoreReview(store.getIdx(), null, PageRequest.of(0, 10));
+
+        // then
+        assertThat(storeReview.getContent()).hasSize(1);
+        assertThat(storeReview.getContent().get(0).content()).isEqualTo("content");
     }
 
     private Image createImageEntity(String urlNumber, Review review) {

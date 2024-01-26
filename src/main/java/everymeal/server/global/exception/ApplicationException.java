@@ -15,6 +15,12 @@ public class ApplicationException extends RuntimeException {
         this.httpStatus = exceptionList.getHttpStatus();
     }
 
+    public ApplicationException(String code, HttpStatus status, String message) {
+        super(message);
+        this.errorCode = code;
+        this.httpStatus = status;
+    }
+
     public ApplicationException(String message) {
         super(message);
         this.errorCode = "INTERNAL_SERVER_ERROR";

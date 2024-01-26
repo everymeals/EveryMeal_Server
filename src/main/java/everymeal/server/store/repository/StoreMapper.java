@@ -50,4 +50,8 @@ public interface StoreMapper {
     List<Map<String, Object>> getStoresKeyword(Map<String, Object> parameter);
 
     Long getStoresKeywordCnt(Map<String, Object> parameter);
+
+    List<Map<String, Object>> getStoreReview(Map<String, Object> parameter);
+
+    Long getStoreReviewCnt(Map<String, Object> parameter);
 }
