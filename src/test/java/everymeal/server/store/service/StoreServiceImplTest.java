@@ -362,8 +362,9 @@ class StoreServiceImplTest extends IntegrationTestSupport {
         entityManager.clear();
 
         // when
-        Page<StoresGetReviews> storesReviews = storeService.getStoresReviews(PageRequest.of(0, 10),
-            SORT_REVIEWMARKCOUNT, "all", null);
+        Page<StoresGetReviews> storesReviews =
+                storeService.getStoresReviews(
+                        PageRequest.of(0, 10), SORT_REVIEWMARKCOUNT, "all", null);
 
         // then
         assertThat(storesReviews.getContent()).hasSize(1);
