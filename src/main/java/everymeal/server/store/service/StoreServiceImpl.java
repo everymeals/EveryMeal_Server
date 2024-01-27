@@ -9,6 +9,7 @@ import everymeal.server.review.repository.ImageRepository;
 import everymeal.server.store.controller.dto.response.LikedStoreGetRes;
 import everymeal.server.store.controller.dto.response.StoreGetRes;
 import everymeal.server.store.controller.dto.response.StoreGetReviewRes;
+import everymeal.server.store.controller.dto.response.StoresGetReviews;
 import everymeal.server.store.entity.Store;
 import everymeal.server.store.repository.StoreMapper;
 import everymeal.server.store.repository.StoreRepository;
@@ -163,5 +164,23 @@ public class StoreServiceImpl implements StoreService {
         List<StoreGetReviewRes> result = StoreGetReviewRes.of(storeReview);
 
         return new PageImpl<>(result, pageRequest, storeReviewCnt);
+    }
+
+    @Override
+    public Page<StoresGetReviews> getStoresReviews(
+            PageRequest pageRequest, String order, String group, Integer grade) {
+        Map<String, Object> parameter = new HashMap<>();
+        parameter.put("limit", pageRequest.getPageSize());
+        parameter.put("offset", pageRequest.getOffset());
+        parameter.put("order", order);
+        parameter.put("group", group);
+        parameter.put("grade", grade);
+
+        List<Map<String, Object>> storesReviews = storeMapper.getStoresReviews(parameter);
+        Long storesReviewsCnt = storeMapper.getStoresReviewsCnt(parameter);
+
+        List<StoresGetReviews> result = StoresGetReviews.of(storesReviews);
+
+        return new PageImpl<>(result, pageRequest, storesReviewsCnt);
     }
 }

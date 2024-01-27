@@ -313,6 +313,67 @@
     <include refid="everymeal.server.PagingMapper.PagingCountEnd" />
   </select>
 
+  <select id="getStoresReviews" resultType="java.util.Map">
+    <include refid="everymeal.server.PagingMapper.Paging" />
+    <include refid="getStoresReviewsSQL" />
+    <include refid="everymeal.server.PagingMapper.PagingEnd" />
+  </select>
+
+  <select id="getStoresReviewsCnt" resultType="java.lang.Long">
+    <include refid="everymeal.server.PagingMapper.PagingCount" />
+    <include refid="getStoresReviewsSQL" />
+    <include refid="everymeal.server.PagingMapper.PagingCountEnd" />
+  </select>
+
+  <sql id="getStoresReviewsSQL">
+    select r.idx as 'reviewIdx',
+           r.content as 'content',
+           r.grade as 'grade',
+           r.created_at as 'createdAt',
+           u.nickname as 'nickname',
+           u.profile_img_url as 'profileImgUrl',
+           (select count(*)
+            from review_marks rm
+            where r.idx = rm.review_idx) as 'reviewMarksCnt',
+           GROUP_CONCAT(i.image_url SEPARATOR ',') AS 'images',
+            s.idx as 'storeIdx',
+           s.name as 'storeName'
+    from reviews r
+           left join users u on r.user_idx = u.idx and u.is_deleted = false
+           left join images i on r.idx = i.review_idx and i.is_deleted = false
+           left join store s on r.store_idx = s.idx and s.is_deleted = false
+    where CASE
+            WHEN #{group} = 'recommend' THEN s.recommended_count > 0
+            WHEN #{group} = 'restaurant' THEN s.category_detail IN ('한식', '중식', '일식', '양식')
+            WHEN #{group} = 'cafe' THEN s.category_detail IN ('카페', '디저트')
+            WHEN #{group} = 'bar' THEN s.category_detail = '술집'
+            WHEN #{group} = 'all' THEN 1 = 1
+            ELSE s.category_detail IN
+                 ('한식', '중식', '일식', '양식', '카페', '디저트', '술집', '기타', '패스트푸드', '분식')
+      END
+      AND (
+      CASE
+        WHEN #{grade} = 1 THEN s.grade BETWEEN 0 AND 1
+        WHEN #{grade} = 2 THEN s.grade BETWEEN 1 AND 2
+        WHEN #{grade} = 3 THEN s.grade BETWEEN 2 AND 3
+        WHEN #{grade} = 4 THEN s.grade BETWEEN 3 AND 4
+        WHEN #{grade} = 5 THEN s.grade BETWEEN 4 AND 5
+        ELSE s.grade BETWEEN 0 AND 5
+        END
+      )
+    group by r.idx, s.idx, s.name, s.distance, s.recommended_count, s.review_count, s.grade, s.created_at
+    ORDER BY CASE #{order}
+               WHEN 'name' THEN s.name
+               WHEN 'distance' THEN s.distance
+               WHEN 'recommendedCount' THEN s.recommended_count
+               WHEN 'reviewCount' THEN s.review_count
+               WHEN 'grade' THEN s.grade
+               WHEN 'registDate' THEN s.created_at
+              WHEN 'reviewMarksCnt' THEN reviewMarksCnt
+               ELSE s.created_at
+               END DESC
+  </sql>
+
   <sql id="getStoreReviewSQL">
     <![CDATA[
     SELECT

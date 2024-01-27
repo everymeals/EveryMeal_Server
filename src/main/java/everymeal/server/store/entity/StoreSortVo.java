@@ -7,4 +7,5 @@ public interface StoreSortVo {
     String SORT_REVIEWCOUNT = "reviewCount";
     String SORT_GRADE = "grade";
     String SORT_RECENT = "registDate";
+    String SORT_REVIEWMARKCOUNT = "reviewMarksCnt";
 }
