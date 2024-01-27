@@ -178,9 +178,7 @@ public class StoreServiceImpl implements StoreService {
 
         List<Map<String, Object>> storesReviews = storeMapper.getStoresReviews(parameter);
         Long storesReviewsCnt = storeMapper.getStoresReviewsCnt(parameter);
-
         List<StoresGetReviews> result = StoresGetReviews.of(storesReviews);
-
         return new PageImpl<>(result, pageRequest, storesReviewsCnt);
     }
 }

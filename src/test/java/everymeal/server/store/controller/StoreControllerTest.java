@@ -245,4 +245,46 @@ class StoreControllerTest extends ControllerTestSupport {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("OK"));
     }
+
+    @DisplayName("가게 리뷰 조회 API")
+    @Test
+    void getStoreReview() throws Exception {
+        // given
+        int offset = 0;
+        int limit = 10;
+        String order = "reviewMarksCnt";
+        String group = "etc";
+
+        // when then
+        mockMvc.perform(
+                        get("/api/v1/stores/reviews")
+                                .param("order", order)
+                                .param("group", group)
+                                .param("offset", String.valueOf(offset))
+                                .param("limit", String.valueOf(limit)))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("OK"));
+    }
+
+    @DisplayName("가게 리뷰 조회 _ 홈 리뷰모아보기")
+    @Test
+    void getStoreReviewForHome() throws Exception {
+        // given
+        int offset = 0;
+        int limit = 3;
+        String order = "reviewMarksCnt";
+        String group = "all";
+
+        // when then
+        mockMvc.perform(
+                        get("/api/v1/stores/reviews")
+                                .param("order", order)
+                                .param("group", group)
+                                .param("offset", String.valueOf(offset))
+                                .param("limit", String.valueOf(limit)))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("OK"));
+    }
 }

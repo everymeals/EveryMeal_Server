@@ -353,12 +353,12 @@
       END
       AND (
       CASE
-        WHEN #{grade} = 1 THEN s.grade BETWEEN 0 AND 1
-        WHEN #{grade} = 2 THEN s.grade BETWEEN 1 AND 2
-        WHEN #{grade} = 3 THEN s.grade BETWEEN 2 AND 3
-        WHEN #{grade} = 4 THEN s.grade BETWEEN 3 AND 4
-        WHEN #{grade} = 5 THEN s.grade BETWEEN 4 AND 5
-        ELSE s.grade BETWEEN 0 AND 5
+        WHEN #{grade} = 1 THEN r.grade BETWEEN 0 AND 1
+        WHEN #{grade} = 2 THEN r.grade BETWEEN 1 AND 2
+        WHEN #{grade} = 3 THEN r.grade BETWEEN 2 AND 3
+        WHEN #{grade} = 4 THEN r.grade BETWEEN 3 AND 4
+        WHEN #{grade} = 5 THEN r.grade BETWEEN 4 AND 5
+        ELSE r.grade BETWEEN 0 AND 5
         END
       )
     group by r.idx, s.idx, s.name, s.distance, s.recommended_count, s.review_count, s.grade, s.created_at
