@@ -22,7 +22,6 @@ import everymeal.server.user.entity.User;
 import everymeal.server.user.service.UserCommServiceImpl;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -172,7 +171,8 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewTodayGetRes getTodayReview(Long restaurantIdx, String offeredAt) {
-        return ReviewDto.of(reviewCommServiceImpl.getTodayReviewEntityFromMapper(restaurantIdx, offeredAt));
+        return ReviewDto.of(
+                reviewCommServiceImpl.getTodayReviewEntityFromMapper(restaurantIdx, offeredAt));
     }
 
     @Override
