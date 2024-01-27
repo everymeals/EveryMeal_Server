@@ -242,7 +242,7 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
     void getNearRestaurantReview() {
         // given
         ReviewCreateReq req =
-            new ReviewCreateReq(store.getIdx(), 5, "오늘 학식 진짜 미침", List.of(), true);
+                new ReviewCreateReq(store.getIdx(), 5, "오늘 학식 진짜 미침", List.of(), true);
         // when
         var result = reviewService.createReviewByStore(req, user.getIdx());
 
@@ -254,12 +254,12 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
     @Test
     void getNearRestaurantReview_failed() {
         // given
-        ReviewCreateReq req =
-            new ReviewCreateReq(0L, 5, "오늘 학식 진짜 미침", List.of(), true);
+        ReviewCreateReq req = new ReviewCreateReq(0L, 5, "오늘 학식 진짜 미침", List.of(), true);
         // when
-        ApplicationException applicationException = assertThrows(
-            ApplicationException.class,
-            () -> reviewService.createReviewByStore(req, user.getIdx()));
+        ApplicationException applicationException =
+                assertThrows(
+                        ApplicationException.class,
+                        () -> reviewService.createReviewByStore(req, user.getIdx()));
         assertEquals(applicationException.getErrorCode(), ExceptionList.STORE_NOT_FOUND.getCODE());
     }
 }

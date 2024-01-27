@@ -184,13 +184,13 @@ class ReviewControllerTest extends ControllerTestSupport {
         // given
         ReviewCreateReq req = new ReviewCreateReq(1L, 5, "오늘 학식 진짜 미침", List.of(), true);
         given(userJwtResolver.resolveArgument(any(), any(), any(), any()))
-            .willReturn(AuthenticatedUser.builder().idx(1L).build());
+                .willReturn(AuthenticatedUser.builder().idx(1L).build());
         // when-then
         mockMvc.perform(
-                post("/api/v1/reviews/store")
-                    .content(objectMapper.writeValueAsString(req))
-                    .contentType(MediaType.APPLICATION_JSON))
-            .andDo(MockMvcResultHandlers.print())
-            .andExpect(status().isOk());
+                        post("/api/v1/reviews/store")
+                                .content(objectMapper.writeValueAsString(req))
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk());
     }
 }

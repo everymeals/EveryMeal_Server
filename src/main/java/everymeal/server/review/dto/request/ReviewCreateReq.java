@@ -21,10 +21,7 @@ public record ReviewCreateReq(
                         defaultValue = "오늘 학식 진짜 미침...안먹으면 땅을 치고 후회함")
                 @Nullable
                 String content,
-        @Schema(
-                        description =
-                                "학식이 보이는 사진 이미지 주소를 String 리스트 형태로 입력해주세요. 최대 10개의 이미지를 첨부할 수 있습니다."
-        )
+        @Schema(description = "학식이 보이는 사진 이미지 주소를 String 리스트 형태로 입력해주세요. 최대 10개의 이미지를 첨부할 수 있습니다.")
                 @Max(10)
                 List<String> imageList,
         @Schema(

@@ -34,21 +34,21 @@ public class ReviewData {
 
     public static Store getStoreEntity(University university) {
         return Store.builder()
-            .name("name")
-            .address("address")
-            .categoryGroup("categoryGroup")
-            .category("category")
-            .kakaoId("kakaoId")
-            .phone("phone")
-            .distance(3)
-            .url("url")
-            .roadAddress("roadAddress")
-            .x("x")
-            .y("y")
-            .gradeStatistics(new GradeStatistics())
-            .university(university)
-            .categoryDetail("한식")
-            .build();
+                .name("name")
+                .address("address")
+                .categoryGroup("categoryGroup")
+                .category("category")
+                .kakaoId("kakaoId")
+                .phone("phone")
+                .distance(3)
+                .url("url")
+                .roadAddress("roadAddress")
+                .x("x")
+                .y("y")
+                .gradeStatistics(new GradeStatistics())
+                .university(university)
+                .categoryDetail("한식")
+                .build();
     }
 
     public static Review getReviewEntity() {
