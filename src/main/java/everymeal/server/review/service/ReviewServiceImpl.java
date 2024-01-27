@@ -172,9 +172,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewTodayGetRes getTodayReview(Long restaurantIdx, String offeredAt) {
-        Map<String, Object> todayReviewEntityFromMapper =
-                reviewCommServiceImpl.getTodayReviewEntityFromMapper(restaurantIdx, offeredAt);
-        return ReviewDto.of(todayReviewEntityFromMapper);
+        return ReviewDto.of(reviewCommServiceImpl.getTodayReviewEntityFromMapper(restaurantIdx, offeredAt));
     }
 
     @Override
