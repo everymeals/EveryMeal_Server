@@ -62,7 +62,9 @@ public class ReviewCommServiceImpl {
 
     public Map<String, Object> getTodayReviewEntityFromMapper(
             Long restaurantIdx, String offeredAt) {
-        return reviewMapper.findTodayReview(restaurantIdx, offeredAt);
+        Map<String, Object> todayReview = reviewMapper.findTodayReview(restaurantIdx, offeredAt);
+        System.out.println("todayReview = " + todayReview);
+        return todayReview;
     }
 
     @Transactional
