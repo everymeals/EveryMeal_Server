@@ -6,6 +6,7 @@ import static everymeal.server.store.entity.StoreSortVo.SORT_NAME;
 import static everymeal.server.store.entity.StoreSortVo.SORT_RECENT;
 import static everymeal.server.store.entity.StoreSortVo.SORT_RECOMMENDEDCNOUNT;
 import static everymeal.server.store.entity.StoreSortVo.SORT_REVIEWCOUNT;
+import static everymeal.server.store.entity.StoreSortVo.SORT_REVIEWMARKCOUNT;
 
 import everymeal.server.global.dto.response.ApplicationResponse;
 import everymeal.server.global.util.authresolver.Auth;
@@ -14,6 +15,7 @@ import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
 import everymeal.server.store.controller.dto.response.LikedStoreGetRes;
 import everymeal.server.store.controller.dto.response.StoreGetRes;
 import everymeal.server.store.controller.dto.response.StoreGetReviewRes;
+import everymeal.server.store.controller.dto.response.StoresGetReviews;
 import everymeal.server.store.service.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -230,5 +232,59 @@ public class StoreController {
                         storeIdx,
                         authenticatedUser == null ? null : authenticatedUser.getIdx(),
                         PageRequest.of(offset, limit)));
+    }
+
+    @GetMapping("/reviews")
+    @SecurityRequirement(name = "jwt-user-auth")
+    @Operation(summary = "식당 리뷰 조회", description = "식당 리뷰를 조회합니다")
+    public ApplicationResponse<Page<StoresGetReviews>> getStoreReviews(
+            @RequestParam(value = "offset", defaultValue = "0")
+                    @Schema(title = "페이지 번호", example = "0", description = "페이지 번호는 0부터 시작합니다.")
+                    Integer offset,
+            @RequestParam(value = "limit", defaultValue = "10")
+                    @Schema(
+                            title = "Data 갯수",
+                            example = "10",
+                            description = "한 페이지에 보여지는 데이터 수 입니다.")
+                    Integer limit,
+            @RequestParam(value = "order")
+                    @Schema(
+                            title = "정렬 기준",
+                            description = "정렬 기준은 기획에 따라 변경 가능합니다.",
+                            allowableValues = {
+                                SORT_NAME,
+                                SORT_DISTANCE,
+                                SORT_RECOMMENDEDCNOUNT,
+                                SORT_REVIEWCOUNT,
+                                SORT_GRADE,
+                                SORT_RECENT,
+                                SORT_REVIEWMARKCOUNT
+                            })
+                    String order,
+            @RequestParam(value = "group", required = false, defaultValue = "all")
+                    @Schema(
+                            title = "그룹",
+                            description = "그룹",
+                            allowableValues = {
+                                "all",
+                                "etc",
+                                "recommend",
+                                "restaurant",
+                                "cafe",
+                                "bar",
+                                "korean",
+                                "chinese",
+                                "japanese",
+                                "western",
+                            })
+                    String group,
+            @RequestParam(value = "grade", required = false)
+                    @Schema(
+                            title = "평점",
+                            description = "평점",
+                            allowableValues = {"1", "2", "3", "4", "5"})
+                    Integer grade) {
+        return ApplicationResponse.ok(
+                storeService.getStoresReviews(PageRequest.of(offset, limit), order, group, grade));
     }
 }
