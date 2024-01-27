@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="everymeal.server.review.repository.ReviewMapper">
-  <select id="findTodayReview">
+  <select id="findTodayReview" resultType="java.util.Map">
     SELECT r.idx as 'reviewIdx',
            r.content as 'content'
     FROM reviews r

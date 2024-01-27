@@ -94,4 +94,8 @@ public class Store extends BaseEntity {
         this.university = university;
         this.isDeleted = Boolean.FALSE;
     }
+
+    public void addGrade(Integer grade) {
+        this.gradeStatistics.addGrade(grade);
+    }
 }

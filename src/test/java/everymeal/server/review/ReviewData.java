@@ -8,6 +8,8 @@ import everymeal.server.review.dto.response.ReviewDto.ReviewGetRes;
 import everymeal.server.review.dto.response.ReviewDto.ReviewPaging;
 import everymeal.server.review.dto.response.ReviewDto.ReviewPagingVOWithCnt;
 import everymeal.server.review.entity.Review;
+import everymeal.server.store.entity.GradeStatistics;
+import everymeal.server.store.entity.Store;
 import everymeal.server.university.entity.University;
 import everymeal.server.user.entity.User;
 import java.util.List;
@@ -28,6 +30,25 @@ public class ReviewData {
 
     public static User getUserEntity(University university, int i) {
         return new User("test" + i, "test" + i + "@everymeal.com", "test_IMG_URL", university);
+    }
+
+    public static Store getStoreEntity(University university) {
+        return Store.builder()
+            .name("name")
+            .address("address")
+            .categoryGroup("categoryGroup")
+            .category("category")
+            .kakaoId("kakaoId")
+            .phone("phone")
+            .distance(3)
+            .url("url")
+            .roadAddress("roadAddress")
+            .x("x")
+            .y("y")
+            .gradeStatistics(new GradeStatistics())
+            .university(university)
+            .categoryDetail("한식")
+            .build();
     }
 
     public static Review getReviewEntity() {
