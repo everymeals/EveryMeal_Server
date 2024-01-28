@@ -18,4 +18,6 @@ public interface ReviewService {
     Boolean markReview(Long reviewIdx, boolean isLike, Long userIdx);
 
     ReviewTodayGetRes getTodayReview(Long restaurantIdx, String offeredAt);
+
+    Long createReviewByStore(ReviewCreateReq request, Long idx);
 }

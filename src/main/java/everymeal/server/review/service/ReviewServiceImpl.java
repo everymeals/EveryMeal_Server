@@ -3,6 +3,7 @@ package everymeal.server.review.service;
 import static everymeal.server.global.exception.ExceptionList.REVIEW_ALREADY_MARKED;
 import static everymeal.server.global.exception.ExceptionList.REVIEW_MARK_NOT_FOUND;
 import static everymeal.server.global.exception.ExceptionList.REVIEW_UNAUTHORIZED;
+import static everymeal.server.global.exception.ExceptionList.STORE_NOT_FOUND;
 
 import everymeal.server.global.exception.ApplicationException;
 import everymeal.server.global.util.TimeFormatUtil;
@@ -15,6 +16,8 @@ import everymeal.server.review.dto.response.ReviewDto.ReviewPaging;
 import everymeal.server.review.dto.response.ReviewDto.ReviewTodayGetRes;
 import everymeal.server.review.entity.Image;
 import everymeal.server.review.entity.Review;
+import everymeal.server.store.entity.Store;
+import everymeal.server.store.repository.StoreRepository;
 import everymeal.server.user.entity.User;
 import everymeal.server.user.service.UserCommServiceImpl;
 import java.util.ArrayList;
@@ -31,13 +34,13 @@ public class ReviewServiceImpl implements ReviewService {
     private final RestaurantCommServiceImpl restaurantCommServiceImpl;
     private final UserCommServiceImpl userCommServiceImpl;
     private final ReviewCommServiceImpl reviewCommServiceImpl;
+    private final StoreRepository storeRepository;
 
     @Override
     @Transactional
     public Long createReview(ReviewCreateReq request, Long userIdx) {
         // (1) restaurant 객체 조회
-        Restaurant restaurant =
-                restaurantCommServiceImpl.getRestaurantEntity(request.restaurantIdx());
+        Restaurant restaurant = restaurantCommServiceImpl.getRestaurantEntity(request.idx());
 
         // (2) 이미지 주소 <> 이미지 객체 치환
         List<Image> imageList = getImageFromString(request.imageList());
@@ -170,6 +173,38 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewTodayGetRes getTodayReview(Long restaurantIdx, String offeredAt) {
         return ReviewDto.of(
                 reviewCommServiceImpl.getTodayReviewEntityFromMapper(restaurantIdx, offeredAt));
+    }
+
+    @Override
+    @Transactional
+    public Long createReviewByStore(ReviewCreateReq request, Long userIdx) {
+        // (1) restaurant 객체 조회
+        Store store =
+                storeRepository
+                        .findById(request.idx())
+                        .orElseThrow(() -> new ApplicationException(STORE_NOT_FOUND));
+
+        // (2) 이미지 주소 <> 이미지 객체 치환
+        List<Image> imageList = getImageFromString(request.imageList());
+        User user = userCommServiceImpl.getUserEntity(userIdx);
+
+        // (3) Entity 생성 ( 사진리뷰인지 분기 처리 )
+        Review review =
+                (request.content() == null && request.grade() == 0)
+                        ? Review.builder().images(imageList).store(store).user(user).build()
+                        : Review.builder()
+                                .content(request.content())
+                                .images(imageList)
+                                .store(store)
+                                .grade(request.grade())
+                                .user(user)
+                                .build();
+
+        // (4) 저장
+        Review savedReview = reviewCommServiceImpl.save(review);
+
+        store.addGrade(request.grade());
+        return savedReview.getIdx();
     }
 
     /**

@@ -5,6 +5,7 @@ import static everymeal.server.meal.MealData.getRestaurant;
 import static everymeal.server.meal.MealData.getRestaurantRegisterReq;
 import static everymeal.server.meal.MealData.getUniversity;
 import static everymeal.server.review.ReviewData.getReviewEntity;
+import static everymeal.server.review.ReviewData.getStoreEntity;
 import static everymeal.server.review.ReviewData.getUserEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,6 +23,8 @@ import everymeal.server.review.entity.Review;
 import everymeal.server.review.entity.ReviewMark;
 import everymeal.server.review.repository.ReviewMarkRepository;
 import everymeal.server.review.repository.ReviewRepository;
+import everymeal.server.store.entity.Store;
+import everymeal.server.store.repository.StoreRepository;
 import everymeal.server.university.entity.University;
 import everymeal.server.university.repository.UniversityRepository;
 import everymeal.server.user.entity.User;
@@ -44,6 +47,7 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
     @Autowired private RestaurantRepository restaurantRepository;
     @Autowired private UserRepository userRepository;
     @Autowired private ReviewMarkRepository reviewMarkRepository;
+    @Autowired private StoreRepository storeRepository;
 
     /**
      * ============================================================================================
@@ -53,7 +57,7 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
     private University university;
 
     private Meal meal;
-
+    private Store store;
     private Restaurant restaurant;
     private User user;
     private Review review;
@@ -66,6 +70,7 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
         meal = mealRepository.save(getMealEntity(restaurant));
         user = userRepository.save(getUserEntity(university));
         review = reviewRepository.save(getReviewEntity(restaurant, user));
+        store = storeRepository.save(getStoreEntity(university));
     }
 
     @AfterEach
@@ -73,6 +78,7 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
         reviewMarkRepository.deleteAllInBatch();
         reviewRepository.deleteAllInBatch();
         mealRepository.deleteAllInBatch();
+        storeRepository.deleteAllInBatch();
         restaurantRepository.deleteAllInBatch();
         userRepository.deleteAllInBatch();
         universityRepository.deleteAllInBatch();
@@ -229,5 +235,31 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
         var result = reviewService.getTodayReview(restaurant.getIdx(), offeredAt);
         // then
         assertEquals(result.content(), review.getContent());
+    }
+
+    @DisplayName("주변 식당 리뷰 생성")
+    @Test
+    void getNearRestaurantReview() {
+        // given
+        ReviewCreateReq req =
+                new ReviewCreateReq(store.getIdx(), 5, "오늘 학식 진짜 미침", List.of(), true);
+        // when
+        var result = reviewService.createReviewByStore(req, user.getIdx());
+
+        // then
+        assertThat(result).isNotNull();
+    }
+
+    @DisplayName("없는 식당 리뷰 생성 - 실패")
+    @Test
+    void getNearRestaurantReview_failed() {
+        // given
+        ReviewCreateReq req = new ReviewCreateReq(0L, 5, "오늘 학식 진짜 미침", List.of(), true);
+        // when
+        ApplicationException applicationException =
+                assertThrows(
+                        ApplicationException.class,
+                        () -> reviewService.createReviewByStore(req, user.getIdx()));
+        assertEquals(applicationException.getErrorCode(), ExceptionList.STORE_NOT_FOUND.getCODE());
     }
 }

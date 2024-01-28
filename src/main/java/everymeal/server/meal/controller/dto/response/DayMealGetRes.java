@@ -32,7 +32,7 @@ public record DayMealGetRes(
                                         (String) meal.get("menu"),
                                         (Double) meal.get("price"),
                                         (String) meal.get("category"),
-                                        (Long) meal.get("restaurantIdx"),
+                                        (Long) meal.get("idx"),
                                         (String) meal.get("restaurantName"),
                                         (String) meal.get("universityName"),
                                         (Integer) meal.get("reviewCount"),

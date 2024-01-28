@@ -41,13 +41,13 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @Operation(
-            summary = "식당 리뷰 작성",
+            summary = "학식 리뷰 작성",
             description = """
-  식당 리뷰 작성을 진행합니다. <br>
+  학식 리뷰 작성을 진행합니다. <br>
   로그인이 필요한 기능입니다.
   """)
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "리뷰 등록 성공"),
+        @ApiResponse(responseCode = "200", description = "학식 리뷰 등록 성공"),
     })
     @Auth(require = true)
     @PostMapping
@@ -188,5 +188,23 @@ public class ReviewController {
                     @Schema(description = "조회하고자 하는 날짜 ( yyyy-MM-dd )", defaultValue = "2023-10-01")
                     String offeredAt) {
         return ApplicationResponse.ok(reviewService.getTodayReview(restaurantIdx, offeredAt));
+    }
+
+    @Auth(require = true)
+    @Operation(summary = "주변 식당 리뷰 생성", description = """
+    주변 식당 리뷰 생성합니다. <br>
+    """)
+    @SecurityRequirement(name = "jwt-user-auth")
+    @ApiResponses({
+        @ApiResponse(
+                responseCode = "200",
+                description = "리뷰 생성 성공",
+                content = @Content(schema = @Schema(implementation = Long.class))),
+    })
+    @PostMapping("/store")
+    public ApplicationResponse<Long> createReviewByStore(
+            @RequestBody ReviewCreateReq request,
+            @Parameter(hidden = true) @AuthUser AuthenticatedUser user) {
+        return ApplicationResponse.ok(reviewService.createReviewByStore(request, user.getIdx()));
     }
 }
