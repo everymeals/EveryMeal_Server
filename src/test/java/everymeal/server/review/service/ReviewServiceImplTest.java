@@ -228,7 +228,7 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
         review.addMark(user);
         reviewRepository.saveAndFlush(review);
 
-        String offeredAt = LocalDate.of(2024,1,25).toString();
+        String offeredAt = LocalDate.of(2024, 1, 25).toString();
         // when
         System.out.println("offeredAt = " + offeredAt);
         System.out.println("restaurant.getIdx() = " + restaurant.getIdx());
