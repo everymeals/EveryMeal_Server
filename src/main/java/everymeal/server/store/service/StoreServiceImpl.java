@@ -168,13 +168,14 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public Page<StoresGetReviews> getStoresReviews(
-            PageRequest pageRequest, String order, String group, Integer grade) {
+            PageRequest pageRequest, String order, String group, Integer grade, Long campusIdx) {
         Map<String, Object> parameter = new HashMap<>();
         parameter.put("limit", pageRequest.getPageSize());
         parameter.put("offset", pageRequest.getOffset());
         parameter.put("order", order);
         parameter.put("group", group);
         parameter.put("grade", grade);
+        parameter.put("campusIdx", campusIdx);
 
         List<Map<String, Object>> storesReviews = storeMapper.getStoresReviews(parameter);
         Long storesReviewsCnt = storeMapper.getStoresReviewsCnt(parameter);

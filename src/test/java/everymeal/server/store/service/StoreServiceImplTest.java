@@ -25,6 +25,7 @@ import everymeal.server.user.entity.User;
 import everymeal.server.user.repository.LikeRepository;
 import everymeal.server.user.repository.UserRepository;
 import jakarta.persistence.EntityManager;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -262,7 +263,9 @@ class StoreServiceImplTest extends IntegrationTestSupport {
         Store store = createEntity("샌드위치", 3, university, "치킨");
         storeRepository.save(store);
 
-        Review review = createReviewEntity(store, getUser(university, 1));
+        User user = getUser(university, 1);
+        userRepository.save(user);
+        Review review = createReviewEntity(store, user);
         reviewRepository.save(review);
 
         List<Image> images =
@@ -275,6 +278,10 @@ class StoreServiceImplTest extends IntegrationTestSupport {
                         createImageEntity("6", review));
         imageRepository.saveAll(images);
 
+        storeRepository.flush();
+        userRepository.flush();
+        reviewRepository.flush();
+        imageRepository.flush();
         entityManager.clear();
 
         // when
@@ -364,7 +371,11 @@ class StoreServiceImplTest extends IntegrationTestSupport {
         // when
         Page<StoresGetReviews> storesReviews =
                 storeService.getStoresReviews(
-                        PageRequest.of(0, 10), SORT_REVIEWMARKCOUNT, "all", null);
+                        PageRequest.of(0, 10),
+                        SORT_REVIEWMARKCOUNT,
+                        "all",
+                        null,
+                        university.getIdx());
 
         // then
         assertThat(storesReviews.getContent()).hasSize(1);
@@ -376,7 +387,8 @@ class StoreServiceImplTest extends IntegrationTestSupport {
     }
 
     private Review createReviewEntity(Store store, User user) {
-        return Review.builder().store(store).user(user).content("content").grade(0).build();
+        return Review.builder().store(store).user(user).content("content").grade(0)
+            .build();
     }
 
     private Like createLikeEntity(Store store, User user) {

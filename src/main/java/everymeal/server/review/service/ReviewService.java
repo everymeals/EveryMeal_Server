@@ -2,6 +2,7 @@ package everymeal.server.review.service;
 
 
 import everymeal.server.review.dto.request.ReviewCreateReq;
+import everymeal.server.review.dto.request.ReviewStoreCreateReq;
 import everymeal.server.review.dto.response.ReviewDto;
 import everymeal.server.review.dto.response.ReviewDto.ReviewGetRes;
 import everymeal.server.review.dto.response.ReviewDto.ReviewTodayGetRes;
@@ -19,5 +20,5 @@ public interface ReviewService {
 
     ReviewTodayGetRes getTodayReview(Long restaurantIdx, String offeredAt);
 
-    Long createReviewByStore(ReviewCreateReq request, Long idx);
+    Long createReviewByStore(ReviewStoreCreateReq request, Long idx);
 }

@@ -32,7 +32,7 @@ public record StoreGetReviewRes(
                                     (Integer) review.get("grade"),
                                     (LocalDateTime) review.get("createdAt"),
                                     (String) review.get("nickName"),
-                                    (String) review.get("profileImageUrl"),
+                                    S3Util.getImgUrl((String) review.get("profileImageUrl")),
                                     (Integer) review.get("recommendedCount"),
                                     images);
                         })

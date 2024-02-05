@@ -283,8 +283,12 @@ public class StoreController {
                             title = "평점",
                             description = "평점",
                             allowableValues = {"1", "2", "3", "4", "5"})
-                    Integer grade) {
+                    Integer grade,
+            @RequestParam(value = "campusIdx", required = false)
+                    @Schema(title = "캠퍼스 키 값", description = "캠퍼스 키 값", example = "1")
+                    Long campusIdx) {
         return ApplicationResponse.ok(
-                storeService.getStoresReviews(PageRequest.of(offset, limit), order, group, grade));
+                storeService.getStoresReviews(
+                        PageRequest.of(offset, limit), order, group, grade, campusIdx));
     }
 }

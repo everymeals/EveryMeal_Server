@@ -18,6 +18,7 @@ import everymeal.server.meal.entity.Restaurant;
 import everymeal.server.meal.repository.MealRepository;
 import everymeal.server.meal.repository.RestaurantRepository;
 import everymeal.server.review.dto.request.ReviewCreateReq;
+import everymeal.server.review.dto.request.ReviewStoreCreateReq;
 import everymeal.server.review.dto.response.ReviewDto.ReviewQueryParam;
 import everymeal.server.review.entity.Review;
 import everymeal.server.review.entity.ReviewMark;
@@ -241,8 +242,8 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
     @Test
     void getNearRestaurantReview() {
         // given
-        ReviewCreateReq req =
-                new ReviewCreateReq(store.getIdx(), 5, "오늘 학식 진짜 미침", List.of(), true);
+        ReviewStoreCreateReq req =
+                new ReviewStoreCreateReq(store.getIdx(), 5, "오늘 학식 진짜 미침", List.of());
         // when
         var result = reviewService.createReviewByStore(req, user.getIdx());
 
@@ -254,7 +255,7 @@ class ReviewServiceImplTest extends IntegrationTestSupport {
     @Test
     void getNearRestaurantReview_failed() {
         // given
-        ReviewCreateReq req = new ReviewCreateReq(0L, 5, "오늘 학식 진짜 미침", List.of(), true);
+        ReviewStoreCreateReq req = new ReviewStoreCreateReq(0L, 5, "오늘 학식 진짜 미침", List.of());
         // when
         ApplicationException applicationException =
                 assertThrows(

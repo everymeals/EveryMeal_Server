@@ -10,6 +10,7 @@ import everymeal.server.global.util.TimeFormatUtil;
 import everymeal.server.meal.entity.Restaurant;
 import everymeal.server.meal.service.RestaurantCommServiceImpl;
 import everymeal.server.review.dto.request.ReviewCreateReq;
+import everymeal.server.review.dto.request.ReviewStoreCreateReq;
 import everymeal.server.review.dto.response.ReviewDto;
 import everymeal.server.review.dto.response.ReviewDto.ReviewGetRes;
 import everymeal.server.review.dto.response.ReviewDto.ReviewPaging;
@@ -177,11 +178,11 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
-    public Long createReviewByStore(ReviewCreateReq request, Long userIdx) {
+    public Long createReviewByStore(ReviewStoreCreateReq request, Long userIdx) {
         // (1) restaurant 객체 조회
         Store store =
                 storeRepository
-                        .findById(request.idx())
+                        .findById(request.storeIdx())
                         .orElseThrow(() -> new ApplicationException(STORE_NOT_FOUND));
 
         // (2) 이미지 주소 <> 이미지 객체 치환

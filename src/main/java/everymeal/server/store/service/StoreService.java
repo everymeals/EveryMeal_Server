@@ -27,5 +27,5 @@ public interface StoreService {
     Page<StoreGetReviewRes> getStoreReview(Long storeIdx, Long aLong, PageRequest of);
 
     Page<StoresGetReviews> getStoresReviews(
-            PageRequest pageRequest, String order, String group, Integer grade);
+            PageRequest pageRequest, String order, String group, Integer grade, Long campusIdx);
 }
