@@ -24,11 +24,13 @@ import everymeal.server.user.entity.WithdrawalReason;
 import everymeal.server.user.repository.UserMapper;
 import everymeal.server.user.repository.UserRepository;
 import everymeal.server.user.repository.WithdrawalRepository;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.transaction.annotation.Transactional;
 
 class UserServiceImplTest extends IntegrationTestSupport {
 
@@ -39,6 +41,7 @@ class UserServiceImplTest extends IntegrationTestSupport {
     @Autowired private UniversityRepository universityRepository;
     @Autowired private S3Util s3Util;
     @Autowired private WithdrawalRepository withdrawalRepository;
+    @Autowired private EntityManager em;
 
     @Autowired private UserMapper userMapper;
 
@@ -66,6 +69,33 @@ class UserServiceImplTest extends IntegrationTestSupport {
         // then
         assertThat(userLoginRes.nickname()).isEqualTo(request.nickname());
         assertThat(userLoginRes.profileImg()).isEqualTo(s3Util.getImgUrl(request.profileImgKey()));
+    }
+
+    @DisplayName("회원가입에서 이미 탈퇴한 유저의 경우 에러가 발생한다.")
+    @Test
+    @Transactional
+    void singUpWithdrawalUser() {
+        // given
+        String token = jwtUtil.generateEmailToken("test@gmail.com", "12345");
+        University university =
+                universityRepository.save(
+                        University.builder().name("명지대학교").campusName("인문캠퍼스").build());
+
+        User user = userRepository.save(createUser("test@gmail.com", "nickname"));
+
+        user.setIsDeleted();
+
+        userRepository.flush();
+        em.clear();
+        UserEmailSingReq request =
+                new UserEmailSingReq("nickname", token, "12345", university.getIdx(), "imageKey");
+
+        // when then
+        ApplicationException applicationException =
+                assertThrows(ApplicationException.class, () -> userService.signUp(request));
+
+        assertEquals(
+                applicationException.getErrorCode(), ExceptionList.USER_ALREADY_DELETED.getCODE());
     }
 
     @DisplayName("회원가입에서 이메일 토큰에서 추출한 값과 요청 값이 다를 경우 에러가 발생한다.")

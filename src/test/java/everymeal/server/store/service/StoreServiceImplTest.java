@@ -25,7 +25,6 @@ import everymeal.server.user.entity.User;
 import everymeal.server.user.repository.LikeRepository;
 import everymeal.server.user.repository.UserRepository;
 import jakarta.persistence.EntityManager;
-import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -387,8 +386,7 @@ class StoreServiceImplTest extends IntegrationTestSupport {
     }
 
     private Review createReviewEntity(Store store, User user) {
-        return Review.builder().store(store).user(user).content("content").grade(0)
-            .build();
+        return Review.builder().store(store).user(user).content("content").grade(0).build();
     }
 
     private Like createLikeEntity(Store store, User user) {

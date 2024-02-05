@@ -52,7 +52,11 @@ public class UserServiceImpl implements UserService {
             throw new ApplicationException(ExceptionList.USER_AUTH_FAIL);
         }
         String email = jwtUtil.getEmailTokenFromEmail(request.emailAuthToken());
-        if (userCommServiceImpl.getUserOptionalEntityByEmail(email).isPresent()) {
+        Optional<User> userOp = userCommServiceImpl.getUserOptionalEntityByEmail(email);
+        if (userOp.isPresent()) {
+            if (Boolean.TRUE.equals(userOp.get().getIsDeleted())) {
+                throw new ApplicationException(ExceptionList.USER_ALREADY_DELETED);
+            }
             throw new ApplicationException(ExceptionList.USER_ALREADY_EXIST);
         }
         if (userCommServiceImpl.getUserOptionalEntityByNickname(request.nickname()).isPresent()) {
