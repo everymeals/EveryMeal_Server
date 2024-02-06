@@ -23,12 +23,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-            .allowedOrigins(
-                "dev.everymeal.shop:8085"
-            ) // 허용할 출처
-            .allowedMethods("*") // 허용할 HTTP method
-            .allowedHeaders("*") // 허용할 HTTP Header
-            .allowCredentials(true) // 쿠키 인증 요청 허용
-            .maxAge(60 * 60 * 24 * 30L); // 원하는 시간만큼 pre-flight 리퀘스트를 캐싱
+                .allowedOrigins("dev.everymeal.shop:8085") // 허용할 출처
+                .allowedMethods("*") // 허용할 HTTP method
+                .allowedHeaders("*") // 허용할 HTTP Header
+                .allowCredentials(true) // 쿠키 인증 요청 허용
+                .maxAge(60 * 60 * 24 * 30L); // 원하는 시간만큼 pre-flight 리퀘스트를 캐싱
     }
 }
