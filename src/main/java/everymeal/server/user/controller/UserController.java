@@ -184,10 +184,10 @@ public class UserController {
 
     @GetMapping("/token/access")
     @Operation(
-        summary = "Access Token 재발급",
-        description = "Refresh Token을 이용하여 Access Token을 재발급합니다.")
+            summary = "Access Token 재발급",
+            description = "Refresh Token을 이용하여 Access Token을 재발급합니다.")
     public ApplicationResponse<String> reissueAccessToken(
-        @CookieValue(name = "refresh-token") String refreshToken) {
+            @CookieValue(name = "refresh-token") String refreshToken) {
         return ApplicationResponse.ok(userService.reissueAccessToken(refreshToken));
     }
 

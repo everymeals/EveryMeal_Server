@@ -185,14 +185,13 @@ class UserControllerTest extends ControllerTestSupport {
         given(userJwtResolver.resolveArgument(any(), any(), any(), any()))
                 .willReturn(AuthenticatedUser.builder().idx(1L).build());
 
-        given(userService.reissueAccessToken(any()))
-                .willReturn("newAccessToken");
+        given(userService.reissueAccessToken(any())).willReturn("newAccessToken");
 
         // when-then
         mockMvc.perform(
                         get("/api/v1/users/token/access")
                                 .contentType(MediaType.APPLICATION_JSON)
-                            .cookie(new Cookie("refresh-token", "refreshToken")))
+                                .cookie(new Cookie("refresh-token", "refreshToken")))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk());
     }

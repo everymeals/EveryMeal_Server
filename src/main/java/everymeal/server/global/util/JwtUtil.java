@@ -90,8 +90,8 @@ public class JwtUtil {
         Claims claims = getClaimsFromToken(tokenSubBearer(refreshToken), refreshSecretKey);
         if (claims != null) {
             return AuthenticatedUser.builder()
-                .idx(Long.parseLong(claims.get("CLAIM_KEY_IDX").toString()))
-                .build();
+                    .idx(Long.parseLong(claims.get("CLAIM_KEY_IDX").toString()))
+                    .build();
         }
         return null;
     }

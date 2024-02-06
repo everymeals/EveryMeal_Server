@@ -207,13 +207,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String reissueAccessToken(String refreshToken) {
-        AuthenticatedUser authenticateUserFromRefreshToken = jwtUtil.getAuthenticateUserFromRefreshToken(
-            refreshToken);
+        AuthenticatedUser authenticateUserFromRefreshToken =
+                jwtUtil.getAuthenticateUserFromRefreshToken(refreshToken);
         if (authenticateUserFromRefreshToken == null) {
             throw new ApplicationException(ExceptionList.TOKEN_NOT_VALID);
         }
-        User user = userRepository.findById(authenticateUserFromRefreshToken.getIdx())
-            .orElseThrow(() -> new ApplicationException(ExceptionList.USER_NOT_FOUND));
+        User user =
+                userRepository
+                        .findById(authenticateUserFromRefreshToken.getIdx())
+                        .orElseThrow(() -> new ApplicationException(ExceptionList.USER_NOT_FOUND));
         return jwtUtil.generateAccessToken(user.getIdx());
     }
 }
