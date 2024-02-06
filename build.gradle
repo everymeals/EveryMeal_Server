@@ -160,6 +160,7 @@ jacocoTestCoverageVerification {
 					"**/repository/**",
 					"**/global/*",
 					"**/*Dao*",
+					"**/dev/**",
 			])
 		}))
 	}

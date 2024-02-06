@@ -62,12 +62,12 @@ public class JwtUtil {
                 .compact();
     }
 
-    public String generateRefreshToken(Long idx, String refreshToken) {
+    public String generateRefreshToken(Long idx, String accessToken) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + refreshTokenExpirationMs);
         Map<String, Object> claims = new HashMap<>();
         claims.put("CLAIM_KEY_IDX", idx);
-        claims.put("CLAIM_KEY_ACCESS_TOKEN", refreshToken);
+        claims.put("CLAIM_KEY_ACCESS_TOKEN", accessToken);
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
