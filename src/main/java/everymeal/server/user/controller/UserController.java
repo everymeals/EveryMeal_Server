@@ -199,7 +199,7 @@ public class UserController {
                         .sameSite("None")
                         .path("/")
                         .maxAge(60 * 60 * 24 * 30L)
-                        .secure(true)
+                        //                        .secure(true)
                         .build();
         return ResponseEntity.ok()
                 .header("Set-Cookie", cookie.toString())
