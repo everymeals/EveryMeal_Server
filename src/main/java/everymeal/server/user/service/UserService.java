@@ -29,4 +29,6 @@ public interface UserService {
             AuthenticatedUser authenticatedUser, UserProfileUpdateReq userProfileUpdateReq);
 
     Boolean withdrawal(AuthenticatedUser authenticatedUser, WithdrawalReq request);
+
+    String reissueAccessToken(String refreshToken);
 }

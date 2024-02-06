@@ -26,6 +26,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -179,6 +180,15 @@ public class UserController {
             @Parameter(hidden = true) @AuthUser AuthenticatedUser authenticatedUser,
             @RequestBody WithdrawalReq withdrawalReq) {
         return ApplicationResponse.ok(userService.withdrawal(authenticatedUser, withdrawalReq));
+    }
+
+    @GetMapping("/token/access")
+    @Operation(
+        summary = "Access Token 재발급",
+        description = "Refresh Token을 이용하여 Access Token을 재발급합니다.")
+    public ApplicationResponse<String> reissueAccessToken(
+        @CookieValue(name = "refresh-token") String refreshToken) {
+        return ApplicationResponse.ok(userService.reissueAccessToken(refreshToken));
     }
 
     private ResponseEntity<ApplicationResponse<UserLoginRes>> setRefreshToken(

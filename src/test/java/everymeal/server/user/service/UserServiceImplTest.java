@@ -380,6 +380,30 @@ class UserServiceImplTest extends IntegrationTestSupport {
         assertEquals(withdrawalUser.getIsDeleted(), Boolean.TRUE);
     }
 
+    @DisplayName("엑세스 토큰 재발급 - 리프레시 토큰이 유효한 경우")
+    @Test
+    void reissueAccessToken() {
+        // given
+        String token = jwtUtil.generateEmailToken("test@test.com", "12345");
+
+        University university =
+                universityRepository.save(
+                        University.builder().name("명지대학교").campusName("인문캠퍼스").build());
+        UserEmailSingReq request =
+                new UserEmailSingReq("연유크림", token, "12345", university.getIdx(), "imageKey");
+
+        UserLoginRes userLoginRes = userService.signUp(request);
+
+        AuthenticatedUser user =
+                jwtUtil.getAuthenticateUserFromAccessToken(userLoginRes.accessToken());
+
+        // when
+        var response = userService.reissueAccessToken(userLoginRes.refreshToken());
+
+        // then
+        assertNotNull(response);
+    }
+
     private User createUser(String email, String nickname) {
         return User.builder().email(email).nickname(nickname).build();
     }
