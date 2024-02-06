@@ -19,6 +19,7 @@ import everymeal.server.user.controller.dto.request.UserProfileUpdateReq;
 import everymeal.server.user.controller.dto.request.WithdrawalReq;
 import everymeal.server.user.controller.dto.response.UserLoginRes;
 import everymeal.server.user.entity.WithdrawalReason;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -175,5 +176,23 @@ class UserControllerTest extends ControllerTestSupport {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("OK"));
+    }
+
+    @DisplayName("엑세스 토큰 재발급")
+    @Test
+    void reissueToken() throws Exception {
+        // given
+        given(userJwtResolver.resolveArgument(any(), any(), any(), any()))
+                .willReturn(AuthenticatedUser.builder().idx(1L).build());
+
+        given(userService.reissueAccessToken(any())).willReturn("newAccessToken");
+
+        // when-then
+        mockMvc.perform(
+                        get("/api/v1/users/token/access")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .cookie(new Cookie("refresh-token", "refreshToken")))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk());
     }
 }

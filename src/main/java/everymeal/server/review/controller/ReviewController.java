@@ -10,6 +10,7 @@ import everymeal.server.global.util.authresolver.Auth;
 import everymeal.server.global.util.authresolver.AuthUser;
 import everymeal.server.global.util.authresolver.entity.AuthenticatedUser;
 import everymeal.server.review.dto.request.ReviewCreateReq;
+import everymeal.server.review.dto.request.ReviewStoreCreateReq;
 import everymeal.server.review.dto.response.ReviewDto.ReviewGetRes;
 import everymeal.server.review.dto.response.ReviewDto.ReviewQueryParam;
 import everymeal.server.review.dto.response.ReviewDto.ReviewTodayGetRes;
@@ -203,7 +204,7 @@ public class ReviewController {
     })
     @PostMapping("/store")
     public ApplicationResponse<Long> createReviewByStore(
-            @RequestBody ReviewCreateReq request,
+            @RequestBody ReviewStoreCreateReq request,
             @Parameter(hidden = true) @AuthUser AuthenticatedUser user) {
         return ApplicationResponse.ok(reviewService.createReviewByStore(request, user.getIdx()));
     }

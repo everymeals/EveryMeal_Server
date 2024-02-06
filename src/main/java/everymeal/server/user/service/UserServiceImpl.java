@@ -21,6 +21,7 @@ import everymeal.server.user.entity.User;
 import everymeal.server.user.entity.Withdrawal;
 import everymeal.server.user.entity.WithdrawalReason;
 import everymeal.server.user.repository.UserMapper;
+import everymeal.server.user.repository.UserRepository;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Map;
@@ -43,6 +44,7 @@ public class UserServiceImpl implements UserService {
     private final WithdrawalServiceImpl withdrawalServiceImpl;
 
     private final UserCommServiceImpl userCommServiceImpl;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
@@ -52,7 +54,11 @@ public class UserServiceImpl implements UserService {
             throw new ApplicationException(ExceptionList.USER_AUTH_FAIL);
         }
         String email = jwtUtil.getEmailTokenFromEmail(request.emailAuthToken());
-        if (userCommServiceImpl.getUserOptionalEntityByEmail(email).isPresent()) {
+        Optional<User> userOp = userCommServiceImpl.getUserOptionalEntityByEmail(email);
+        if (userOp.isPresent()) {
+            if (Boolean.TRUE.equals(userOp.get().getIsDeleted())) {
+                throw new ApplicationException(ExceptionList.USER_ALREADY_DELETED);
+            }
             throw new ApplicationException(ExceptionList.USER_ALREADY_EXIST);
         }
         if (userCommServiceImpl.getUserOptionalEntityByNickname(request.nickname()).isPresent()) {
@@ -197,5 +203,19 @@ public class UserServiceImpl implements UserService {
         withdrawalServiceImpl.save(withdrawal); // 탈퇴 관련 정보 저장
         user.setIsDeleted(); // 논리 삭제
         return true;
+    }
+
+    @Override
+    public String reissueAccessToken(String refreshToken) {
+        AuthenticatedUser authenticateUserFromRefreshToken =
+                jwtUtil.getAuthenticateUserFromRefreshToken(refreshToken);
+        if (authenticateUserFromRefreshToken == null) {
+            throw new ApplicationException(ExceptionList.TOKEN_NOT_VALID);
+        }
+        User user =
+                userRepository
+                        .findById(authenticateUserFromRefreshToken.getIdx())
+                        .orElseThrow(() -> new ApplicationException(ExceptionList.USER_NOT_FOUND));
+        return jwtUtil.generateAccessToken(user.getIdx());
     }
 }

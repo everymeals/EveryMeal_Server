@@ -62,12 +62,12 @@ public class JwtUtil {
                 .compact();
     }
 
-    public String generateRefreshToken(Long idx, String accessToken) {
+    public String generateRefreshToken(Long idx, String refreshToken) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + refreshTokenExpirationMs);
         Map<String, Object> claims = new HashMap<>();
         claims.put("CLAIM_KEY_IDX", idx);
-        claims.put("CLAIM_KEY_ACCESS_TOKEN", accessToken);
+        claims.put("CLAIM_KEY_ACCESS_TOKEN", refreshToken);
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
@@ -76,8 +76,18 @@ public class JwtUtil {
                 .compact();
     }
 
-    public AuthenticatedUser getAuthenticateUserFromAccessToken(String token) {
-        Claims claims = getClaimsFromToken(tokenSubBearer(token), accessSecretKey);
+    public AuthenticatedUser getAuthenticateUserFromAccessToken(String accessToken) {
+        Claims claims = getClaimsFromToken(tokenSubBearer(accessToken), accessSecretKey);
+        if (claims != null) {
+            return AuthenticatedUser.builder()
+                    .idx(Long.parseLong(claims.get("CLAIM_KEY_IDX").toString()))
+                    .build();
+        }
+        return null;
+    }
+
+    public AuthenticatedUser getAuthenticateUserFromRefreshToken(String refreshToken) {
+        Claims claims = getClaimsFromToken(tokenSubBearer(refreshToken), refreshSecretKey);
         if (claims != null) {
             return AuthenticatedUser.builder()
                     .idx(Long.parseLong(claims.get("CLAIM_KEY_IDX").toString()))

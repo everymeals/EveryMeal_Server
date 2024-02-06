@@ -16,8 +16,8 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
                     """
         SELECT i
         FROM images i
-        LEFT JOIN reviews r ON i.review.idx = r.idx and r.store.idx = :storeIdx AND r.isDeleted = false
-        WHERE i.isDeleted = false
+        LEFT JOIN reviews r ON i.review.idx = r.idx AND r.isDeleted = false
+        WHERE i.isDeleted = false and r.store.idx = :storeIdx
         ORDER BY i.createdAt DESC
         LIMIT 5
     """)

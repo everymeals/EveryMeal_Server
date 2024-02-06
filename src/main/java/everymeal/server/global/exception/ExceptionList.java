@@ -20,6 +20,7 @@ public enum ExceptionList {
     USER_AUTH_FAIL("USR0003", HttpStatus.FORBIDDEN, "인증에 실패하였습니다."),
     USER_ALREADY_EXIST("USR0004", HttpStatus.CONFLICT, "이미 등록된 이메일입니다."),
     NICKNAME_ALREADY_EXIST("USR0005", HttpStatus.CONFLICT, "이미 등록된 닉네임입니다."),
+    USER_ALREADY_DELETED("USR0006", HttpStatus.CONFLICT, "이미 탈퇴한 유저입니다."),
 
     TOKEN_NOT_VALID("TKN0001", HttpStatus.NOT_ACCEPTABLE, "해당 토큰은 유효하지 않습니다."),
     TOKEN_EXPIRATION("TKN0002", HttpStatus.FORBIDDEN, "토큰이 만료되었습니다."),

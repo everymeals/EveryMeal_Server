@@ -41,7 +41,7 @@ public record StoresGetReviews(
                                     TimeFormatUtil.getTimeFormat(
                                             createdAt == null ? LocalDateTime.now() : createdAt),
                                     (String) storeReview.get("nickname"),
-                                    (String) storeReview.get("profileImgUrl"),
+                                    S3Util.getImgUrl((String) storeReview.get("profileImgUrl")),
                                     (Long) storeReview.get("reviewMarksCnt"),
                                     images,
                                     (Long) storeReview.get("storeIdx"),
