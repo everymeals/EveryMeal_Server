@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 public record StoreGetReviewRes(
-        Integer reviewIdx,
+        Long reviewIdx,
         String content,
         Integer grade,
         LocalDateTime createdAt,
@@ -27,7 +27,7 @@ public record StoreGetReviewRes(
                                 images.replaceAll(S3Util::getImgUrl);
                             }
                             return new StoreGetReviewRes(
-                                    (Integer) review.get("reviewIdx"),
+                                    (Long) review.get("idx"),
                                     (String) review.get("content"),
                                     (Integer) review.get("grade"),
                                     (LocalDateTime) review.get("createdAt"),
