@@ -342,7 +342,7 @@
            left join users u on r.user_idx = u.idx and u.is_deleted = false
            left join images i on r.idx = i.review_idx and i.is_deleted = false
            left join store s on r.store_idx = s.idx and s.is_deleted = false
-           left join university un on s.university_idx = #{campusIdx} and un.is_deleted = false
+           join university un on s.university_idx = #{campusIdx} and un.is_deleted = false
     where CASE
             WHEN #{group} = 'recommend' THEN s.recommended_count > 0
             WHEN #{group} = 'restaurant' THEN s.category_detail IN ('한식', '중식', '일식', '양식')
