@@ -7,16 +7,19 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import java.io.File;
 import java.net.URL;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class S3Util {
 
     public static AmazonS3 amazonS3;
@@ -55,5 +58,15 @@ public class S3Util {
     public static String getImgUrl(String fileName) {
         URL url = amazonS3.getUrl(bucket, runningName + File.separator + fileName);
         return url.toString();
+    }
+
+    public void deleteImage(String fileUrl) {
+        try {
+            String fileKey = "dev/" + fileUrl;
+            amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileKey));
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("S3 이미지 삭제 실패 fileUrl: {}", fileUrl);
+        }
     }
 }

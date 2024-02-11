@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public record ReviewCreateReq(
@@ -14,7 +15,7 @@ public record ReviewCreateReq(
                         description =
                                 "학식에 대한 리뷰 평가 점수를 정수형 최소 1 ~ 최대 5점까지로 입력해주세요. 사진 리뷰인 경우 0으로 보내주세요.",
                         defaultValue = "5")
-                @Nullable
+                @NotNull
                 Integer grade,
         @Schema(
                         description = "학식에 대한 리뷰 내용을 1글자 이상 입력해주세요. 사진 리뷰인 경우 null로 보내주세요.",

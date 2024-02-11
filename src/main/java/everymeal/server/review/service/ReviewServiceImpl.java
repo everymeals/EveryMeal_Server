@@ -4,9 +4,11 @@ import static everymeal.server.global.exception.ExceptionList.REVIEW_ALREADY_MAR
 import static everymeal.server.global.exception.ExceptionList.REVIEW_MARK_NOT_FOUND;
 import static everymeal.server.global.exception.ExceptionList.REVIEW_UNAUTHORIZED;
 import static everymeal.server.global.exception.ExceptionList.STORE_NOT_FOUND;
+import static everymeal.server.global.util.aws.S3Util.getImgUrl;
 
 import everymeal.server.global.exception.ApplicationException;
 import everymeal.server.global.util.TimeFormatUtil;
+import everymeal.server.global.util.aws.S3Util;
 import everymeal.server.meal.entity.Restaurant;
 import everymeal.server.meal.service.RestaurantCommServiceImpl;
 import everymeal.server.review.dto.request.ReviewCreateReq;
@@ -36,6 +38,8 @@ public class ReviewServiceImpl implements ReviewService {
     private final UserCommServiceImpl userCommServiceImpl;
     private final ReviewCommServiceImpl reviewCommServiceImpl;
     private final StoreRepository storeRepository;
+    private final S3Util s3Util;
+    private final ImageCommServiceImpl imageCommServiceImpl;
 
     @Override
     @Transactional
@@ -80,6 +84,17 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = reviewCommServiceImpl.getReviewEntity(reviewIdx);
 
         // (2) 이미지 주소 <> 이미지 객체 치환
+        List<Image> alreadyImageList = review.getImages();
+        if (!alreadyImageList.isEmpty()) { // [1,2,3] <> [1,2,4] 3을 삭제
+            List<String> reqImgList = request.imageList();
+            for (Image alreadyImg : alreadyImageList) {
+                if (!reqImgList.contains(alreadyImg.getImageUrl())) {
+                    s3Util.deleteImage(alreadyImg.getImageUrl());
+                    imageCommServiceImpl.deleteImage(alreadyImg);
+                }
+            }
+        }
+
         List<Image> imageList = getImageFromString(request.imageList());
         User user = userCommServiceImpl.getUserEntity(userIdx);
         if (review.getUser() != user) {
@@ -101,6 +116,7 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = reviewCommServiceImpl.getReviewEntity(reviewIdx, user);
         // (2) 기존 데이터 삭제
         review.getRestaurant().removeGrade(review.getGrade());
+        review.getImages().forEach(Image::deleteImage);
         review.deleteEntity();
 
         reviewCommServiceImpl
@@ -125,7 +141,7 @@ public class ReviewServiceImpl implements ReviewService {
                             vo.getIdx(),
                             vo.getRestaurant().getName(),
                             vo.getUser().getNickname(),
-                            vo.getUser().getProfileImgUrl(),
+                            getImgUrl(vo.getUser().getProfileImgUrl()),
                             vo.isTodayReview(),
                             vo.getGrade(),
                             vo.getContent(),
