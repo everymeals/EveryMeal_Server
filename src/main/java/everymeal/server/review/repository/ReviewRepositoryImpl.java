@@ -35,7 +35,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                         .select(review)
                         .from(review)
                         .leftJoin(image)
-                        .on(review.idx.eq(image.review.idx))
+                        .on(review.idx.eq(image.review.idx).and(image.isDeleted.eq(Boolean.FALSE)))
                         .leftJoin(reviewMark)
                         .on(review.idx.eq(reviewMark.review.idx))
                         .innerJoin(restaurant)
@@ -58,7 +58,10 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                                         .select(review.idx.count())
                                         .from(review)
                                         .leftJoin(image)
-                                        .on(review.idx.eq(image.review.idx))
+                                        .on(
+                                                review.idx
+                                                        .eq(image.review.idx)
+                                                        .and(image.isDeleted.eq(Boolean.FALSE)))
                                         .leftJoin(reviewMark)
                                         .on(review.idx.eq(reviewMark.review.idx))
                                         .innerJoin(restaurant)
