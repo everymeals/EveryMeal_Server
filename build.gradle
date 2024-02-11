@@ -19,7 +19,7 @@ sonar {
 		property 'sonar.language', 'java'
 		property 'sonar.sourceEncoding', 'UTF-8'
 		property("sonar.test.inclusions", "**/*Test.java")
-		property "sonar.exclusions", "**/test/**, **/*Application*.java, **/dto/**, **/entity/**, **/*Exception*.java, **/*RepositoryImpl.java, **/global/**, **/resources/**, **/*Dao*.java, **/dev/**, **/admin/**"
+		property "sonar.exclusions", "**/test/**, **/*Application*.java, **/dto/**, **/entity/**, **/*Exception*.java, **/*RepositoryImpl.java, **/global/**, **/resources/**, **/*Dao*.java, **/dev/**, **/admin/**, **/Image*.java"
 		property "sonar.java.coveragePlugin", "jacoco"
 		property 'sonar.coverage.jacoco.xmlReportPaths', 'build/reports/jacoco/test/jacocoTestReport.xml'
 	}
@@ -128,6 +128,7 @@ jacocoTestReport {
 					"**/*Dao*",
 					"**/dev/**",
 					"**/admin/**",
+					"**/Image*"
 			])
 		}))
 	}
@@ -164,6 +165,7 @@ jacocoTestCoverageVerification {
 					"**/*Dao*",
 					"**/dev/**",
 					"**/admin/**",
+					"**/Image*"
 			])
 		}))
 	}
