@@ -34,10 +34,16 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                 jpaQueryFactory
                         .select(review)
                         .from(review)
-                        .leftJoin(review.images, image)
-                        .leftJoin(review.reviewMarks, reviewMark)
-                        .leftJoin(review.restaurant)
-                        .on(restaurant.idx.eq(queryParam.restaurantIdx()))
+                        .leftJoin(image)
+                        .on(review.idx.eq(image.review.idx))
+                        .leftJoin(reviewMark)
+                        .on(review.idx.eq(reviewMark.review.idx))
+                        .innerJoin(restaurant)
+                        .on(
+                                review.restaurant
+                                        .idx
+                                        .eq(restaurant.idx)
+                                        .and(restaurant.idx.eq(queryParam.restaurantIdx())))
                         .where(
                                 gtReviewIdx(queryParam.cursorIdx()),
                                 isDeleted(),
@@ -51,10 +57,19 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                                 jpaQueryFactory
                                         .select(review.idx.count())
                                         .from(review)
-                                        .leftJoin(review.images, image)
-                                        .leftJoin(review.reviewMarks, reviewMark)
-                                        .leftJoin(review.restaurant)
-                                        .on(restaurant.idx.eq(queryParam.restaurantIdx()))
+                                        .leftJoin(image)
+                                        .on(review.idx.eq(image.review.idx))
+                                        .leftJoin(reviewMark)
+                                        .on(review.idx.eq(reviewMark.review.idx))
+                                        .innerJoin(restaurant)
+                                        .on(
+                                                review.restaurant
+                                                        .idx
+                                                        .eq(restaurant.idx)
+                                                        .and(
+                                                                restaurant.idx.eq(
+                                                                        queryParam
+                                                                                .restaurantIdx())))
                                         .where(isDeleted(), eqToday(queryParam.filter()))
                                         .fetchOne())
                         .intValue();

@@ -35,4 +35,8 @@ public class Image extends BaseEntity {
         this.isDeleted = false;
         this.review = review;
     }
+
+    public void deleteImage() {
+        this.isDeleted = true;
+    }
 }

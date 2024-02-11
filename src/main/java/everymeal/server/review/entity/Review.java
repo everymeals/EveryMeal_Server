@@ -90,9 +90,8 @@ public class Review extends BaseEntity {
     public void updateEntity(String content, int grade, List<Image> images, Boolean todayReview) {
         this.content = content;
         this.grade = grade;
-        if (images != null) {
-            this.images.clear();
-        }
+        // 이미지 연관 리스트 지우고 새로운 이미지 리스트로 교체
+        this.images.clear();
         this.images = images;
         this.isTodayReview = todayReview;
     }
