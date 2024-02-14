@@ -218,4 +218,14 @@ public class UserServiceImpl implements UserService {
                         .orElseThrow(() -> new ApplicationException(ExceptionList.USER_NOT_FOUND));
         return jwtUtil.generateAccessToken(user.getIdx());
     }
+
+    @Override
+    public Boolean isVerifyAccessToken(String accessToken) {
+        AuthenticatedUser authenticateUserFromAccessToken = jwtUtil.getAuthenticateUserFromAccessToken(
+            accessToken);
+        if (authenticateUserFromAccessToken == null) {
+            throw new ApplicationException(ExceptionList.TOKEN_NOT_VALID);
+        }
+        return true;
+    }
 }

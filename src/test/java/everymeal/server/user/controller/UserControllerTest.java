@@ -195,4 +195,20 @@ class UserControllerTest extends ControllerTestSupport {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk());
     }
+
+    @DisplayName("엑세스 토큰 만료 여부 조회")
+    @Test
+    void isAccessTokenExpired() throws Exception {
+        // given
+        given(userService.isVerifyAccessToken(any())).willReturn(true);
+
+        // when-then
+        mockMvc.perform(
+                get("/api/v1/users/token/access/verify")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .param("accessToken", "accessToken"))
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.message").value("OK"));
+    }
 }
