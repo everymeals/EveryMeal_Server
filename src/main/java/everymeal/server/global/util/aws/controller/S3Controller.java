@@ -11,6 +11,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -49,5 +50,24 @@ public class S3Controller {
         URL test = s3Util.getPresignedUrl(fileName);
         return ApplicationResponse.ok(
                 S3GetResignedUrlRes.builder().imageKey(fileName).url(test.toString()).build());
+    }
+
+    @Operation(
+            summary = "S3 이미지 삭제",
+            description =
+                    """
+        S3에 저장된 이미지를 삭제합니다.
+        언제 사용하는 API인가요?
+        1. 리뷰 작성 중 이미지를 업로드하고, 리뷰 작성을 취소할 때
+        2. 리뷰 수정 중 이미지를 업로드하고, 리뷰 수정을 취소할 때
+        3. 리뷰 삭제 시 이미지를 삭제할 때
+        4. 이미지를 잘못 업로드 했을 때
+        5. 유저 프로필 이미지를 변경할 때 ( 기본 이미지 제외 )
+""")
+    @DeleteMapping("/image")
+    public ApplicationResponse<Void> deleteImage(
+            @RequestParam(value = "fileName") String fileName) {
+        s3Util.deleteImage(fileName);
+        return ApplicationResponse.ok();
     }
 }
