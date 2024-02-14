@@ -41,19 +41,17 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "User API", description = "유저 관련 API입니다")
 @ApiResponses({
     @ApiResponse(
-        responseCode = "403",
-        description =
-            """
+            responseCode = "403",
+            description = """
                 (TKN0001)해당 토큰은 유효하지 않습니다.<br>
                 """,
-        content = @Content(schema = @Schema())),
+            content = @Content(schema = @Schema())),
     @ApiResponse(
-        responseCode = "406",
-        description =
-            """
+            responseCode = "406",
+            description = """
                 (TKN0002)토큰이 만료되었습니다.<br>
                 """,
-        content = @Content(schema = @Schema())),
+            content = @Content(schema = @Schema())),
 })
 public class UserController {
 
@@ -210,15 +208,8 @@ public class UserController {
     @GetMapping("/token/access/verify")
     @Operation(
             summary = "Access Token 유효성 검사",
-            description = "Access Token의 유효성을 검사합니다.")
-    @ApiResponse(
-        responseCode = "406",
-        description = """
-                    (TKN0001)해당 토큰은 유효하지 않습니다.<br>
-                    """,
-        content = @Content(schema = @Schema()))
-    public ApplicationResponse<Boolean> isVerifyAccessToken(
-            @RequestParam String accessToken) {
+            description = "Access Token의 유효성을 검사합니다. <br> 유효하면 true, 유효하지 않으면 false를 반환합니다.")
+    public ApplicationResponse<Boolean> isVerifyAccessToken(@RequestParam String accessToken) {
         return ApplicationResponse.ok(userService.isVerifyAccessToken(accessToken));
     }
 

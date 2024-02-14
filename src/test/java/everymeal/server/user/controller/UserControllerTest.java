@@ -204,11 +204,11 @@ class UserControllerTest extends ControllerTestSupport {
 
         // when-then
         mockMvc.perform(
-                get("/api/v1/users/token/access/verify")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .param("accessToken", "accessToken"))
-            .andDo(MockMvcResultHandlers.print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.message").value("OK"));
+                        get("/api/v1/users/token/access/verify")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .param("accessToken", "accessToken"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("OK"));
     }
 }

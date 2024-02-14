@@ -221,11 +221,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Boolean isVerifyAccessToken(String accessToken) {
-        AuthenticatedUser authenticateUserFromAccessToken = jwtUtil.getAuthenticateUserFromAccessToken(
-            accessToken);
-        if (authenticateUserFromAccessToken == null) {
-            throw new ApplicationException(ExceptionList.TOKEN_NOT_VALID);
+        try {
+            AuthenticatedUser authenticateUserFromAccessToken =
+                    jwtUtil.getAuthenticateUserFromAccessToken(accessToken);
+            if (authenticateUserFromAccessToken == null) {
+                throw new ApplicationException(ExceptionList.TOKEN_NOT_VALID);
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
         }
-        return true;
     }
 }

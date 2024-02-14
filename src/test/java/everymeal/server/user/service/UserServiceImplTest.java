@@ -424,14 +424,8 @@ class UserServiceImplTest extends IntegrationTestSupport {
     @Test
     void isAccessTokenValid_invalid() {
         // when then
-        ApplicationException applicationException =
-            assertThrows(
-                ApplicationException.class,
-                () -> userService.isVerifyAccessToken("accessToken"));
-
-        assertEquals(
-            applicationException.getErrorCode(),
-            ExceptionList.TOKEN_EXPIRATION.getCODE());
+        var response = userService.isVerifyAccessToken("accessToken");
+        assertFalse(response);
     }
 
     private User createUser(String email, String nickname) {
