@@ -404,6 +404,30 @@ class UserServiceImplTest extends IntegrationTestSupport {
         assertNotNull(response);
     }
 
+    @DisplayName("엑세스 토큰 유효 여부 조회")
+    @Test
+    void isAccessTokenValid() {
+        // given
+        User user = createUser("test@gmail.com", "연유크림");
+        userRepository.saveAndFlush(user);
+
+        String accessToken = jwtUtil.generateAccessToken(user.getIdx());
+
+        // when
+        var response = userService.isVerifyAccessToken(accessToken);
+
+        // then
+        assertTrue(response);
+    }
+
+    @DisplayName("엑세스 토큰 유효 여부 조회 - 유효하지 않은 토큰")
+    @Test
+    void isAccessTokenValid_invalid() {
+        // when then
+        var response = userService.isVerifyAccessToken("accessToken");
+        assertFalse(response);
+    }
+
     private User createUser(String email, String nickname) {
         return User.builder().email(email).nickname(nickname).build();
     }

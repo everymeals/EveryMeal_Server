@@ -31,4 +31,6 @@ public interface UserService {
     Boolean withdrawal(AuthenticatedUser authenticatedUser, WithdrawalReq request);
 
     String reissueAccessToken(String refreshToken);
+
+    Boolean isVerifyAccessToken(String accessToken);
 }
