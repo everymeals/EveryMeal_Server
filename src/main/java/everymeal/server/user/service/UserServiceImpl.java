@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
 
         University university =
                 universityRepository
-                        .findById(request.universityIdx())
+                        .findById(request.campusIdx())
                         .orElseThrow(
                                 () -> new ApplicationException(ExceptionList.UNIVERSITY_NOT_FOUND));
         User user =

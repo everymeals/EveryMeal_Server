@@ -20,7 +20,7 @@ public record UserEmailSingReq(
                 String emailAuthValue,
         @Schema(description = "선택 대학교 IDX", example = "1", defaultValue = "1")
                 @NotBlank(message = "대학교를 선택해주세요.")
-                Long universityIdx,
+                Long campusIdx,
         @Schema(
                         description = "프로필 이미지 URL",
                         example =
