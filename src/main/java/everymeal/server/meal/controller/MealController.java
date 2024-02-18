@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,16 +47,13 @@ public class MealController {
      * 학생식당 조회 API
      * ============================================================================================
      */
-    @GetMapping("/restaurant")
+    @GetMapping("/restaurant/{campusIdx}")
     @Operation(summary = "학교별 학생 식당 목록 조회")
     public ApplicationResponse<List<RestaurantListGetRes>> getRestaurants(
-            @Schema(title = "대학 이름", defaultValue = "명지대학교", example = "명지대학교")
-                    @RequestParam(value = "universityName")
-                    String universityName,
-            @Schema(title = "캠퍼스 이름", defaultValue = "인문캠퍼스", example = "인문캠퍼스")
-                    @RequestParam(value = "campusName")
-                    String campusName) {
-        return ApplicationResponse.ok(mealService.getRestaurantList(universityName, campusName));
+            @Schema(title = "대학 캠퍼스 IDX", defaultValue = "1", example = "1")
+                    @PathVariable(value = "campusIdx")
+                    Long campusIdx) {
+        return ApplicationResponse.ok(mealService.getRestaurantList(campusIdx));
     }
 
     /**
@@ -70,31 +68,25 @@ public class MealController {
         return ApplicationResponse.create(mealService.createWeekMeal(weekMealRegisterReq));
     }
 
-    @GetMapping("/day/v2")
+    @GetMapping("/day/{campusIdx}")
     @Operation(summary = "당일 식단 조회")
-    public ApplicationResponse<Map<String, Map<String, List<DayMealGetRes>>>> getDayMealV2(
-            @RequestParam @Schema(description = "학교 이름", defaultValue = "명지대학교")
-                    String universityName,
-            @RequestParam @Schema(description = "캠퍼스 이름", defaultValue = "인문캠퍼스") String campusName,
+    public ApplicationResponse<Map<String, Map<String, List<DayMealGetRes>>>> getDayMeal(
+            @PathVariable @Schema(description = "대학교 캠퍼스 idx", defaultValue = "1") Long campusIdx,
             @RequestParam
                     @Schema(description = "조회하고자 하는 날짜 ( yyyy-MM-dd )", defaultValue = "2023-10-01")
                     String offeredAt) {
-        return ApplicationResponse.ok(
-                mealService.getDayMealListV2(universityName, campusName, offeredAt));
+        return ApplicationResponse.ok(mealService.getDayMealList(campusIdx, offeredAt));
     }
 
-    @GetMapping("/week/v2")
+    @GetMapping("/week/{campusIdx}")
     @Operation(summary = "주간 식단 조회")
-    public ApplicationResponse<List<Map<String, Map<String, List<DayMealGetRes>>>>> getWeekMealV2(
-            @RequestParam @Schema(description = "학교 이름", defaultValue = "명지대학교")
-                    String universityName,
-            @RequestParam @Schema(description = "캠퍼스 이름", defaultValue = "인문캠퍼스") String campusName,
+    public ApplicationResponse<List<Map<String, Map<String, List<DayMealGetRes>>>>> getWeekMeal(
+            @PathVariable @Schema(description = "대학교 캠퍼스 idx", defaultValue = "1") Long campusIdx,
             @RequestParam
                     @Schema(
                             description = "조회하고자 하는 시작 날짜 ( yyyy-MM-dd )",
                             defaultValue = "2023-10-01")
                     String offeredAt) {
-        return ApplicationResponse.ok(
-                mealService.getWeekMealList(universityName, campusName, offeredAt));
+        return ApplicationResponse.ok(mealService.getWeekMealList(campusIdx, offeredAt));
     }
 }

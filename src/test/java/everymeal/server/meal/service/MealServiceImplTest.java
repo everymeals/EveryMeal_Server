@@ -60,11 +60,10 @@ class MealServiceImplTest extends IntegrationTestSupport {
     @Test
     void 학생식당_등록() throws Exception {
         // given
-        RestaurantRegisterReq req = getRestaurantRegisterReq();
+        University university = universityRepository.save(getUniversity());
+        RestaurantRegisterReq req = getRestaurantRegisterReq(university.getIdx());
 
         // when
-        University university =
-                universityRepository.save(getUniversity(req.universityName(), req.campusName()));
         Boolean response = restaurantService.createRestaurant(req);
 
         // then
@@ -76,11 +75,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
     void 주간식단_등록() throws Exception {
         // given
         RestaurantRegisterReq restaurantRegisterReq = getRestaurantRegisterReq();
-        University university =
-                universityRepository.save(
-                        getUniversity(
-                                restaurantRegisterReq.universityName(),
-                                restaurantRegisterReq.campusName()));
+        University university = universityRepository.save(getUniversity());
         Restaurant restaurant =
                 restaurantRepository.save(getRestaurant(university, restaurantRegisterReq));
 
@@ -111,11 +106,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
     void 주간식단_조회() throws Exception {
         // given
         RestaurantRegisterReq restaurantRegisterReq = getRestaurantRegisterReq();
-        University university =
-                universityRepository.save(
-                        getUniversity(
-                                restaurantRegisterReq.universityName(),
-                                restaurantRegisterReq.campusName()));
+        University university = universityRepository.save(getUniversity());
         Restaurant restaurant =
                 restaurantRepository.save(getRestaurant(university, restaurantRegisterReq));
 
@@ -156,9 +147,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
 
         // when
         String offeredAt = today.plusDays(1).toString().split("T")[0];
-        var response =
-                mealService.getWeekMealList(
-                        university.getName(), university.getCampusName(), offeredAt);
+        var response = mealService.getWeekMealList(university.getIdx(), offeredAt);
 
         // then
         assertEquals(response.size(), 6);
@@ -174,9 +163,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
 
         // when
         String offeredAt = LocalDate.now().toString().split("T")[0];
-        var response =
-                mealService.getDayMealListV2(
-                        getUniversity().getName(), getUniversity().getCampusName(), offeredAt);
+        var response = mealService.getDayMealList(getUniversity().getIdx(), offeredAt);
 
         // then
         assertEquals(response.size(), 1);
@@ -191,12 +178,8 @@ class MealServiceImplTest extends IntegrationTestSupport {
         Restaurant restaurant =
                 restaurantRepository.save(getRestaurant(university, restaurantRegisterReq));
 
-        String universityName = restaurantRegisterReq.universityName();
-        String campusName = restaurantRegisterReq.campusName();
-
         // when
-        List<RestaurantListGetRes> response =
-                mealService.getRestaurantList(universityName, campusName);
+        List<RestaurantListGetRes> response = mealService.getRestaurantList(university.getIdx());
         var result = restaurantRepository.findAllByUniversityAndIsDeletedFalse(university);
         // then
         assertEquals(response.size(), result.size());
@@ -208,8 +191,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
         // given
         RestaurantRegisterReq invalidReq =
                 new RestaurantRegisterReq(
-                        "서울대학교",
-                        "서울캠퍼스",
+                        99L,
                         "서울시 관악구 관악로",
                         "유령식당",
                         LocalTime.of(8, 0),
@@ -260,11 +242,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
     void 등록되어_있는_식단_데이터_덮어쓰기() throws Exception {
         // given
         RestaurantRegisterReq restaurantRegisterReq = getRestaurantRegisterReq();
-        University university =
-                universityRepository.save(
-                        getUniversity(
-                                restaurantRegisterReq.universityName(),
-                                restaurantRegisterReq.campusName()));
+        University university = universityRepository.save(getUniversity());
         Restaurant restaurant =
                 restaurantRepository.save(getRestaurant(university, restaurantRegisterReq));
 

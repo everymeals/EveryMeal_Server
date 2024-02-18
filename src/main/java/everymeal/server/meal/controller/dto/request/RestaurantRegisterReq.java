@@ -8,10 +8,8 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalTime;
 
 public record RestaurantRegisterReq(
-        @Schema(title = "대학 이름", description = "학교 한글명", defaultValue = "명지대학교") @NotBlank
-                String universityName,
-        @Schema(title = "캠퍼스 이름", description = "학교 캠퍼스명", defaultValue = "인문캠퍼스") @NotBlank
-                String campusName,
+        @Schema(title = "대학 캠퍼스 아이디", description = "대학 캠퍼스 아이디", defaultValue = "1")
+                Long campusIdx,
         @Schema(
                         title = "학교 주소",
                         description = "시/구/동 도로명 주소 모두 기입",

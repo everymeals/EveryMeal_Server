@@ -28,8 +28,7 @@ public class MealCommServiceImpl {
         mealDao.saveAll(mealList);
     }
 
-    public List<Map<String, Object>> getDayList(
-            String offeredAt, String universityName, String campusName) {
-        return mealMapper.findDayList(offeredAt, universityName, campusName);
+    public List<Map<String, Object>> getDayList(String offeredAt, Long universityIdx) {
+        return mealMapper.findDayList(offeredAt, universityIdx);
     }
 }

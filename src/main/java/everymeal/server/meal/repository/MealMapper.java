@@ -12,9 +12,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MealMapper {
     List<Map<String, Object>> findDayList(
-            @Param("offeredAt") String offeredAt,
-            @Param("universityName") String universityName,
-            @Param("campusName") String campusName);
+            @Param("offeredAt") String offeredAt, @Param("universityIdx") Long universityIdx);
 
     List<Meal> findAllByOfferedAtOnDateAndMealType(
             @Param("offeredAt") String offeredAt,

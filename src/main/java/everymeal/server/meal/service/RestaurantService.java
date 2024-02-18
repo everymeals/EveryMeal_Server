@@ -11,5 +11,5 @@ public interface RestaurantService {
 
     Boolean createRestaurant(RestaurantRegisterReq restaurantRegisterReq);
 
-    List<Restaurant> getAllByUniversityAndIsDeletedFalse(String universityName, String campusName);
+    List<Restaurant> getAllByUniversityAndIsDeletedFalse(Long universityIdx);
 }

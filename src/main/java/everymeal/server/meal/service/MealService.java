@@ -12,13 +12,13 @@ public interface MealService {
 
     Boolean createWeekMeal(WeekMealRegisterReq weekMealRegisterReq);
 
-    List<RestaurantListGetRes> getRestaurantList(String universityName, String campusName);
+    List<RestaurantListGetRes> getRestaurantList(Long universityIdx);
 
-    Map<String, Map<String, List<DayMealGetRes>>> getDayMealListV2(
-            String universityName, String campusName, String offeredAt);
+    Map<String, Map<String, List<DayMealGetRes>>> getDayMealList(
+            Long universityIdx, String offeredAt);
 
     List<Map<String, Map<String, List<DayMealGetRes>>>> getWeekMealList(
-            String universityName, String campusName, String offeredAt);
+            Long universityIdx, String offeredAt);
 
     Boolean createRestaurant(RestaurantRegisterReq restaurantRegisterReq);
 }

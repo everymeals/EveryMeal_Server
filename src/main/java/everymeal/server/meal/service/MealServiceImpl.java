@@ -55,24 +55,23 @@ public class MealServiceImpl implements MealService {
     }
 
     @Override
-    public List<RestaurantListGetRes> getRestaurantList(String universityName, String campusName) {
+    public List<RestaurantListGetRes> getRestaurantList(Long universityIdx) {
         // 학교와 식당 폐업 여부를 키로 조회
         List<Restaurant> restaurants =
-                restaurantServiceImpl.getAllByUniversityAndIsDeletedFalse(
-                        universityName, campusName);
+                restaurantServiceImpl.getAllByUniversityAndIsDeletedFalse(universityIdx);
         return RestaurantListGetRes.of(restaurants);
     }
 
     @Override
-    public Map<String, Map<String, List<DayMealGetRes>>> getDayMealListV2(
-            String universityName, String campusName, String offeredAt) {
-        var result = mealCommServiceImpl.getDayList(offeredAt, universityName, campusName);
+    public Map<String, Map<String, List<DayMealGetRes>>> getDayMealList(
+            Long universityIdx, String offeredAt) {
+        var result = mealCommServiceImpl.getDayList(offeredAt, universityIdx);
         return Map.of(offeredAt, DayMealGetRes.of(result));
     }
 
     @Override
     public List<Map<String, Map<String, List<DayMealGetRes>>>> getWeekMealList(
-            String universityName, String campusName, String offeredAt) { // 현재 날짜와 시간을 가져옵니다.
+            Long universityIdx, String offeredAt) { // 현재 날짜와 시간을 가져옵니다.
         LocalDate ldOfferedAt = LocalDate.parse(offeredAt);
 
         // 현재 요일을 가져옵니다.
@@ -98,9 +97,7 @@ public class MealServiceImpl implements MealService {
         List<Map<String, Map<String, List<DayMealGetRes>>>> result = new ArrayList<>();
         for (LocalDate i = monday; i.isBefore(sunday); i = i.plusDays(1)) {
             Map<String, List<DayMealGetRes>> row =
-                    DayMealGetRes.of(
-                            mealCommServiceImpl.getDayList(
-                                    i.toString(), universityName, campusName));
+                    DayMealGetRes.of(mealCommServiceImpl.getDayList(i.toString(), universityIdx));
             result.add(Map.of(i.toString(), row));
         }
         return result;

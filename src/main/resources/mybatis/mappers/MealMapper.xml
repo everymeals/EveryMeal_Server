@@ -19,13 +19,13 @@
       r.name AS restaurantName,
       CONCAT(u.name, ' ', u.campus_name) AS universityName,
       r.review_count AS reviewCount,
-      r.grade AS grade
+      ROUND(r.grade,1) AS grade
     FROM restaurant r
            JOIN (SELECT DISTINCT meal_type AS mealType FROM meal) AS meal_types ON 1=1
            LEFT JOIN meal m ON m.restaurant_idx = r.idx AND m.meal_type = meal_types.mealType AND m.offered_at = DATE(#{offeredAt})
       INNER JOIN university u ON r.university_idx = u.idx AND u.is_deleted = false
     WHERE
-      u.name = #{universityName} AND u.campus_name = #{campusName}
+      u.idx = #{universityIdx}
       AND (
         (meal_types.mealType = 'BREAKFAST' AND r.is_open_breakfast = true) OR
         (meal_types.mealType = 'LUNCH' AND r.is_open_lunch = true) OR

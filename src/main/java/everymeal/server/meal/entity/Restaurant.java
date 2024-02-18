@@ -56,7 +56,7 @@ public class Restaurant {
 
     @Builder
     public Restaurant(RestaurantRegisterReq restaurantRegisterReq, University university) {
-        this.name = restaurantRegisterReq.campusName();
+        this.name = restaurantRegisterReq.restaurantName();
         this.address = restaurantRegisterReq.address();
         this.university = university;
         this.isDeleted = Boolean.TRUE;
