@@ -32,7 +32,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     public Boolean createRestaurant(RestaurantRegisterReq restaurantRegisterReq) {
         // 학교 조회
         University university =
-                universityServiceImpl.getUniversity(restaurantRegisterReq.universityIdx());
+                universityServiceImpl.getUniversity(restaurantRegisterReq.campusIdx());
         // 식당 등록
         Restaurant restaurant =
                 Restaurant.builder()

@@ -70,7 +70,7 @@ class MealControllerTest extends ControllerTestSupport {
         // given
         // when-then
         mockMvc.perform(
-                        get("/api/v1/meals/restaurant/{universityIdx}", 1)
+                        get("/api/v1/meals/restaurant/{campusIdx}", 1)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk());
@@ -84,7 +84,7 @@ class MealControllerTest extends ControllerTestSupport {
 
         // when-then
         mockMvc.perform(
-                        get("/api/v1/meals/day/{universityIdx}", 1)
+                        get("/api/v1/meals/day/{campusIdx}", 1)
                                 .param("offeredAt", offeredAt)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
@@ -99,7 +99,7 @@ class MealControllerTest extends ControllerTestSupport {
 
         // when-then
         mockMvc.perform(
-                        get("/api/v1/meals/week/{universityIdx}", 1)
+                        get("/api/v1/meals/week/{campusIdx}", 1)
                                 .param("offeredAt", offeredAt)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())

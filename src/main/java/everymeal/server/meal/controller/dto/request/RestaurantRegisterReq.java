@@ -9,7 +9,7 @@ import java.time.LocalTime;
 
 public record RestaurantRegisterReq(
         @Schema(title = "대학 캠퍼스 아이디", description = "대학 캠퍼스 아이디", defaultValue = "1")
-                Long universityIdx,
+                Long campusIdx,
         @Schema(
                         title = "학교 주소",
                         description = "시/구/동 도로명 주소 모두 기입",
