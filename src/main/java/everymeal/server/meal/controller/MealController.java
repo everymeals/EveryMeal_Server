@@ -68,31 +68,27 @@ public class MealController {
         return ApplicationResponse.create(mealService.createWeekMeal(weekMealRegisterReq));
     }
 
-    @GetMapping("/day/v2")
+    @GetMapping("/day/{universityIdx}")
     @Operation(summary = "당일 식단 조회")
-    public ApplicationResponse<Map<String, Map<String, List<DayMealGetRes>>>> getDayMealV2(
-            @RequestParam @Schema(description = "학교 이름", defaultValue = "명지대학교")
-                    String universityName,
-            @RequestParam @Schema(description = "캠퍼스 이름", defaultValue = "인문캠퍼스") String campusName,
+    public ApplicationResponse<Map<String, Map<String, List<DayMealGetRes>>>> getDayMeal(
+            @PathVariable @Schema(description = "대학교 캠퍼스 idx", defaultValue = "1")
+                    Long universityIdx,
             @RequestParam
                     @Schema(description = "조회하고자 하는 날짜 ( yyyy-MM-dd )", defaultValue = "2023-10-01")
                     String offeredAt) {
-        return ApplicationResponse.ok(
-                mealService.getDayMealListV2(universityName, campusName, offeredAt));
+        return ApplicationResponse.ok(mealService.getDayMealList(universityIdx, offeredAt));
     }
 
-    @GetMapping("/week/v2")
+    @GetMapping("/week/{universityIdx}")
     @Operation(summary = "주간 식단 조회")
-    public ApplicationResponse<List<Map<String, Map<String, List<DayMealGetRes>>>>> getWeekMealV2(
-            @RequestParam @Schema(description = "학교 이름", defaultValue = "명지대학교")
-                    String universityName,
-            @RequestParam @Schema(description = "캠퍼스 이름", defaultValue = "인문캠퍼스") String campusName,
+    public ApplicationResponse<List<Map<String, Map<String, List<DayMealGetRes>>>>> getWeekMeal(
+            @PathVariable @Schema(description = "대학교 캠퍼스 idx", defaultValue = "1")
+                    Long universityIdx,
             @RequestParam
                     @Schema(
                             description = "조회하고자 하는 시작 날짜 ( yyyy-MM-dd )",
                             defaultValue = "2023-10-01")
                     String offeredAt) {
-        return ApplicationResponse.ok(
-                mealService.getWeekMealList(universityName, campusName, offeredAt));
+        return ApplicationResponse.ok(mealService.getWeekMealList(universityIdx, offeredAt));
     }
 }

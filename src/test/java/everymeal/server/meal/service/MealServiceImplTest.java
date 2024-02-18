@@ -147,9 +147,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
 
         // when
         String offeredAt = today.plusDays(1).toString().split("T")[0];
-        var response =
-                mealService.getWeekMealList(
-                        university.getName(), university.getCampusName(), offeredAt);
+        var response = mealService.getWeekMealList(university.getIdx(), offeredAt);
 
         // then
         assertEquals(response.size(), 6);
@@ -165,9 +163,7 @@ class MealServiceImplTest extends IntegrationTestSupport {
 
         // when
         String offeredAt = LocalDate.now().toString().split("T")[0];
-        var response =
-                mealService.getDayMealListV2(
-                        getUniversity().getName(), getUniversity().getCampusName(), offeredAt);
+        var response = mealService.getDayMealList(getUniversity().getIdx(), offeredAt);
 
         // then
         assertEquals(response.size(), 1);

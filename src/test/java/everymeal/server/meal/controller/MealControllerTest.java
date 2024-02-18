@@ -80,15 +80,11 @@ class MealControllerTest extends ControllerTestSupport {
     @Test
     void getDayMeal() throws Exception {
         // given
-        String universityName = "명지대학교";
-        String campusName = "인문캠퍼스";
         String offeredAt = "2023-10-01";
 
         // when-then
         mockMvc.perform(
-                        get("/api/v1/meals/day/v2")
-                                .param("universityName", universityName)
-                                .param("campusName", campusName)
+                        get("/api/v1/meals/day/{universityIdx}", 1)
                                 .param("offeredAt", offeredAt)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
@@ -99,14 +95,11 @@ class MealControllerTest extends ControllerTestSupport {
     @Test
     void getWeekMeal() throws Exception {
         // given
-        String universityName = "명지대학교";
         String offeredAt = "2023-10-01";
 
         // when-then
         mockMvc.perform(
-                        get("/api/v1/meals/week/v2")
-                                .param("universityName", universityName)
-                                .param("campusName", "인문캠퍼스")
+                        get("/api/v1/meals/week/{universityIdx}", 1)
                                 .param("offeredAt", offeredAt)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
