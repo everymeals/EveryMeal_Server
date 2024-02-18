@@ -33,10 +33,8 @@ public class UniversityServiceImpl implements UniversityService {
         return UniversityListGetRes.of(universities);
     }
 
-    public University getUniversity(String universityName, String campusName) {
-        return universityRepository
-                .findByNameAndCampusNameAndIsDeletedFalse(universityName, campusName)
-                .stream()
+    public University getUniversity(Long universityIdx) {
+        return universityRepository.findByIdxAndIsDeletedFalse(universityIdx).stream()
                 .findFirst()
                 .orElseThrow(() -> new ApplicationException(ExceptionList.UNIVERSITY_NOT_FOUND));
     }

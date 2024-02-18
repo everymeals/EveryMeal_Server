@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,16 +47,13 @@ public class MealController {
      * 학생식당 조회 API
      * ============================================================================================
      */
-    @GetMapping("/restaurant")
+    @GetMapping("/restaurant/{universityIdx}")
     @Operation(summary = "학교별 학생 식당 목록 조회")
     public ApplicationResponse<List<RestaurantListGetRes>> getRestaurants(
-            @Schema(title = "대학 이름", defaultValue = "명지대학교", example = "명지대학교")
-                    @RequestParam(value = "universityName")
-                    String universityName,
-            @Schema(title = "캠퍼스 이름", defaultValue = "인문캠퍼스", example = "인문캠퍼스")
-                    @RequestParam(value = "campusName")
-                    String campusName) {
-        return ApplicationResponse.ok(mealService.getRestaurantList(universityName, campusName));
+            @Schema(title = "대학 캠퍼스 IDX", defaultValue = "1", example = "1")
+                    @PathVariable(value = "universityIdx")
+                    Long universityIdx) {
+        return ApplicationResponse.ok(mealService.getRestaurantList(universityIdx));
     }
 
     /**

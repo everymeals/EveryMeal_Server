@@ -68,14 +68,9 @@ class MealControllerTest extends ControllerTestSupport {
     @Test
     void getRestaurants() throws Exception {
         // given
-        String universityName = "명지대학교";
-        String campusName = "인문캠퍼스";
-
         // when-then
         mockMvc.perform(
-                        get("/api/v1/meals/restaurant")
-                                .param("universityName", universityName)
-                                .param("campusName", campusName)
+                        get("/api/v1/meals/restaurant/{universityIdx}", 1)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk());
@@ -120,8 +115,7 @@ class MealControllerTest extends ControllerTestSupport {
 
     private RestaurantRegisterReq getRestaurantRegisterReq() {
         return new RestaurantRegisterReq(
-                "명지대학교",
-                "인문캠퍼스",
+                1L,
                 "서울시 서대문구 남가좌동 거북골로 34",
                 "MCC 식당",
                 LocalTime.of(8, 0),

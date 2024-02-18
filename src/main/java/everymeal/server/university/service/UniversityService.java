@@ -11,5 +11,5 @@ public interface UniversityService {
 
     List<UniversityListGetRes> getUniversities();
 
-    University getUniversity(String universityName, String campusName);
+    University getUniversity(Long universityIdx);
 }

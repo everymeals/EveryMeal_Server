@@ -32,8 +32,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     public Boolean createRestaurant(RestaurantRegisterReq restaurantRegisterReq) {
         // 학교 조회
         University university =
-                universityServiceImpl.getUniversity(
-                        restaurantRegisterReq.universityName(), restaurantRegisterReq.campusName());
+                universityServiceImpl.getUniversity(restaurantRegisterReq.universityIdx());
         // 식당 등록
         Restaurant restaurant =
                 Restaurant.builder()
@@ -44,10 +43,9 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public List<Restaurant> getAllByUniversityAndIsDeletedFalse(
-            String universityName, String campusName) {
+    public List<Restaurant> getAllByUniversityAndIsDeletedFalse(Long universityIdx) {
         // 학교 등록 여부 판단
-        University university = universityServiceImpl.getUniversity(universityName, campusName);
+        University university = universityServiceImpl.getUniversity(universityIdx);
 
         return restaurantCommServiceImpl.getAllByUniversityAndIsDeletedFalse(university);
     }

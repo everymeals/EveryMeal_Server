@@ -55,11 +55,10 @@ public class MealServiceImpl implements MealService {
     }
 
     @Override
-    public List<RestaurantListGetRes> getRestaurantList(String universityName, String campusName) {
+    public List<RestaurantListGetRes> getRestaurantList(Long universityIdx) {
         // 학교와 식당 폐업 여부를 키로 조회
         List<Restaurant> restaurants =
-                restaurantServiceImpl.getAllByUniversityAndIsDeletedFalse(
-                        universityName, campusName);
+                restaurantServiceImpl.getAllByUniversityAndIsDeletedFalse(universityIdx);
         return RestaurantListGetRes.of(restaurants);
     }
 
