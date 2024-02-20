@@ -14,7 +14,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,8 +50,8 @@ public class S3Controller {
                             allowableValues = {"store", "meal", "user"})
                     String fileDomain,
             @Min(value = 1, message = "최소 1개 이상의 파일을 업로드해주세요.")
-            @Max(value = 10, message = "최대 10개까지 업로드 가능합니다.")
-            @RequestParam(value = "count")
+                    @Max(value = 10, message = "최대 10개까지 업로드 가능합니다.")
+                    @RequestParam(value = "count")
                     @Schema(
                             title = "파일 개수",
                             defaultValue = "1",
@@ -64,8 +63,8 @@ public class S3Controller {
             String fileName = UUID.randomUUID().toString();
             fileName = fileDomain + File.separator + fileName;
             URL url = s3Util.getPresignedUrl(fileName);
-            S3GetResignedUrlRes build = S3GetResignedUrlRes.builder().imageKey(fileName)
-                .url(url.toString()).build();
+            S3GetResignedUrlRes build =
+                    S3GetResignedUrlRes.builder().imageKey(fileName).url(url.toString()).build();
             res.add(build);
         }
         return ApplicationResponse.ok(res);
