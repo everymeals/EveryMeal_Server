@@ -7,8 +7,12 @@ import everymeal.server.global.util.aws.controller.dto.S3GetResignedUrlRes;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,7 +40,7 @@ public class S3Controller {
         4. Url에 PutMapping 이미지 파일을 binary로 보낼 경우, S3에 저장됩니다.
         PS. Server에는 ImageKey로만 통신합합니다.
         """)
-    public ApplicationResponse<S3GetResignedUrlRes> getPresignedUrl(
+    public ApplicationResponse<List<S3GetResignedUrlRes>> getPresignedUrl(
             @RequestParam(value = "fileDomain")
                     @Schema(
                             title = "파일 도메인",
@@ -44,12 +48,26 @@ public class S3Controller {
                             example = "store",
                             description = "store, meal, user 중 하나를 입력해주세요.",
                             allowableValues = {"store", "meal", "user"})
-                    String fileDomain) {
-        String fileName = UUID.randomUUID().toString();
-        fileName = fileDomain + File.separator + fileName;
-        URL test = s3Util.getPresignedUrl(fileName);
-        return ApplicationResponse.ok(
-                S3GetResignedUrlRes.builder().imageKey(fileName).url(test.toString()).build());
+                    String fileDomain,
+            @Min(value = 1, message = "최소 1개 이상의 파일을 업로드해주세요.")
+                    @Max(value = 10, message = "최대 10개까지 업로드 가능합니다.")
+                    @RequestParam(value = "count")
+                    @Schema(
+                            title = "파일 개수",
+                            defaultValue = "1",
+                            example = "1",
+                            description = "파일 개수를 입력해주세요. 최대 10개까지 업로드 가능합니다.")
+                    Integer count) {
+        List<S3GetResignedUrlRes> res = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            String fileName = UUID.randomUUID().toString();
+            fileName = fileDomain + File.separator + fileName;
+            URL url = s3Util.getPresignedUrl(fileName);
+            S3GetResignedUrlRes build =
+                    S3GetResignedUrlRes.builder().imageKey(fileName).url(url.toString()).build();
+            res.add(build);
+        }
+        return ApplicationResponse.ok(res);
     }
 
     @Operation(
