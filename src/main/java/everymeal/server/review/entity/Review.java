@@ -107,12 +107,20 @@ public class Review extends BaseEntity {
     public void addMark(User user) {
         ReviewMark reviewMark = ReviewMark.builder().review(this).user(user).build();
         this.reviewMarks.add(reviewMark);
-        this.restaurant.getGradeStatistics().addRecommendedCount();
+        if (this.restaurant == null) {
+            this.store.getGradeStatistics().addRecommendedCount();
+        } else {
+            this.restaurant.getGradeStatistics().addRecommendedCount();
+        }
     }
 
     public void removeMark(User user) {
         this.reviewMarks.removeIf(mark -> mark.getUser().getIdx().equals(user.getIdx()));
-        this.restaurant.getGradeStatistics().removeRecommendedCount();
+        if (this.restaurant == null) {
+            this.store.getGradeStatistics().addRecommendedCount();
+        } else {
+            this.restaurant.getGradeStatistics().addRecommendedCount();
+        }
     }
 
     public boolean isLike(Long userIdx) {

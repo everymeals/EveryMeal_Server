@@ -15,7 +15,8 @@ public record StoreGetReviewRes(
         String nickName,
         String profileImageUrl,
         Integer recommendedCount,
-        List<String> images) {
+        List<String> images,
+        Long likeCount) {
 
     public static List<StoreGetReviewRes> of(List<Map<String, Object>> storeReview) {
         return storeReview.stream()
@@ -34,7 +35,8 @@ public record StoreGetReviewRes(
                                     (String) review.get("nickName"),
                                     S3Util.getImgUrl((String) review.get("profileImageUrl")),
                                     (Integer) review.get("recommendedCount"),
-                                    images);
+                                    images,
+                                    (Long) review.get("likeCount"));
                         })
                 .toList();
     }
