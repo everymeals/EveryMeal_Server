@@ -385,7 +385,8 @@
       u.nickname as 'nickname',
       u.profile_img_url as 'profileImageUrl',
       s.recommended_count as 'recommendedCount',
-      GROUP_CONCAT(i.image_url SEPARATOR ',') AS 'images'
+      GROUP_CONCAT(i.image_url SEPARATOR ',') AS 'images',
+      count(distinct rm.review_idx) as 'likeCount'
     FROM
       reviews r
         JOIN
@@ -394,6 +395,8 @@
       images i ON r.idx = i.review_idx AND i.is_deleted = false
         LEFT JOIN
       store s ON r.store_idx = s.idx AND s.is_deleted = false
+        LEFT JOIN
+      review_marks rm ON r.idx = rm.review_idx
     WHERE
       r.store_idx = #{storeIdx}
         AND r.is_deleted = false
